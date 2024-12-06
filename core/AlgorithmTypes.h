@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   AlgorithmTypes.h
- * \brief  »ù´¡¼ÓËÙÔËËãµÄ·½·¨£¬Ö÷ÒªÊÇµ÷ÓÃcuh¿âµÄÏà¹ØËã·¨
+ * \brief  åŸºç¡€åŠ é€Ÿè¿ç®—çš„æ–¹æ³•ï¼Œä¸»è¦æ˜¯è°ƒç”¨cuhåº“çš„ç›¸å…³ç®—æ³•
  * 
  * \author LUO
  * \date   January 31st 2024
@@ -14,7 +14,7 @@
 namespace SparseSurfelFusion {
 
 	/**
-	 * \brief ¸ù¾İ±êÖ¾Î»Êı×é£¬É¸Ñ¡ÖµÊı×éÖĞµÄÊı¾İ£¬Éú³ÉĞÂÊı×éµÄĞ¡½á¹¹Ìå.
+	 * \brief æ ¹æ®æ ‡å¿—ä½æ•°ç»„ï¼Œç­›é€‰å€¼æ•°ç»„ä¸­çš„æ•°æ®ï¼Œç”Ÿæˆæ–°æ•°ç»„çš„å°ç»“æ„ä½“.
 	 */
 	struct FlagSelection {
 	private:
@@ -23,9 +23,9 @@ namespace SparseSurfelFusion {
 		DeviceArray<unsigned char> m_temp_storage;
 
 
-		//´æ´¢¡°±»Ñ¡ÖĞµÄË÷Òı¡±µÄÊıÁ¿
-		int* m_device_num_selected;	// GPUÉÏ´æ´¢¡°±»Ñ¡ÖĞµÄË÷Òı¡±µÄÊıÁ¿
-		int* m_host_num_selected;	// CPUÉÏ´æ´¢¡°±»Ñ¡ÖĞµÄË÷Òı¡±µÄÊıÁ¿
+		//å­˜å‚¨â€œè¢«é€‰ä¸­çš„ç´¢å¼•â€çš„æ•°é‡
+		int* m_device_num_selected;	// GPUä¸Šå­˜å‚¨â€œè¢«é€‰ä¸­çš„ç´¢å¼•â€çš„æ•°é‡
+		int* m_host_num_selected;	// CPUä¸Šå­˜å‚¨â€œè¢«é€‰ä¸­çš„ç´¢å¼•â€çš„æ•°é‡
 
 	public:
 		FlagSelection() {
@@ -39,55 +39,55 @@ namespace SparseSurfelFusion {
 		}
 
 		/**
-		 * \brief ·ÖÅä²¢³õÊ¼»¯ÄÚ´æ£¬µ±SelectionÊäÈëµÄBuffer´óĞ¡±Èinput_size´ó£¬ÔòÎŞĞè·ÖÅä£»µ±SelectionÊäÈëµÄBuffer´óĞ¡±ÈÊäÈëµÄinput_sizeĞ¡µÄÊ±ºò£¬
-		 *		  ÊÍ·Åµ±Ç°m_selection_input_buffer¡¢m_selected_idx_buffer¡¢m_temp_storageµÄ»º´æ£¬²¢¶ÔÆäÖØĞÂ·ÖÅä»º´æ£¬ÒÔinput_sizeµÄ1.5±¶·ÖÅä»º´æ,
-		 *		  ³õÊ¼»¯Êı×éµÄÄÚÈİÊÇµ±Ç°µãµÄindex.
+		 * \brief åˆ†é…å¹¶åˆå§‹åŒ–å†…å­˜ï¼Œå½“Selectionè¾“å…¥çš„Bufferå¤§å°æ¯”input_sizeå¤§ï¼Œåˆ™æ— éœ€åˆ†é…ï¼›å½“Selectionè¾“å…¥çš„Bufferå¤§å°æ¯”è¾“å…¥çš„input_sizeå°çš„æ—¶å€™ï¼Œ
+		 *		  é‡Šæ”¾å½“å‰m_selection_input_bufferã€m_selected_idx_bufferã€m_temp_storageçš„ç¼“å­˜ï¼Œå¹¶å¯¹å…¶é‡æ–°åˆ†é…ç¼“å­˜ï¼Œä»¥input_sizeçš„1.5å€åˆ†é…ç¼“å­˜,
+		 *		  åˆå§‹åŒ–æ•°ç»„çš„å†…å®¹æ˜¯å½“å‰ç‚¹çš„index.
 		 *
-		 * \param input_size ĞèÒª´¦ÀíµÄselectionµÄbuffer´óĞ¡
-		 * \param stream cudaÁ÷ID
+		 * \param input_size éœ€è¦å¤„ç†çš„selectionçš„bufferå¤§å°
+		 * \param stream cudaæµID
 		 */
 		void AllocateAndInit(size_t input_size, cudaStream_t stream = 0);
 
 		/**
-		 * \brief ±éÀúflagsÊı×é£¬²¢½«¶ÔÓ¦ÔªËØ¸øµ½validSelectedIndexÊı×éÖĞ.
+		 * \brief éå†flagsæ•°ç»„ï¼Œå¹¶å°†å¯¹åº”å…ƒç´ ç»™åˆ°validSelectedIndexæ•°ç»„ä¸­.
 		 *
-		 * \param flags ´«ÈëµÄflagsÊı×é
-		 * \param stream cudaÁ÷ID
+		 * \param flags ä¼ å…¥çš„flagsæ•°ç»„
+		 * \param stream cudaæµID
 		 */
 		void Select(const DeviceArray<char>& flags, cudaStream_t stream = 0);
 
 		/**
-		 * \brief ±éÀúflagsÊı×é£¬²¢½«¶ÔÓ¦ÔªËØ¸øµ½validSelectedIndexÊı×éÖĞ(µ±ËùÑ¡ÔªËØÖ»ÊÇÎŞ·ûºÅÊı×éÊ±).
+		 * \brief éå†flagsæ•°ç»„ï¼Œå¹¶å°†å¯¹åº”å…ƒç´ ç»™åˆ°validSelectedIndexæ•°ç»„ä¸­(å½“æ‰€é€‰å…ƒç´ åªæ˜¯æ— ç¬¦å·æ•°ç»„æ—¶).
 		 *
-		 * \param flags ´«ÈëµÄ±êÖ¾Êı×é
-		 * \param selectFrom Òª½øĞĞÌõ¼şÑ¡ÔñµÄÊı×é
-		 * \param selectToBuffer ´ËÊı×éÎªÔİ´æÊı×é£¬Ñ¡ÔñµÄÔªËØ½«±»¸´ÖÆµ½¸ÃÊä³öÊı×éÖĞ½øĞĞÔİ´æ
-		 * \param validSelectToArray Êä³öÊı×é£ºÑ¡ÔñµÄÔªËØ½«±»¸´ÖÆµ½¸ÃÊä³öÊı×éÖĞ
-		 * \param stream cudaÁ÷ID
+		 * \param flags ä¼ å…¥çš„æ ‡å¿—æ•°ç»„
+		 * \param selectFrom è¦è¿›è¡Œæ¡ä»¶é€‰æ‹©çš„æ•°ç»„
+		 * \param selectToBuffer æ­¤æ•°ç»„ä¸ºæš‚å­˜æ•°ç»„ï¼Œé€‰æ‹©çš„å…ƒç´ å°†è¢«å¤åˆ¶åˆ°è¯¥è¾“å‡ºæ•°ç»„ä¸­è¿›è¡Œæš‚å­˜
+		 * \param validSelectToArray è¾“å‡ºæ•°ç»„ï¼šé€‰æ‹©çš„å…ƒç´ å°†è¢«å¤åˆ¶åˆ°è¯¥è¾“å‡ºæ•°ç»„ä¸­
+		 * \param stream cudaæµID
 		 */
 		void SelectUnsigned(const DeviceArray<char>& flags, const DeviceArray<unsigned int>& selectFrom, DeviceArray<unsigned int>& selectToBuffer, DeviceArray<unsigned int>& validSelectToArray, cudaStream_t stream = 0);
 
-		// ÒòÎªÖµÒª´«Èëº¯Êı£¬Òò´ËÖ±½Ó¿ª·Å³ÉÔ±±äÁ¿È¨ÏŞ¹©¶ÁÈ¡
-		DeviceArray<int> validSelectedIndex;			// ÓĞĞ§µÄ±»Ñ¡ÔñµÄindex£¬validSelectedIndexÊÇÖ¸Õë
-		DeviceArray<char> selectIndicatorBuffer;		// ´æ´¢±êÖ¾Î»µÄBuffer£¬ÒòÎªFlaggedº¯ÊıĞèÒª´«ÈëcharÀàĞÍ±êÖ¾Î»Êı×é
+		// å› ä¸ºå€¼è¦ä¼ å…¥å‡½æ•°ï¼Œå› æ­¤ç›´æ¥å¼€æ”¾æˆå‘˜å˜é‡æƒé™ä¾›è¯»å–
+		DeviceArray<int> validSelectedIndex;			// æœ‰æ•ˆçš„è¢«é€‰æ‹©çš„indexï¼ŒvalidSelectedIndexæ˜¯æŒ‡é’ˆ
+		DeviceArray<char> selectIndicatorBuffer;		// å­˜å‚¨æ ‡å¿—ä½çš„Bufferï¼Œå› ä¸ºFlaggedå‡½æ•°éœ€è¦ä¼ å…¥charç±»å‹æ ‡å¿—ä½æ•°ç»„
 
 	};
 
 	/**
-	 * \brief ÓÃÓÚÔÚÊäÈëÊı×éÖĞ²éÕÒ²¢É¾³ıÖØ¸´µÄÔªËØ.
+	 * \brief ç”¨äºåœ¨è¾“å…¥æ•°ç»„ä¸­æŸ¥æ‰¾å¹¶åˆ é™¤é‡å¤çš„å…ƒç´ .
 	 */
 	struct UniqueSelection {
 	private:
 		DeviceArray<int> m_selected_element_buffer;
 		DeviceArray<unsigned char> m_temp_storage;
 
-		// ËùÑ¡Ë÷ÒıÊıÁ¿µÄÄÚ´æ
+		// æ‰€é€‰ç´¢å¼•æ•°é‡çš„å†…å­˜
 		int* m_device_num_selected;
 		int* m_host_num_selected;
 
 	public:
 		/**
-		 * \brief ·ÖÅäËùÑ¡Ë÷ÒıÊıÁ¿µÄÄÚ´æ.
+		 * \brief åˆ†é…æ‰€é€‰ç´¢å¼•æ•°é‡çš„å†…å­˜.
 		 * 
 		 */
 		UniqueSelection() {
@@ -95,7 +95,7 @@ namespace SparseSurfelFusion {
 			CHECKCUDA(cudaMallocHost((void**)(&m_host_num_selected), sizeof(int)));
 		}
 		/**
-		 * \brief ÊÍ·ÅËùÑ¡Ë÷ÒıÊıÁ¿µÄÄÚ´æ.
+		 * \brief é‡Šæ”¾æ‰€é€‰ç´¢å¼•æ•°é‡çš„å†…å­˜.
 		 * 
 		 */
 		~UniqueSelection() {
@@ -103,27 +103,27 @@ namespace SparseSurfelFusion {
 			CHECKCUDA(cudaFreeHost(m_host_num_selected));
 		}
 		/**
-		 * \brief ¸ù¾İËùĞèÉ¾³ıÊı¾İÖØ¸´Êı¾İÊı×éµÄ´óĞ¡£¬·ÖÅä»º´æÒÔ¹©Ëã·¨.
+		 * \brief æ ¹æ®æ‰€éœ€åˆ é™¤æ•°æ®é‡å¤æ•°æ®æ•°ç»„çš„å¤§å°ï¼Œåˆ†é…ç¼“å­˜ä»¥ä¾›ç®—æ³•.
 		 * 
-		 * \param input_size ËùĞèÉ¾³ıÊı¾İÖØ¸´Êı¾İÊı×éµÄ´óĞ¡
+		 * \param input_size æ‰€éœ€åˆ é™¤æ•°æ®é‡å¤æ•°æ®æ•°ç»„çš„å¤§å°
 		 */
 		void Allocate(size_t input_size);
 		/**
-		 * \brief É¾³ıkey_inÖĞµÄÖØ¸´Êı¾İ.
+		 * \brief åˆ é™¤key_inä¸­çš„é‡å¤æ•°æ®.
 		 * 
-		 * \param key_in ĞèÒªÉ¸Ñ¡µÄÊı×é
-		 * \param stream CUDAÁ÷ID
-		 * \param debug_sync ÓÃÓÚÖ¸¶¨ÊÇ·ñÔÚÅÅĞòÖ®Ç°½øĞĞÍ¬²½£¬ÒÔ½øĞĞµ÷ÊÔÄ¿µÄ
+		 * \param key_in éœ€è¦ç­›é€‰çš„æ•°ç»„
+		 * \param stream CUDAæµID
+		 * \param debug_sync ç”¨äºæŒ‡å®šæ˜¯å¦åœ¨æ’åºä¹‹å‰è¿›è¡ŒåŒæ­¥ï¼Œä»¥è¿›è¡Œè°ƒè¯•ç›®çš„
 		 */
 		void Select(const DeviceArray<int>& key_in, cudaStream_t stream = 0, bool debug_sync = false);
 
-		// Êä³öÊÇ±»Ñ¡ÖĞµÄÔªËØ£¬×÷ÎªÖ¸ÏòÉÏÃæµÄÖ¸Õë
+		// è¾“å‡ºæ˜¯è¢«é€‰ä¸­çš„å…ƒç´ ï¼Œä½œä¸ºæŒ‡å‘ä¸Šé¢çš„æŒ‡é’ˆ
 		DeviceArray<int> valid_selected_element;
 	};
 
 
 	/**
-	 * \brief Ö´ĞĞ¼ü - ÖµÅÅĞòµÄ£¬½«ÊıÖµ¸ù¾İ¼üµÄÇé¿öÅÅĞò£¬¼üµÄÎ»ÖÃÓëÖµµÄÎ»ÖÃÓ¦¸ÃÊÇÒ»ÖÂµÄ.
+	 * \brief æ‰§è¡Œé”® - å€¼æ’åºçš„ï¼Œå°†æ•°å€¼æ ¹æ®é”®çš„æƒ…å†µæ’åºï¼Œé”®çš„ä½ç½®ä¸å€¼çš„ä½ç½®åº”è¯¥æ˜¯ä¸€è‡´çš„.
 	 */
 	template<typename KeyT, typename ValueT>
 	struct KeyValueSort {
@@ -135,107 +135,107 @@ namespace SparseSurfelFusion {
 
 	public:
 		/**
-		 * \brief Èç¹û»º³åÇø²»¹»£¬Ôò·ÖÅäm_temp_storage¡¢m_sorted_key_buffer¡¢m_sorted_value_bufferµÄ»º´æ.
+		 * \brief å¦‚æœç¼“å†²åŒºä¸å¤Ÿï¼Œåˆ™åˆ†é…m_temp_storageã€m_sorted_key_bufferã€m_sorted_value_bufferçš„ç¼“å­˜.
 		 * 
-		 * \param input_size ·ÖÅä»º´æµÄ´óĞ¡
+		 * \param input_size åˆ†é…ç¼“å­˜çš„å¤§å°
 		 */
 		void AllocateBuffer(size_t input_size);
 
 		/**
-		 * \brief ¸ù¾İ¼ükey_in£¬¶Ôvalue_in½øĞĞÅÅĞò.
+		 * \brief æ ¹æ®é”®key_inï¼Œå¯¹value_inè¿›è¡Œæ’åº.
 		 * 
-		 * \param key_in ¼üÖµ
-		 * \param value_in ÊıÖµ
-		 * \param stream CUDAÁ÷ID
-		 * \param end_bit ¿¼ÂÇ¼üµÄ³¤¶È£¬ÒÔ¶ş½øÖÆµÄĞÎÊ½£¬sizeof(KeyT) -> ×Ö½ÚÊı£¬8 -> Ò»¸ö×Ö½ÚÓĞ¶àÉÙ¶ş½øÖÆ·û
-		 * \param debug_sync ÓÃÓÚÖ¸¶¨ÊÇ·ñÔÚÅÅĞòÖ®Ç°½øĞĞÍ¬²½£¬ÒÔ½øĞĞµ÷ÊÔÄ¿µÄ
+		 * \param key_in é”®å€¼
+		 * \param value_in æ•°å€¼
+		 * \param stream CUDAæµID
+		 * \param end_bit è€ƒè™‘é”®çš„é•¿åº¦ï¼Œä»¥äºŒè¿›åˆ¶çš„å½¢å¼ï¼Œsizeof(KeyT) -> å­—èŠ‚æ•°ï¼Œ8 -> ä¸€ä¸ªå­—èŠ‚æœ‰å¤šå°‘äºŒè¿›åˆ¶ç¬¦
+		 * \param debug_sync ç”¨äºæŒ‡å®šæ˜¯å¦åœ¨æ’åºä¹‹å‰è¿›è¡ŒåŒæ­¥ï¼Œä»¥è¿›è¡Œè°ƒè¯•ç›®çš„
 		 */
 		void Sort(const DeviceArray<KeyT>& key_in, const DeviceArray<ValueT>& value_in, cudaStream_t stream = 0, int end_bit = sizeof(KeyT) * 8, bool debug_sync = false);
 
 		/**
-		 * \brief ¸ù¾İ¼ükey_in£¬¶Ôvalue_in½øĞĞÅÅĞò£¬Ä¬ÈÏend_bit = sizeof(KeyT) * 8£¬ debug_sync = false.
+		 * \brief æ ¹æ®é”®key_inï¼Œå¯¹value_inè¿›è¡Œæ’åºï¼Œé»˜è®¤end_bit = sizeof(KeyT) * 8ï¼Œ debug_sync = false.
 		 * 
-		 * \param key_in ¼üÖµ
-		 * \param value_in ÊıÖµ
-		 * \param stream CUDAÁ÷ID
+		 * \param key_in é”®å€¼
+		 * \param value_in æ•°å€¼
+		 * \param stream CUDAæµID
 		 */
 		void Sort(const DeviceArrayView<KeyT>& key_in, const DeviceArrayView<ValueT>& value_in, cudaStream_t stream = 0);
 
 		/**
-		 * \brief ¸ù¾İ¼ükey_in£¬¶Ôvalue_in½øĞĞÅÅĞò£¬debug_sync = false.
+		 * \brief æ ¹æ®é”®key_inï¼Œå¯¹value_inè¿›è¡Œæ’åºï¼Œdebug_sync = false.
 		 * 
-		 * \param key_in ¼üÖµ
-		 * \param value_in ÊıÖµ
-		 * \param end_bit ¿¼ÂÇ¼üµÄ³¤¶È£¬ÒÔ¶ş½øÖÆµÄĞÎÊ½£¬sizeof(KeyT) -> ×Ö½ÚÊı£¬8 -> Ò»¸ö×Ö½ÚÓĞ¶àÉÙ¶ş½øÖÆ·û
-		 * \param stream CUDAÁ÷ID
+		 * \param key_in é”®å€¼
+		 * \param value_in æ•°å€¼
+		 * \param end_bit è€ƒè™‘é”®çš„é•¿åº¦ï¼Œä»¥äºŒè¿›åˆ¶çš„å½¢å¼ï¼Œsizeof(KeyT) -> å­—èŠ‚æ•°ï¼Œ8 -> ä¸€ä¸ªå­—èŠ‚æœ‰å¤šå°‘äºŒè¿›åˆ¶ç¬¦
+		 * \param stream CUDAæµID
 		 */
 		void Sort(const DeviceArrayView<KeyT>& key_in, const DeviceArrayView<ValueT>& value_in, int end_bit, cudaStream_t stream = 0);
 
 		/**
-		 * \brief Ö»ÅÅĞò¼ü£¬²»Í¬²½Öµ.
+		 * \brief åªæ’åºé”®ï¼Œä¸åŒæ­¥å€¼.
 		 * 
-		 * \param key_in ¼üÖµ
-		 * \param stream CUDAÁ÷
-		 * \param end_bit ¿¼ÂÇ¼üµÄ³¤¶È£¬ÒÔ¶ş½øÖÆµÄĞÎÊ½£¬sizeof(KeyT) -> ×Ö½ÚÊı£¬8 -> Ò»¸ö×Ö½ÚÓĞ¶àÉÙ¶ş½øÖÆ·û
-		 * \param debug_sync ÓÃÓÚÖ¸¶¨ÊÇ·ñÔÚÅÅĞòÖ®Ç°½øĞĞÍ¬²½£¬ÒÔ½øĞĞµ÷ÊÔÄ¿µÄ
+		 * \param key_in é”®å€¼
+		 * \param stream CUDAæµ
+		 * \param end_bit è€ƒè™‘é”®çš„é•¿åº¦ï¼Œä»¥äºŒè¿›åˆ¶çš„å½¢å¼ï¼Œsizeof(KeyT) -> å­—èŠ‚æ•°ï¼Œ8 -> ä¸€ä¸ªå­—èŠ‚æœ‰å¤šå°‘äºŒè¿›åˆ¶ç¬¦
+		 * \param debug_sync ç”¨äºæŒ‡å®šæ˜¯å¦åœ¨æ’åºä¹‹å‰è¿›è¡ŒåŒæ­¥ï¼Œä»¥è¿›è¡Œè°ƒè¯•ç›®çš„
 		 */
 		void Sort(const DeviceArray<KeyT>& key_in, cudaStream_t stream = 0, int end_bit = sizeof(KeyT) * 8, bool debug_sync = false);
 
 		//Sorted value
-		DeviceArray<KeyT> valid_sorted_key;			//ÓĞĞ§ÅÅÁĞµÄ¼ü  £¨Êı×éÊ×µØÖ·£©
-		DeviceArray<ValueT> valid_sorted_value;		//ÓĞĞ§ÅÅÁĞµÄÖµ  £¨Êı×éÊ×µØÖ·£©
+		DeviceArray<KeyT> valid_sorted_key;			//æœ‰æ•ˆæ’åˆ—çš„é”®  ï¼ˆæ•°ç»„é¦–åœ°å€ï¼‰
+		DeviceArray<ValueT> valid_sorted_value;		//æœ‰æ•ˆæ’åˆ—çš„å€¼  ï¼ˆæ•°ç»„é¦–åœ°å€ï¼‰
 	};
 
 	/**
-	 * \brief ±£´æÇ°×ººÍµÄ´æ´¢ºÍ½á¹ûµÄĞ¡½á¹¹Ìå£¬Ó¦¸ÃÔÚ±¾µØ·ÖÅäºÍÊ¹ÓÃ.
+	 * \brief ä¿å­˜å‰ç¼€å’Œçš„å­˜å‚¨å’Œç»“æœçš„å°ç»“æ„ä½“ï¼Œåº”è¯¥åœ¨æœ¬åœ°åˆ†é…å’Œä½¿ç”¨.
 	 */
 	struct PrefixSum {
 	private:
-		//¹²ÏíÄÚ´æ, ÔÚÖ´ĞĞÊ±²»½øĞĞÏß³Ì£¨Thread£©°²È«¼ì²é£¬·ÇÏß³Ì°²È«
+		//å…±äº«å†…å­˜, åœ¨æ‰§è¡Œæ—¶ä¸è¿›è¡Œçº¿ç¨‹ï¼ˆThreadï¼‰å®‰å…¨æ£€æŸ¥ï¼Œéçº¿ç¨‹å®‰å…¨
 		DeviceArray<unsigned char> m_temp_storage;
-		DeviceArray<unsigned int> m_prefixsum_buffer;		//ÅÅÁĞÍê³ÉµÄÇ°×ºÊı×éµÄÊ×µØÖ·
+		DeviceArray<unsigned int> m_prefixsum_buffer;		//æ’åˆ—å®Œæˆçš„å‰ç¼€æ•°ç»„çš„é¦–åœ°å€
 
 	public:
 		/**
-		 * \brief ·ÖÅä»º´æ.
+		 * \brief åˆ†é…ç¼“å­˜.
 		 * 
-		 * \param input_size »º´æ´óĞ¡
+		 * \param input_size ç¼“å­˜å¤§å°
 		 */
 		__host__ void AllocateBuffer(size_t input_size);
 		/**
-		 * \brief ¼ÆËãÇ°ÏîºÍ£ºInclusiveSum(a[0],a[1],a[2]) = (a[0], a[0]+a[1], a[0]+a[1]+a[2]).
+		 * \brief è®¡ç®—å‰é¡¹å’Œï¼šInclusiveSum(a[0],a[1],a[2]) = (a[0], a[0]+a[1], a[0]+a[1]+a[2]).
 		 * 
-		 * \param array_in ÊäÈëÊıÖµ
-		 * \param stream CUDAÁ÷ID
-		 * \param debug_sync ÓÃÓÚÖ¸¶¨ÊÇ·ñÔÚÇóºÍÖ®Ç°½øĞĞÍ¬²½£¬ÒÔ½øĞĞµ÷ÊÔÄ¿µÄ¡£
+		 * \param array_in è¾“å…¥æ•°å€¼
+		 * \param stream CUDAæµID
+		 * \param debug_sync ç”¨äºæŒ‡å®šæ˜¯å¦åœ¨æ±‚å’Œä¹‹å‰è¿›è¡ŒåŒæ­¥ï¼Œä»¥è¿›è¡Œè°ƒè¯•ç›®çš„ã€‚
 		 */
 		__host__ void InclusiveSum(const DeviceArray<unsigned>& array_in, cudaStream_t stream = 0, bool debug_sync = false);
 		/**
-		 * \brief ¼ÆËãInclusiveSum£ºInclusiveSum(a[0],a[1],a[2]) = (a[0], a[0]+a[1], a[0]+a[1]+a[2]).
+		 * \brief è®¡ç®—InclusiveSumï¼šInclusiveSum(a[0],a[1],a[2]) = (a[0], a[0]+a[1], a[0]+a[1]+a[2]).
 		 * 
-		 * \param array_in ÊäÈëÊıÖµ
-		 * \param stream CUDAÁ÷ID
+		 * \param array_in è¾“å…¥æ•°å€¼
+		 * \param stream CUDAæµID
 		 */
 		__host__ void InclusiveSum(const DeviceArrayView<unsigned>& array_in, cudaStream_t stream = 0);
 		/**
-		 * \brief ¼ÆËãExclusiveSum£ºExclusiveSum(a[0],a[1],a[2],a[3]) = (1£¬a[0], a[0]+a[1], a[0]+a[1]+a[2]).
+		 * \brief è®¡ç®—ExclusiveSumï¼šExclusiveSum(a[0],a[1],a[2],a[3]) = (1ï¼Œa[0], a[0]+a[1], a[0]+a[1]+a[2]).
 		 * 
-		 * \param array_in ÊäÈëÊıÖµ
-		 * \param stream CUDAÁ÷ID
-		 * \param debug_sync ÓÃÓÚÖ¸¶¨ÊÇ·ñÔÚÇóºÍÖ®Ç°½øĞĞÍ¬²½£¬ÒÔ½øĞĞµ÷ÊÔÄ¿µÄ
+		 * \param array_in è¾“å…¥æ•°å€¼
+		 * \param stream CUDAæµID
+		 * \param debug_sync ç”¨äºæŒ‡å®šæ˜¯å¦åœ¨æ±‚å’Œä¹‹å‰è¿›è¡ŒåŒæ­¥ï¼Œä»¥è¿›è¡Œè°ƒè¯•ç›®çš„
 		 * \return 
 		 */
 		__host__ void ExclusiveSum(const DeviceArray<unsigned>& array_in, cudaStream_t stream = 0, bool debug_sync = false);
 
-		//½á¹ûµÄÖ¸Õë£ºÓĞĞ§µÄÇ°×ººÍ
-		DeviceArray<unsigned int> valid_prefixsum_array;		//ÓĞĞ§Ç°×ººÍ  £¨Êı×éµÄÊ×µØÖ·£©
+		//ç»“æœçš„æŒ‡é’ˆï¼šæœ‰æ•ˆçš„å‰ç¼€å’Œ
+		DeviceArray<unsigned int> valid_prefixsum_array;		//æœ‰æ•ˆå‰ç¼€å’Œ  ï¼ˆæ•°ç»„çš„é¦–åœ°å€ï¼‰
 	};
 }
 
-#if defined(__CUDACC__)		//Èç¹ûÓÉNVCC±àÒëÆ÷±àÒë
+#if defined(__CUDACC__)		//å¦‚æœç”±NVCCç¼–è¯‘å™¨ç¼–è¯‘
 /**
- * ÔÚ°üº¬ cub/cub.cuh Í·ÎÄ¼şÊ±£¬Í¨³£»áÊ¹ÓÃ __CUDACC__ ¶¨ÒåÀ´È·±£Ö»ÓĞÔÚ CUDA ±àÒë»·¾³ÏÂ²Å»á°üº¬¸ÃÍ·ÎÄ¼ş¡£
- * ÕâÊÇÒòÎª cub/cub.cuh ÊÇ CUDA Thrust ¿âÖĞµÄÒ»¸öÍ·ÎÄ¼ş£¬Ìá¹©ÁËÒ»Ğ©ÓÃÓÚ²¢ĞĞ¼ÆËãµÄ¹¦ÄÜºÍËã·¨¡£
+ * åœ¨åŒ…å« cub/cub.cuh å¤´æ–‡ä»¶æ—¶ï¼Œé€šå¸¸ä¼šä½¿ç”¨ __CUDACC__ å®šä¹‰æ¥ç¡®ä¿åªæœ‰åœ¨ CUDA ç¼–è¯‘ç¯å¢ƒä¸‹æ‰ä¼šåŒ…å«è¯¥å¤´æ–‡ä»¶ã€‚
+ * è¿™æ˜¯å› ä¸º cub/cub.cuh æ˜¯ CUDA Thrust åº“ä¸­çš„ä¸€ä¸ªå¤´æ–‡ä»¶ï¼Œæä¾›äº†ä¸€äº›ç”¨äºå¹¶è¡Œè®¡ç®—çš„åŠŸèƒ½å’Œç®—æ³•ã€‚
  */
 
 #include "AlgorithmTypes.cuh"

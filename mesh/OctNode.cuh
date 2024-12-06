@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   OctNode.cuh
- * \brief  Ëã·¨µÄÊı¾İ½á¹¹
+ * \brief  ç®—æ³•çš„æ•°æ®ç»“æ„
  * 
  * \author LUOJIAXUAN
  * \date   May 2nd 2024
@@ -10,21 +10,21 @@
 
 namespace SparseSurfelFusion{
     /**
-     * \brief ¼ÇÂ¼°Ë²æÊ÷½ÚµãµÄÊı¾İÀàĞÍ£¬´óĞ¡ 276 Bytes.
+     * \brief è®°å½•å…«å‰æ ‘èŠ‚ç‚¹çš„æ•°æ®ç±»å‹ï¼Œå¤§å° 276 Bytes.
      */
     class OctNode {
     public:
-        int key;            // ½ÚµãµÄ¼ükey
-        int pidx;           // ½ÚµãÔÚSortedArrayÖĞµÄµÚÒ»¸öÔªËØµÄindex
-        int pnum;           // Óëµ±Ç°½ÚµãkeyÏàÍ¬µÄ³íÃÜµãµÄÊıÁ¿
-        int parent;         // 1¸ö¸¸½Úµã
-        int children[8];    // 8¸öº¢×Ó½Úµã
-        int neighs[27];     // 27¸öÁÚ¾Ó½Úµã
-        // ÔÚmaxDepth NodeArrayÖĞ¼ÇÂ¼¿ªÊ¼£¬maxDepth´¦µÄµÚÒ»¸ö½ÚµãË÷ÒıÎª0
-        int didx;           // µ±Ç°½ÚµãÏÂÊôµÄÉî¶ÈÎªDµÄ×Ó½ÚµãµÚÒ»¸öµã£¬idx×îĞ¡µÄµã
-        int dnum;           // µ±Ç°½ÚµãÏÂÊôµÄÉî¶ÈÎªDµÄ×Ó½ÚµãµÄÊıÁ¿£¬°üÀ¨ÓĞĞ§µãºÍÎŞĞ§µã
+        int key;            // èŠ‚ç‚¹çš„é”®key
+        int pidx;           // èŠ‚ç‚¹åœ¨SortedArrayä¸­çš„ç¬¬ä¸€ä¸ªå…ƒç´ çš„index
+        int pnum;           // ä¸å½“å‰èŠ‚ç‚¹keyç›¸åŒçš„ç¨ å¯†ç‚¹çš„æ•°é‡
+        int parent;         // 1ä¸ªçˆ¶èŠ‚ç‚¹
+        int children[8];    // 8ä¸ªå­©å­èŠ‚ç‚¹
+        int neighs[27];     // 27ä¸ªé‚»å±…èŠ‚ç‚¹
+        // åœ¨maxDepth NodeArrayä¸­è®°å½•å¼€å§‹ï¼ŒmaxDepthå¤„çš„ç¬¬ä¸€ä¸ªèŠ‚ç‚¹ç´¢å¼•ä¸º0
+        int didx;           // å½“å‰èŠ‚ç‚¹ä¸‹å±çš„æ·±åº¦ä¸ºDçš„å­èŠ‚ç‚¹ç¬¬ä¸€ä¸ªç‚¹ï¼Œidxæœ€å°çš„ç‚¹
+        int dnum;           // å½“å‰èŠ‚ç‚¹ä¸‹å±çš„æ·±åº¦ä¸ºDçš„å­èŠ‚ç‚¹çš„æ•°é‡ï¼ŒåŒ…æ‹¬æœ‰æ•ˆç‚¹å’Œæ— æ•ˆç‚¹
 
-        int vertices[8];    // ¡¾¼ÇÂ¼µÄidxÆ«ÒÆÒ»Î»?¡¿¼ÇÂ¼½ÚµãµÄ¶¥µãĞÅÏ¢£¬Õâ¸öĞÅÏ¢´æÔÚVertexArrayÊı×éÖĞ£¬ÕâÀïÖ»ÊÇ¼ÇÂ¼×Å½ÚµãÔÚVertexArrayÖĞµÄindex
+        int vertices[8];    // ã€è®°å½•çš„idxåç§»ä¸€ä½?ã€‘è®°å½•èŠ‚ç‚¹çš„é¡¶ç‚¹ä¿¡æ¯ï¼Œè¿™ä¸ªä¿¡æ¯å­˜åœ¨VertexArrayæ•°ç»„ä¸­ï¼Œè¿™é‡Œåªæ˜¯è®°å½•ç€èŠ‚ç‚¹åœ¨VertexArrayä¸­çš„index
 
         // (real idx) + 1,
         // idx start from (0 + 1)
@@ -39,7 +39,7 @@ namespace SparseSurfelFusion{
     };
 
     /**
-     * \brief OctNodeµÄ¼ò»¯°æ£¬È¥³ıÁËfaceºÍÈı½Ç±ê¼ÇÏà½»±ê¼Ç.
+     * \brief OctNodeçš„ç®€åŒ–ç‰ˆï¼Œå»é™¤äº†faceå’Œä¸‰è§’æ ‡è®°ç›¸äº¤æ ‡è®°.
      */
     class EasyOctNode {
     public:
@@ -60,7 +60,7 @@ namespace SparseSurfelFusion{
         __device__ EasyOctNode& operator = (const OctNode& n) {
             key = n.key;
             parent = n.parent;
-#pragma unroll  // ¶ÔÑ­»·½øĞĞÕ¹¿ª£ºÖÖÓÅ»¯¼¼Êõ£¬Í¨¹ı½«Ñ­»·ÌåÖĞµÄ´úÂë¸´ÖÆ¶à´ÎÀ´¼õÉÙÑ­»·¿ªÏú£¬´Ó¶øÌá¸ß³ÌĞòµÄÖ´ĞĞËÙ¶È
+#pragma unroll  // å¯¹å¾ªç¯è¿›è¡Œå±•å¼€ï¼šç§ä¼˜åŒ–æŠ€æœ¯ï¼Œé€šè¿‡å°†å¾ªç¯ä½“ä¸­çš„ä»£ç å¤åˆ¶å¤šæ¬¡æ¥å‡å°‘å¾ªç¯å¼€é”€ï¼Œä»è€Œæé«˜ç¨‹åºçš„æ‰§è¡Œé€Ÿåº¦
             for (int i = 0; i < 8; ++i) {
                 children[i] = n.children[i];
                 vertices[i] = n.vertices[i];
@@ -77,15 +77,15 @@ namespace SparseSurfelFusion{
     };
 
     /**
-     * \brief ¶¥µãvertexÊı¾İÀàĞÍ£¬´óĞ¡ 56 Bytes.
+     * \brief é¡¶ç‚¹vertexæ•°æ®ç±»å‹ï¼Œå¤§å° 56 Bytes.
      */
     class VertexNode {
     public:
-        Point3D<float> pos = Point3D<float>(0.0f, 0.0f, 0.0f);  // µ±Ç°VertexµÄÎ»ÖÃ
-        int ownerNodeIdx = 0;                                   // Õâ¸öVertexÊôÓÚNodeArrayÖĞÄÄÒ»¸ö½Úµã(index)£¬Í¬Ò»¸ö½Úµã¿ÉÒÔÓµÓĞ¶à¸övertex£¬ µ«Ò»¸övertexÖ»ÄÜÓĞÒ»¸ö½Úµãindex
-        int vertexKind = 0;                                     // ¶¥µã¶ÔÓ¦µÄÎ»ÖÃindex¡¾¶¥µãµÄË³ĞòÊÇ£¬ÒÔÁ¢·½ÌåÎª²Î¿¼£ºx´ÓÇ°µ½ºó£¬y´Ó×óµ½ÓÒ£¬z´ÓÏÂµ½ÉÏ¡¿
-        int depth = 0;                                          // Õâ¸öVertex¶ÔÓ¦µÄ½ÚµãÉî¶È
-        int nodes[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };              // ¼ÇÂ¼µ±Ç°¶¥µãµÄOwnerÁÚ¾ÓÖĞ£¬ÓëÕâ¸övertexÏàÁÚµÄ½Úµãindex(¶¥µãÓë½ÚµãÏàÁÚ£º¾àÀëÕâ¸öÁÚ¾Ó½ÚµãµÄÖĞĞÄ²»³¬¹ı1Ò»¸ö½Úµã¿í¶È)
+        Point3D<float> pos = Point3D<float>(0.0f, 0.0f, 0.0f);  // å½“å‰Vertexçš„ä½ç½®
+        int ownerNodeIdx = 0;                                   // è¿™ä¸ªVertexå±äºNodeArrayä¸­å“ªä¸€ä¸ªèŠ‚ç‚¹(index)ï¼ŒåŒä¸€ä¸ªèŠ‚ç‚¹å¯ä»¥æ‹¥æœ‰å¤šä¸ªvertexï¼Œ ä½†ä¸€ä¸ªvertexåªèƒ½æœ‰ä¸€ä¸ªèŠ‚ç‚¹index
+        int vertexKind = 0;                                     // é¡¶ç‚¹å¯¹åº”çš„ä½ç½®indexã€é¡¶ç‚¹çš„é¡ºåºæ˜¯ï¼Œä»¥ç«‹æ–¹ä½“ä¸ºå‚è€ƒï¼šxä»å‰åˆ°åï¼Œyä»å·¦åˆ°å³ï¼Œzä»ä¸‹åˆ°ä¸Šã€‘
+        int depth = 0;                                          // è¿™ä¸ªVertexå¯¹åº”çš„èŠ‚ç‚¹æ·±åº¦
+        int nodes[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };              // è®°å½•å½“å‰é¡¶ç‚¹çš„Owneré‚»å±…ä¸­ï¼Œä¸è¿™ä¸ªvertexç›¸é‚»çš„èŠ‚ç‚¹index(é¡¶ç‚¹ä¸èŠ‚ç‚¹ç›¸é‚»ï¼šè·ç¦»è¿™ä¸ªé‚»å±…èŠ‚ç‚¹çš„ä¸­å¿ƒä¸è¶…è¿‡1ä¸€ä¸ªèŠ‚ç‚¹å®½åº¦)
     };
 
     class EdgeNode {

@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   device_intrinsics.h
- * \brief  ÓÃÀ´´¦ÀíÒ»¸öÏß³ÌÊøÖĞµÄ¿ìËÙ¹éÔ¼¼Ó·¨£¬Õâ¸öÍ·ÎÄ¼şÖ»ÄÜÔÚ.cuÎÄ¼şÖĞ°üº¬£¬ÒòÎªÕâÀïÊÇÔÚPTX±àÒëµÄÊ±ºò¸æËß±àÒëÆ÷²»ÒªÓÅ»¯Õâ¶Î»ã±à´úÂë
+ * \brief  ç”¨æ¥å¤„ç†ä¸€ä¸ªçº¿ç¨‹æŸä¸­çš„å¿«é€Ÿå½’çº¦åŠ æ³•ï¼Œè¿™ä¸ªå¤´æ–‡ä»¶åªèƒ½åœ¨.cuæ–‡ä»¶ä¸­åŒ…å«ï¼Œå› ä¸ºè¿™é‡Œæ˜¯åœ¨PTXç¼–è¯‘çš„æ—¶å€™å‘Šè¯‰ç¼–è¯‘å™¨ä¸è¦ä¼˜åŒ–è¿™æ®µæ±‡ç¼–ä»£ç 
  * 
  * \author LUO
  * \date   February 4th 2024
@@ -10,16 +10,16 @@
 
 namespace SparseSurfelFusion {
         /**
-         * \brief É¨ÃèÏà¼Ó(floatÀàĞÍ).
+         * \brief æ‰«æç›¸åŠ (floatç±»å‹).
          * 
-         * \param x µ±Ç°Ïß³ÌÊøÖĞµÚÒ»¸öÏß³ÌµÄÊı¾İ
-         * \param offset Ïß³ÌÊøÖĞµÄÆ«ÒÆÁ¿(bitÎ»ÓÒÒÆ)
-         * \return Í¬Ò»¸öÏß³ÌÊøÊı¾İÏà¼ÓµÄ½á¹û
+         * \param x å½“å‰çº¿ç¨‹æŸä¸­ç¬¬ä¸€ä¸ªçº¿ç¨‹çš„æ•°æ®
+         * \param offset çº¿ç¨‹æŸä¸­çš„åç§»é‡(bitä½å³ç§»)
+         * \return åŒä¸€ä¸ªçº¿ç¨‹æŸæ•°æ®ç›¸åŠ çš„ç»“æœ
          */
         __device__ __forceinline__ float shfl_add(float x, int offset) {
             float result = 0;
-            //__asm__ »òasmÓÃÀ´ÉùÃ÷Ò»¸öÄÚÁª»ã±à±í´ïÊ½£¬ÈÎºÎÄÚÁª»ã±à±í´ïÊ½¶¼ÊÇÒÔËü¿ªÍ·£¬±Ø²»¿ÉÉÙ
-            //volatile ÊÇ¿ÉÑ¡µÄ£¬¼ÙÈçÓÃÁËËü£¬ÔòÊÇÏòGCC ÉùÃ÷²»´ğÓ¦¶Ô¸ÃÄÚÁª»ã±àÓÅ»¯
+            //__asm__ æˆ–asmç”¨æ¥å£°æ˜ä¸€ä¸ªå†…è”æ±‡ç¼–è¡¨è¾¾å¼ï¼Œä»»ä½•å†…è”æ±‡ç¼–è¡¨è¾¾å¼éƒ½æ˜¯ä»¥å®ƒå¼€å¤´ï¼Œå¿…ä¸å¯å°‘
+            //volatile æ˜¯å¯é€‰çš„ï¼Œå‡å¦‚ç”¨äº†å®ƒï¼Œåˆ™æ˜¯å‘GCC å£°æ˜ä¸ç­”åº”å¯¹è¯¥å†…è”æ±‡ç¼–ä¼˜åŒ–
             asm volatile (
                 "{.reg .f32 r0;"
                 ".reg .pred p;"
@@ -32,10 +32,10 @@ namespace SparseSurfelFusion {
         }
 
     /**
-     * \brief Ïß³ÌÊøÄÚÉ¨ÃèÏà¼Ó(floatÀàĞÍ).
+     * \brief çº¿ç¨‹æŸå†…æ‰«æç›¸åŠ (floatç±»å‹).
      * 
-     * \param data Ïß³ÌÊøµÚÒ»¸öÊı¾İ(bitÎ»ÓÒÒÆÏà¼Ó)
-     * \return Í¬Ò»¸öÏß³ÌÊøÊı¾İÏà¼ÓµÄ½á¹û
+     * \param data çº¿ç¨‹æŸç¬¬ä¸€ä¸ªæ•°æ®(bitä½å³ç§»ç›¸åŠ )
+     * \return åŒä¸€ä¸ªçº¿ç¨‹æŸæ•°æ®ç›¸åŠ çš„ç»“æœ
      */
      __device__ __forceinline__ float warp_scan(float data) {
          data = shfl_add(data, 1);
@@ -47,11 +47,11 @@ namespace SparseSurfelFusion {
     }
 
     /**
-     * \brief É¨ÃèÏà¼Ó(int ÀàĞÍ).
+     * \brief æ‰«æç›¸åŠ (int ç±»å‹).
      * 
-     * \param x µ±Ç°Ïß³ÌÊøÖĞµÚÒ»¸öÏß³ÌµÄÊı¾İ
-     * \param offset Ïß³ÌÊøÖĞµÄÆ«ÒÆÁ¿(bitÎ»ÓÒÒÆ)
-     * \return Í¬Ò»¸öÏß³ÌÊøÊı¾İÏà¼ÓµÄ½á¹û
+     * \param x å½“å‰çº¿ç¨‹æŸä¸­ç¬¬ä¸€ä¸ªçº¿ç¨‹çš„æ•°æ®
+     * \param offset çº¿ç¨‹æŸä¸­çš„åç§»é‡(bitä½å³ç§»)
+     * \return åŒä¸€ä¸ªçº¿ç¨‹æŸæ•°æ®ç›¸åŠ çš„ç»“æœ
      */
     __device__ __forceinline__ int shfl_add(int x, int offset)
     {
@@ -68,10 +68,10 @@ namespace SparseSurfelFusion {
     }
 
     /**
-     * \brief Ïß³ÌÊøÄÚÉ¨ÃèÏà¼Ó(intÀàĞÍ).
+     * \brief çº¿ç¨‹æŸå†…æ‰«æç›¸åŠ (intç±»å‹).
      * 
-     * \param data Ïß³ÌÊøµÚÒ»¸öÊı¾İ(bitÎ»ÓÒÒÆÏà¼Ó)
-     * \return Í¬Ò»¸öÏß³ÌÊøÊı¾İÏà¼ÓµÄ½á¹û
+     * \param data çº¿ç¨‹æŸç¬¬ä¸€ä¸ªæ•°æ®(bitä½å³ç§»ç›¸åŠ )
+     * \return åŒä¸€ä¸ªçº¿ç¨‹æŸæ•°æ®ç›¸åŠ çš„ç»“æœ
      */
     
     __device__ __forceinline__ int warp_scan(int data)
@@ -85,11 +85,11 @@ namespace SparseSurfelFusion {
     }
 
     /**
-     * \brief É¨ÃèÏà¼Ó(unsigned int ÀàĞÍ).
+     * \brief æ‰«æç›¸åŠ (unsigned int ç±»å‹).
      * 
-     * \param x µ±Ç°Ïß³ÌÊøÖĞµÚÒ»¸öÏß³ÌµÄÊı¾İ
-     * \param offset Ïß³ÌÊøÖĞµÄÆ«ÒÆÁ¿(bitÎ»ÓÒÒÆ)
-     * \return Í¬Ò»¸öÏß³ÌÊøÊı¾İÏà¼ÓµÄ½á¹û
+     * \param x å½“å‰çº¿ç¨‹æŸä¸­ç¬¬ä¸€ä¸ªçº¿ç¨‹çš„æ•°æ®
+     * \param offset çº¿ç¨‹æŸä¸­çš„åç§»é‡(bitä½å³ç§»)
+     * \return åŒä¸€ä¸ªçº¿ç¨‹æŸæ•°æ®ç›¸åŠ çš„ç»“æœ
      */
     __device__ __forceinline__ unsigned int shfl_add(unsigned int x, unsigned int offset)
     {
@@ -106,10 +106,10 @@ namespace SparseSurfelFusion {
     }
 
     /**
-     * \brief Ïß³ÌÊøÄÚÉ¨ÃèÏà¼Ó(unsigned intÀàĞÍ).
+     * \brief çº¿ç¨‹æŸå†…æ‰«æç›¸åŠ (unsigned intç±»å‹).
      * 
-     * \param data Ïß³ÌÊøµÚÒ»¸öÊı¾İ(bitÎ»ÓÒÒÆÏà¼Ó)
-     * \return Í¬Ò»¸öÏß³ÌÊøÊı¾İÏà¼ÓµÄ½á¹û
+     * \param data çº¿ç¨‹æŸç¬¬ä¸€ä¸ªæ•°æ®(bitä½å³ç§»ç›¸åŠ )
+     * \return åŒä¸€ä¸ªçº¿ç¨‹æŸæ•°æ®ç›¸åŠ çš„ç»“æœ
      */
     __device__ __forceinline__ unsigned int warp_scan(unsigned int data)
     {

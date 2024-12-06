@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   SparseMatrix.h
- * \brief  Ï¡Êè¾ØÕó¼ÆËã·½·¨ÊµÏÖ
+ * \brief  ç¨€ç–çŸ©é˜µè®¡ç®—æ–¹æ³•å®ç°
  * 
  * \author LUOJIAXUAN
  * \date   May 22nd 2024
@@ -10,15 +10,15 @@
 
 namespace SparseSurfelFusion {
     template <class T>
-    struct MatrixEntry;		// Ç°ÏòÉùÃ÷
+    struct MatrixEntry;		// å‰å‘å£°æ˜
 
     template <class T, int Dim>
-    struct NMatrixEntry;	// Ç°ÏòÉùÃ÷
+    struct NMatrixEntry;	// å‰å‘å£°æ˜
 
 
     /**
-     *  Êı¾İ±£´æÔÚAllocator<MatrixEntry<T> >.memoryÖĞ
-     *  m_ppElements[i]ÊÇÖ¸ÏòµÚiĞĞÆğÊ¼µØÖ·µÄÖ¸Õë
+     *  æ•°æ®ä¿å­˜åœ¨Allocator<MatrixEntry<T> >.memoryä¸­
+     *  m_ppElements[i]æ˜¯æŒ‡å‘ç¬¬iè¡Œèµ·å§‹åœ°å€çš„æŒ‡é’ˆ
      */
     template<class T> class SparseMatrix
     {

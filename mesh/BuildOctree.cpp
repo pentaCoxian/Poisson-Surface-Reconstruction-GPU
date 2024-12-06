@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   BuildOctree.cpp
- * \brief  ¹¹Ôì°Ë²æÊ÷·½·¨ÊµÏÖ
+ * \brief  æ„é€ å…«å‰æ ‘æ–¹æ³•å®ç°
  * 
  * \author LUOJIAXUAN
  * \date   May 5th 2024
@@ -31,9 +31,9 @@ SparseSurfelFusion::BuildOctree::BuildOctree()
 	nodeAddressD.AllocateBuffer(MAX_SURFEL_COUNT);
 	nodeAddressPrevious.AllocateBuffer(MAX_SURFEL_COUNT);
 
-	NodeArray.AllocateBuffer(TOTAL_NODEARRAY_MAX_COUNT);					// Ô¤¹À10±¶×î´ó½Úµã
+	NodeArray.AllocateBuffer(TOTAL_NODEARRAY_MAX_COUNT);					// é¢„ä¼°10å€æœ€å¤§èŠ‚ç‚¹
 	EncodedFunctionNodeIndex.AllocateBuffer(TOTAL_NODEARRAY_MAX_COUNT);
-	NodeAddressFull.AllocateBuffer(D_LEVEL_MAX_NODE);						// ×î»µÇé¿öÓ¦¸ÃÊÇ8 * MAX_SURFEL_COUNT
+	NodeAddressFull.AllocateBuffer(D_LEVEL_MAX_NODE);						// æœ€åæƒ…å†µåº”è¯¥æ˜¯8 * MAX_SURFEL_COUNT
 
 	BaseAddressArray_Device.AllocateBuffer(Constants::maxDepth_Host + 1);
 
@@ -75,7 +75,7 @@ SparseSurfelFusion::BuildOctree::~BuildOctree()
 void SparseSurfelFusion::BuildOctree::BuildNodesArray(DeviceArrayView<DepthSurfel> depthSurfel, pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, pcl::PointCloud<pcl::Normal>::Ptr normals, cudaStream_t stream)
 {
 #ifdef CHECK_MESH_BUILD_TIME_COST
-	auto start = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼¿ªÊ¼Ê±¼äµã
+	auto start = std::chrono::high_resolution_clock::now();						// è®°å½•å¼€å§‹æ—¶é—´ç‚¹
 #endif // CHECK_MESH_BUILD_TIME_COST
 
 
@@ -83,111 +83,111 @@ void SparseSurfelFusion::BuildOctree::BuildNodesArray(DeviceArrayView<DepthSurfe
 	size_t count = depthSurfel.Size();
 	sampleOrientedPoints.ResizeArrayOrException(count);
 
-	/***************************************** Step.1£º¼ÆËãBoundingBox *****************************************/
-	Point3D<float> MaxPoint = Point3D<float>(float(-1e6), float(-1e6), float(-1e6));// ÓÃÓÚ¿ò¶¨µãÔÆx,y,z×î´óÖµ
-	Point3D<float> MinPoint = Point3D<float>(float(1e6), float(1e6), float(1e6));	// ÓÃÓÚ¿ò¶¨µãÔÆx,y,z×îĞ¡Öµ
-	Point3D<float> center;		// BoundingBoxµÄÖĞĞÄ
-	float maxEdge = 1.0f;		// BoundingBoxµÄ×î³¤µÄ±ß³¤
-	float scaleFactor = 1.25f;	// ·ÅËõ³ß´ç¡¾´óÓÚ1£º½«ËùÓĞµãÔÆÔÚ[0, 1]µÄ·¶Î§Ñ¹Ëõ£»Ğ¡ÓÚ1£ºµãÔÆ½«³¬³ö[0, 1]£»µÈÓÚ1£ºx,y,z×î´ó·ÖÁ¿ == 1¡¿
+	/***************************************** Step.1ï¼šè®¡ç®—BoundingBox *****************************************/
+	Point3D<float> MaxPoint = Point3D<float>(float(-1e6), float(-1e6), float(-1e6));// ç”¨äºæ¡†å®šç‚¹äº‘x,y,zæœ€å¤§å€¼
+	Point3D<float> MinPoint = Point3D<float>(float(1e6), float(1e6), float(1e6));	// ç”¨äºæ¡†å®šç‚¹äº‘x,y,zæœ€å°å€¼
+	Point3D<float> center;		// BoundingBoxçš„ä¸­å¿ƒ
+	float maxEdge = 1.0f;		// BoundingBoxçš„æœ€é•¿çš„è¾¹é•¿
+	float scaleFactor = 1.25f;	// æ”¾ç¼©å°ºå¯¸ã€å¤§äº1ï¼šå°†æ‰€æœ‰ç‚¹äº‘åœ¨[0, 1]çš„èŒƒå›´å‹ç¼©ï¼›å°äº1ï¼šç‚¹äº‘å°†è¶…å‡º[0, 1]ï¼›ç­‰äº1ï¼šx,y,zæœ€å¤§åˆ†é‡ == 1ã€‘
 
 #ifdef CHECK_MESH_BUILD_TIME_COST
-	auto time1 = std::chrono::high_resolution_clock::now();					// ¼ÇÂ¼¿ªÊ¼Ê±¼äµã
+	auto time1 = std::chrono::high_resolution_clock::now();					// è®°å½•å¼€å§‹æ—¶é—´ç‚¹
 #endif // CHECK_MESH_BUILD_TIME_COST
 
 
-	// DenseSurfel×ª³ÉPoint3D
+	// DenseSurfelè½¬æˆPoint3D
 	getCoordinateAndNormal(depthSurfel, stream);		
-	// »ñµÃ°üÎ§ºĞ(¹éÔ¼Ëã·¨)
+	// è·å¾—åŒ…å›´ç›’(å½’çº¦ç®—æ³•)
 	getBoundingBox(sampleOrientedPoints.ArrayView(), MaxPoint, MinPoint, stream);
 
-	//// °üÎ§ºĞ¿ÉÊÓ»¯
+	//// åŒ…å›´ç›’å¯è§†åŒ–
 	//BoundBoxVisualization(cloud, MaxPoint, MinPoint);
 
-	// µ÷Õû¸ù¾İscaleFactorµ÷Õû¸÷¸öµãÔÆ×ø±êÎ»ÖÃ
+	// è°ƒæ•´æ ¹æ®scaleFactorè°ƒæ•´å„ä¸ªç‚¹äº‘åæ ‡ä½ç½®
 	adjustPointsCoordinateAndNormal(sampleOrientedPoints, MaxPoint, MinPoint, maxEdge, scaleFactor, center, stream);
 
 #ifdef CHECK_MESH_BUILD_TIME_COST
 	CHECKCUDA(cudaStreamSynchronize(stream));
-	auto time2 = std::chrono::high_resolution_clock::now();					// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration1 = time2 - time1;		// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "µ÷Õû×ø±êÊ±¼ä: " << duration1.count() << " ms" << std::endl;
+	auto time2 = std::chrono::high_resolution_clock::now();					// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration1 = time2 - time1;		// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "è°ƒæ•´åæ ‡æ—¶é—´: " << duration1.count() << " ms" << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 
-	/***************************************** Step.2£º¼ÆËã´òÂÒµÄxyz¼üºÍÅÅĞò±àÂë *****************************************/
-	generateCode(sampleOrientedPoints, sortCode, count, stream);	// ¼ÆËã±àÂë
+	/***************************************** Step.2ï¼šè®¡ç®—æ‰“ä¹±çš„xyzé”®å’Œæ’åºç¼–ç  *****************************************/
+	generateCode(sampleOrientedPoints, sortCode, count, stream);	// è®¡ç®—ç¼–ç 
 #ifdef CHECK_MESH_BUILD_TIME_COST
 	CHECKCUDA(cudaStreamSynchronize(stream));
-	auto time3 = std::chrono::high_resolution_clock::now();							// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration2 = time3 - time2;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "±àÂëÊ±¼ä: " << duration2.count() << " ms" << std::endl;
+	auto time3 = std::chrono::high_resolution_clock::now();							// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration2 = time3 - time2;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "ç¼–ç æ—¶é—´: " << duration2.count() << " ms" << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 
-	/***************************************** Step.3 && Step.4£º¶Ô¼ü½øĞĞÅÅĞò && UniqueÑ¹Ëõ *****************************************/
-	DeviceArray<OrientedPoint3D<float>> orientedPoints = sampleOrientedPoints.Array();	// ´«Èë¿É±©Â¶Ö¸Õë
-	sortAndCompactVerticesKeys(orientedPoints, stream);									// ³íÃÜµãsampleOrientedPointsÍê³ÉÅÅĞò
+	/***************************************** Step.3 && Step.4ï¼šå¯¹é”®è¿›è¡Œæ’åº && Uniqueå‹ç¼© *****************************************/
+	DeviceArray<OrientedPoint3D<float>> orientedPoints = sampleOrientedPoints.Array();	// ä¼ å…¥å¯æš´éœ²æŒ‡é’ˆ
+	sortAndCompactVerticesKeys(orientedPoints, stream);									// ç¨ å¯†ç‚¹sampleOrientedPointså®Œæˆæ’åº
 	initUniqueNode(uniqueNodeD, uniqueCode, stream);
 #ifdef CHECK_MESH_BUILD_TIME_COST
 	CHECKCUDA(cudaStreamSynchronize(stream));
-	auto time4 = std::chrono::high_resolution_clock::now();							// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration3 = time4 - time3;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "³õÊ¼»¯D²ã½ÚµãÊ±¼ä: " << duration3.count() << " ms" << std::endl;
+	auto time4 = std::chrono::high_resolution_clock::now();							// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration3 = time4 - time3;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "åˆå§‹åŒ–Då±‚èŠ‚ç‚¹æ—¶é—´: " << duration3.count() << " ms" << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 
-	/***************************************** Step.5 ÍØÕ¹UniqueNode,¼ÆËãnodeNumºÍnodeAddress *****************************************/
+	/***************************************** Step.5 æ‹“å±•UniqueNode,è®¡ç®—nodeNumå’ŒnodeAddress *****************************************/
 	generateNodeNumsAndNodeAddress(uniqueCode, nodeNums, nodeAddressD, stream);
 #ifdef CHECK_MESH_BUILD_TIME_COST
 	CHECKCUDA(cudaStreamSynchronize(stream));
-	auto time5 = std::chrono::high_resolution_clock::now();							// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration4 = time5 - time4;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "Éú³ÉNodeAddressÊ±¼ä: " << duration4.count() << " ms" << std::endl;
+	auto time5 = std::chrono::high_resolution_clock::now();							// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration4 = time5 - time4;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "ç”ŸæˆNodeAddressæ—¶é—´: " << duration4.count() << " ms" << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 
-	/***************************************** Step.6 ´´½¨Octree½ÚµãÊı×é£ºNodeArrayD *****************************************/
+	/***************************************** Step.6 åˆ›å»ºOctreeèŠ‚ç‚¹æ•°ç»„ï¼šNodeArrayD *****************************************/
 	buildNodeArrayD(sampleOrientedPoints.ArrayView(), uniqueNodeD.ArrayView(), uniqueCode.ArrayView(), nodeAddressD, NodeAddressFull, Point2NodeArray, NodeArrays[Constants::maxDepth_Host], stream);
 
 #ifdef CHECK_MESH_BUILD_TIME_COST
 	CHECKCUDA(cudaStreamSynchronize(stream));
-	auto time6 = std::chrono::high_resolution_clock::now();							// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration5 = time6 - time5;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "¹¹½¨D²ãNodeArrayÊ±¼ä: " << duration5.count() << " ms" << std::endl;
+	auto time6 = std::chrono::high_resolution_clock::now();							// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration5 = time6 - time5;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "æ„å»ºDå±‚NodeArrayæ—¶é—´: " << duration5.count() << " ms" << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 
-	/***************************************** Step.7 ¹¹½¨[0, D - 1]²ã *****************************************/
+	/***************************************** Step.7 æ„å»º[0, D - 1]å±‚ *****************************************/
 	buildOtherDepthNodeArray(BaseAddressArray_Host, stream);
 #ifdef CHECK_MESH_BUILD_TIME_COST
 	CHECKCUDA(cudaStreamSynchronize(stream));
-	auto time7 = std::chrono::high_resolution_clock::now();							// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration6 = time7 - time6;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "¹¹½¨[1, D - 1]²ãNodeArrayÊ±¼ä: " << duration6.count() << " ms" << std::endl;
+	auto time7 = std::chrono::high_resolution_clock::now();							// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration6 = time7 - time6;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "æ„å»º[1, D - 1]å±‚NodeArrayæ—¶é—´: " << duration6.count() << " ms" << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 
-	/***************************************** Step.8 ¸üĞÂÃ¿¸ö½ÚµãµÄĞÅÏ¢£¬ÖØ¹¹NodeArray£¬Í¬Ê±¼ÆËã½ÚµãDepth²éÕÒ±í£¬½ÚµãÖĞĞÄµãCenter²éÕÒ±í *****************************************/
+	/***************************************** Step.8 æ›´æ–°æ¯ä¸ªèŠ‚ç‚¹çš„ä¿¡æ¯ï¼Œé‡æ„NodeArrayï¼ŒåŒæ—¶è®¡ç®—èŠ‚ç‚¹DepthæŸ¥æ‰¾è¡¨ï¼ŒèŠ‚ç‚¹ä¸­å¿ƒç‚¹CenteræŸ¥æ‰¾è¡¨ *****************************************/
 	updateNodeInfo(BaseAddressArray_Host, NodeArray, stream);
 #ifdef CHECK_MESH_BUILD_TIME_COST
 	CHECKCUDA(cudaStreamSynchronize(stream));
-	auto time8 = std::chrono::high_resolution_clock::now();							// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration7 = time8 - time7;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "¸üĞÂÕû¿ÃÊ÷Ê±¼ä: " << duration7.count() << " ms" << std::endl;
+	auto time8 = std::chrono::high_resolution_clock::now();							// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration7 = time8 - time7;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "æ›´æ–°æ•´æ£µæ ‘æ—¶é—´: " << duration7.count() << " ms" << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 
-	/***************************************** Step.9 ¹¹½¨Ã¿¸ö½ÚµãµÄÁÚ¾Ó½Úµã *****************************************/
+	/***************************************** Step.9 æ„å»ºæ¯ä¸ªèŠ‚ç‚¹çš„é‚»å±…èŠ‚ç‚¹ *****************************************/
 	computeNodeNeighbor(NodeArray, stream);
-	CHECKCUDA(cudaStreamSynchronize(stream));	// ´ËÊ±ĞèÒªÍ¬²½£¬ºóĞøÕâÀïµÄ²ÎÊıÒª±»Á½¸ö²»Í¬Á÷Í¬Ê±Ê¹ÓÃ
+	CHECKCUDA(cudaStreamSynchronize(stream));	// æ­¤æ—¶éœ€è¦åŒæ­¥ï¼Œåç»­è¿™é‡Œçš„å‚æ•°è¦è¢«ä¸¤ä¸ªä¸åŒæµåŒæ—¶ä½¿ç”¨
 
 	//printf("NodeArrayCount = %d\n", NodeArray.ArraySize());
 
 
 #ifdef CHECK_MESH_BUILD_TIME_COST
 	CHECKCUDA(cudaStreamSynchronize(stream));
-	auto time9 = std::chrono::high_resolution_clock::now();							// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration8 = time9 - time8;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "¹¹½¨ÁÚ¾Ó½ÚµãÊ±¼ä: " << duration8.count() << " ms" << std::endl;
+	auto time9 = std::chrono::high_resolution_clock::now();							// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration8 = time9 - time8;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "æ„å»ºé‚»å±…èŠ‚ç‚¹æ—¶é—´: " << duration8.count() << " ms" << std::endl;
 
-	auto end = std::chrono::high_resolution_clock::now();							// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration = end - start;				// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "¹¹½¨°Ë²æÊ÷Ê±¼ä: " << duration.count() << " ms" << std::endl;			// Êä³ö
+	auto end = std::chrono::high_resolution_clock::now();							// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration = end - start;				// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "æ„å»ºå…«å‰æ ‘æ—¶é—´: " << duration.count() << " ms" << std::endl;			// è¾“å‡º
 	std::cout << std::endl;
-	std::cout << "-----------------------------------------------------" << std::endl;	// Êä³ö
+	std::cout << "-----------------------------------------------------" << std::endl;	// è¾“å‡º
 	std::cout << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 
@@ -195,13 +195,13 @@ void SparseSurfelFusion::BuildOctree::BuildNodesArray(DeviceArrayView<DepthSurfe
 
 void SparseSurfelFusion::BuildOctree::BoundBoxVisualization(const pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, Point3D<float> MaxPoint, Point3D<float> MinPoint)
 {
-	//----------------¿ÉÊÓ»¯--------------
-	pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("Viewer"));	//viewer->initCameraParameters();//ÉèÖÃÕÕÏà»ú²ÎÊı£¬Ê¹ÓÃ»§´ÓÄ¬ÈÏµÄ½Ç¶ÈºÍ·½Ïò¹Û²ìµãÔÆ
-	//ÉèÖÃ±³¾°ÑÕÉ«
+	//----------------å¯è§†åŒ–--------------
+	pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("Viewer"));	//viewer->initCameraParameters();//è®¾ç½®ç…§ç›¸æœºå‚æ•°ï¼Œä½¿ç”¨æˆ·ä»é»˜è®¤çš„è§’åº¦å’Œæ–¹å‘è§‚å¯Ÿç‚¹äº‘
+	//è®¾ç½®èƒŒæ™¯é¢œè‰²
 	viewer->setBackgroundColor(0.3, 0.3, 0.3);
-	//ÉèÖÃµãÔÆÑÕÉ«
+	//è®¾ç½®ç‚¹äº‘é¢œè‰²
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> single_color(cloud, 0, 225, 0);
-	//Ìí¼Ó×ø±êÏµ
+	//æ·»åŠ åæ ‡ç³»
 	viewer->addCoordinateSystem(0.1);
 	viewer->addPointCloud<pcl::PointXYZ>(cloud, single_color, "sample cloud");
 	viewer->addCube(MinPoint.coords[0], MaxPoint.coords[0], MinPoint.coords[1], MaxPoint.coords[1], MinPoint.coords[2], MaxPoint.coords[2], 1.0f, 0, 0, "cube");

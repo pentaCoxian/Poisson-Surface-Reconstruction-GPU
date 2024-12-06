@@ -1,18 +1,18 @@
 /*****************************************************************//**
  * \file   VectorUtils.h
- * \brief  ÏòÁ¿ÔËËã¹¤¾ß°ü£ºÖ÷Òª½â¾öÒ»Ğ©³£¼ûµÄVectorµÄÔËËãÎÊÌâ
+ * \brief  å‘é‡è¿ç®—å·¥å…·åŒ…ï¼šä¸»è¦è§£å†³ä¸€äº›å¸¸è§çš„Vectorçš„è¿ç®—é—®é¢˜
  * 
  * \author LUO
  * \date   January 12th 2024
  *********************************************************************/
 #pragma once
 #include <base/CommonTypes.h>
-#include <vector_functions.h> //GPU´øµÄvectorµÄÏà¹Øº¯Êı
+#include <vector_functions.h> //GPUå¸¦çš„vectorçš„ç›¸å…³å‡½æ•°
 
 namespace SparseSurfelFusion {
 	/**
-	 * \brief ¼ÆËãvecµÄÄ£
-	 * \param vec ´«Èë¶ÔÓ¦ÀàĞÍ£¬¼ÆËãÆ½·½ºÍ
+	 * \brief è®¡ç®—vecçš„æ¨¡
+	 * \param vec ä¼ å…¥å¯¹åº”ç±»å‹ï¼Œè®¡ç®—å¹³æ–¹å’Œ
 	 * \return 
 	 */
 	__host__ __device__ __forceinline__
@@ -20,8 +20,8 @@ namespace SparseSurfelFusion {
 		return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w;
 	}
 	/**
-	 * \brief ¼ÆËãvecµÄÄ£
-	 * \param vec ´«Èë¶ÔÓ¦ÀàĞÍ£¬¼ÆËãÆ½·½ºÍ
+	 * \brief è®¡ç®—vecçš„æ¨¡
+	 * \param vec ä¼ å…¥å¯¹åº”ç±»å‹ï¼Œè®¡ç®—å¹³æ–¹å’Œ
 	 * \return
 	 */
 	__host__ __device__ __forceinline__
@@ -29,8 +29,8 @@ namespace SparseSurfelFusion {
 		return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z;
 	}
 	/**
-	 * \brief ¼ÆËãvecµÄÄ£
-	 * \param vec ´«Èë¶ÔÓ¦ÀàĞÍ£¬¼ÆËãÆ½·½ºÍ
+	 * \brief è®¡ç®—vecçš„æ¨¡
+	 * \param vec ä¼ å…¥å¯¹åº”ç±»å‹ï¼Œè®¡ç®—å¹³æ–¹å’Œ
 	 * \return
 	 */
 	__host__ __device__ __forceinline__
@@ -38,8 +38,8 @@ namespace SparseSurfelFusion {
 		return vec.x * vec.x + vec.y * vec.y;
 	}
 	/**
-	 * \brief ¼ÆËãvecµÄÄ£
-	 * \param vec ´«Èë¶ÔÓ¦ÀàĞÍ£¬¼ÆËãÆ½·½ºÍ£¬Ö»¼ÆËãx,y,z·ÖÀà
+	 * \brief è®¡ç®—vecçš„æ¨¡
+	 * \param vec ä¼ å…¥å¯¹åº”ç±»å‹ï¼Œè®¡ç®—å¹³æ–¹å’Œï¼Œåªè®¡ç®—x,y,zåˆ†ç±»
 	 * \return
 	 */
 	__host__ __device__ __forceinline__
@@ -48,9 +48,9 @@ namespace SparseSurfelFusion {
 	}
 
 	/**
-	 * \brief ¼ÆËãÁ½¸öÏòÁ¿µÄÅ·Ê½¾àÀë£¬Ö»¿¼ÂÇxyz·ÖÁ¿
-	 * \param v3 float3ÀàĞÍÏòÁ¿
-	 * \param v4 float4ÀàĞÍÏòÁ¿
+	 * \brief è®¡ç®—ä¸¤ä¸ªå‘é‡çš„æ¬§å¼è·ç¦»ï¼Œåªè€ƒè™‘xyzåˆ†é‡
+	 * \param v3 float3ç±»å‹å‘é‡
+	 * \param v4 float4ç±»å‹å‘é‡
 	 * \return 
 	 */
 	__host__ __device__ __forceinline__
@@ -59,9 +59,9 @@ namespace SparseSurfelFusion {
 	}
 
 	/**
-	 * \brief ¼ÆËãÁ½¸öÏòÁ¿µÄÅ·Ê½¾àÀë£¬Ö»¿¼ÂÇxyz·ÖÁ¿
-	 * \param v1 float3ÀàĞÍÏòÁ¿
-	 * \param v2 float3ÀàĞÍÏòÁ¿
+	 * \brief è®¡ç®—ä¸¤ä¸ªå‘é‡çš„æ¬§å¼è·ç¦»ï¼Œåªè€ƒè™‘xyzåˆ†é‡
+	 * \param v1 float3ç±»å‹å‘é‡
+	 * \param v2 float3ç±»å‹å‘é‡
 	 * \return
 	 */
 	__host__ __device__ __forceinline__
@@ -70,11 +70,11 @@ namespace SparseSurfelFusion {
 	}
 
 	/**
-	 * \brief ¼ÆËãÁ½¸öµãµÄ¾àÀë.
+	 * \brief è®¡ç®—ä¸¤ä¸ªç‚¹çš„è·ç¦».
 	 * 
-	 * \param v1 float3ÀàĞÍÏòÁ¿
-	 * \param v2 float3ÀàĞÍÏòÁ¿
-	 * \return Á½¸öµãµÄ¾àÀë
+	 * \param v1 float3ç±»å‹å‘é‡
+	 * \param v2 float3ç±»å‹å‘é‡
+	 * \return ä¸¤ä¸ªç‚¹çš„è·ç¦»
 	 */
 	__host__ __device__ __forceinline__
 		float points_distance(const float3& v1, const float3& v2) {
@@ -82,16 +82,16 @@ namespace SparseSurfelFusion {
 	}
 
 	/**
-	 * \brief ¼ÆËãvecµÄÄ£
-	 * \param vec ´«ÈëµÄÏòÁ¿
+	 * \brief è®¡ç®—vecçš„æ¨¡
+	 * \param vec ä¼ å…¥çš„å‘é‡
 	 * \return 
 	 */
 	__host__ __device__ __forceinline__ float norm(const float4& vec) {
 		return sqrtf(squared_norm(vec));
 	}
 	/**
-	 * \brief ¼ÆËãvecµÄÄ£
-	 * \param vec ´«ÈëµÄÏòÁ¿
+	 * \brief è®¡ç®—vecçš„æ¨¡
+	 * \param vec ä¼ å…¥çš„å‘é‡
 	 * \return
 	 */
 	__host__ __device__ __forceinline__ float norm(const float3& vec) {
@@ -101,16 +101,16 @@ namespace SparseSurfelFusion {
 
 #if defined(__CUDA_ARCH__)//CUDA
 	/**
-	 * \brief ¼ÆËãÏòÁ¿vecÄ£µÄµ¹Êı
-	 * \param vec ÊäÈëÏòÁ¿
+	 * \brief è®¡ç®—å‘é‡vecæ¨¡çš„å€’æ•°
+	 * \param vec è¾“å…¥å‘é‡
 	 * \return
 	 */
 	__device__ __forceinline__ float norm_inversed(const float4& vec) {
 		return rsqrt(squared_norm(vec));
 	}
 	/**
-	 * \brief ¼ÆËãÏòÁ¿vecÄ£µÄµ¹Êı
-	 * \param vec ÊäÈëÏòÁ¿
+	 * \brief è®¡ç®—å‘é‡vecæ¨¡çš„å€’æ•°
+	 * \param vec è¾“å…¥å‘é‡
 	 * \return
 	 */
 	__device__ __forceinline__ float norm_inversed(const float3& vec) {
@@ -118,16 +118,16 @@ namespace SparseSurfelFusion {
 	}
 #else
 	/**
-	 * \brief ¼ÆËãÏòÁ¿vecÄ£µÄµ¹Êı
-	 * \param vec ÊäÈëÏòÁ¿
+	 * \brief è®¡ç®—å‘é‡vecæ¨¡çš„å€’æ•°
+	 * \param vec è¾“å…¥å‘é‡
 	 * \return
 	 */
 	__host__ __forceinline__ float norm_inversed(const float4& vec) {
 		return 1.0f / sqrt(squared_norm(vec));
 	}
 	/**
-	 * \brief ¼ÆËãÏòÁ¿vecÄ£µÄµ¹Êı
-	 * \param vec ÊäÈëÏòÁ¿
+	 * \brief è®¡ç®—å‘é‡vecæ¨¡çš„å€’æ•°
+	 * \param vec è¾“å…¥å‘é‡
 	 * \return
 	 */
 	__host__ __forceinline__ float norm_inversed(const float3& vec) {
@@ -139,8 +139,8 @@ namespace SparseSurfelFusion {
 
 #if defined(__CUDA_ARCH__) //CUDA
 	/**
-	 * \brief ÏòÁ¿¹éÒ»»¯
-	 * \param vec ½«ÊäÈëµÄÏòÁ¿¹éÒ»»¯
+	 * \brief å‘é‡å½’ä¸€åŒ–
+	 * \param vec å°†è¾“å…¥çš„å‘é‡å½’ä¸€åŒ–
 	 * \return
 	 */
 	__device__ __forceinline__ void normalize(float4& vec) {
@@ -152,8 +152,8 @@ namespace SparseSurfelFusion {
 	}
 #else
 	/**
-	 * \brief ÏòÁ¿¹éÒ»»¯£¬´«ÈëµÄÊÇÊµ²Î
-	 * \param vec ½«ÊäÈëµÄÏòÁ¿¹éÒ»»¯
+	 * \brief å‘é‡å½’ä¸€åŒ–ï¼Œä¼ å…¥çš„æ˜¯å®å‚
+	 * \param vec å°†è¾“å…¥çš„å‘é‡å½’ä¸€åŒ–
 	 * \return void
 	 */
 	__host__ __forceinline__ void normalize(float4& vec) {
@@ -167,8 +167,8 @@ namespace SparseSurfelFusion {
 
 
 	/**
-	 * \brief ·µ»Ø¹éÒ»»¯ÏòÁ¿£¬²¢±£³Övec²»±ä
-	 * \param vec ÊäÈëĞèÒª¹éÒ»»¯µÄÏòÁ¿
+	 * \brief è¿”å›å½’ä¸€åŒ–å‘é‡ï¼Œå¹¶ä¿æŒvecä¸å˜
+	 * \param vec è¾“å…¥éœ€è¦å½’ä¸€åŒ–çš„å‘é‡
 	 * \return 
 	 */
 	__host__ __device__ __forceinline__ float4 normalized(const float4& vec) {
@@ -180,8 +180,8 @@ namespace SparseSurfelFusion {
 		return normalized_vec;
 	}
 	/**
-	 * \brief ·µ»Ø¹éÒ»»¯ÏòÁ¿£¬²¢±£³Övec²»±ä
-	 * \param vec ÊäÈëĞèÒª¹éÒ»»¯µÄÏòÁ¿
+	 * \brief è¿”å›å½’ä¸€åŒ–å‘é‡ï¼Œå¹¶ä¿æŒvecä¸å˜
+	 * \param vec è¾“å…¥éœ€è¦å½’ä¸€åŒ–çš„å‘é‡
 	 * \return
 	 */
 	__host__ __device__ __forceinline__ float3 normalized(const float3& vec) {
@@ -196,16 +196,16 @@ namespace SparseSurfelFusion {
 
 
 	/**
-	 * \brief ¼ì²éÏòÁ¿ÊÇ·ñÎª0
-	 * \param v ÊäÈëÏòÁ¿
+	 * \brief æ£€æŸ¥å‘é‡æ˜¯å¦ä¸º0
+	 * \param v è¾“å…¥å‘é‡
 	 * \return 
 	 */
 	__host__ __device__ __forceinline__ bool is_zero_vertex(const float4& v) {
 		return fabsf(v.x) < 1e-3 && fabsf(v.y) < 1e-3 && fabsf(v.z) < 1e-3;
 	}
 	/**
-	 * \brief ¼ì²éÏòÁ¿ÊÇ·ñÎª0
-	 * \param v ÊäÈëÏòÁ¿
+	 * \brief æ£€æŸ¥å‘é‡æ˜¯å¦ä¸º0
+	 * \param v è¾“å…¥å‘é‡
 	 * \return
 	 */
 	__host__ __device__ __forceinline__ bool is_zero_vertex(const float3& v) {
@@ -214,30 +214,30 @@ namespace SparseSurfelFusion {
 
 
 	/**
-	 * \brief ÖØÔØ¡°+¡±£ºÏòÁ¿+³£Êı
-	 * \param vec ÊäÈëÏòÁ¿
-	 * \param scalar ÊäÈë³£Êı
-	 * \return ·µ»Øvec + scalarµÄÖµ
+	 * \brief é‡è½½â€œ+â€ï¼šå‘é‡+å¸¸æ•°
+	 * \param vec è¾“å…¥å‘é‡
+	 * \param scalar è¾“å…¥å¸¸æ•°
+	 * \return è¿”å›vec + scalarçš„å€¼
 	 */
 	__host__ __device__ __forceinline__ float3 operator+(const float3& vec, const float& scalar)
 	{
 		return make_float3(vec.x + scalar, vec.y + scalar, vec.z + scalar);
 	}
 	/**
-	 * \brief ÖØÔØ¡°+¡±£º³£Êı+ÏòÁ¿
-	 * \param scalar ÊäÈë³£Êı
-	 * \param vec ÊäÈëÏòÁ¿
-	 * \return ·µ»Øvec + scalarµÄÖµ
+	 * \brief é‡è½½â€œ+â€ï¼šå¸¸æ•°+å‘é‡
+	 * \param scalar è¾“å…¥å¸¸æ•°
+	 * \param vec è¾“å…¥å‘é‡
+	 * \return è¿”å›vec + scalarçš„å€¼
 	 */
 	__host__ __device__ __forceinline__ float3 operator+(const float& scalar, const float3& vec)
 	{
 		return make_float3(vec.x + scalar, vec.y + scalar, vec.z + scalar);
 	}
 	/**
-	 * \brief ÖØÔØ¡°+¡±£ºÏòÁ¿+ÏòÁ¿
-	 * \param vec_0 ÊäÈëÏòÁ¿0
-	 * \param vec_1 ÊäÈëÏòÁ¿1
-	 * \return ·µ»Øvec_0 + vec_1µÄÖµ
+	 * \brief é‡è½½â€œ+â€ï¼šå‘é‡+å‘é‡
+	 * \param vec_0 è¾“å…¥å‘é‡0
+	 * \param vec_1 è¾“å…¥å‘é‡1
+	 * \return è¿”å›vec_0 + vec_1çš„å€¼
 	 */
 	__host__ __device__ __forceinline__ float3 operator+(const float3& vec_0, const float3& vec_1)
 	{
@@ -246,19 +246,19 @@ namespace SparseSurfelFusion {
 
 
 	/**
-	 * \brief ÖØÔØ¡°-¡±£ºÏòÁ¿0 - ÏòÁ¿1
-	 * \param vec_0 ÊäÈëÏòÁ¿0
-	 * \param vec_1 ÊäÈëÏòÁ¿1
-	 * \return ·µ»Øvec_0 - vec_1
+	 * \brief é‡è½½â€œ-â€ï¼šå‘é‡0 - å‘é‡1
+	 * \param vec_0 è¾“å…¥å‘é‡0
+	 * \param vec_1 è¾“å…¥å‘é‡1
+	 * \return è¿”å›vec_0 - vec_1
 	 */
 	__host__ __device__ __forceinline__ float3 operator-(const float3& vec_0, const float3& vec_1) {
 		return make_float3(vec_0.x - vec_1.x, vec_0.y - vec_1.y, vec_0.z - vec_1.z);
 	}
 	/**
-	 * \brief ÖØÔØ¡°-¡±£ºÏòÁ¿0 - ÏòÁ¿1
-	 * \param vec_0 ÊäÈëÏòÁ¿0
-	 * \param vec_1 ÊäÈëÏòÁ¿1
-	 * \return ·µ»Øvec_0 - vec_1
+	 * \brief é‡è½½â€œ-â€ï¼šå‘é‡0 - å‘é‡1
+	 * \param vec_0 è¾“å…¥å‘é‡0
+	 * \param vec_1 è¾“å…¥å‘é‡1
+	 * \return è¿”å›vec_0 - vec_1
 	 */
 	__host__ __device__ __forceinline__ float4 operator-(const float4& vec_0, const float4& vec_1) {
 		return make_float4(vec_0.x - vec_1.x, vec_0.y - vec_1.y, vec_0.z - vec_1.z, vec_0.w - vec_1.w);
@@ -266,40 +266,40 @@ namespace SparseSurfelFusion {
 
 
 	/**
-	 * \brief ÖØÔØ¡°*¡±£º³£Êıv * ÏòÁ¿v1
-	 * \param v ÊäÈë³£Êı
-	 * \param v1 ÊäÈëÏòÁ¿
-	 * \return ·µ»Ø v * v1µÄÖµ
+	 * \brief é‡è½½â€œ*â€ï¼šå¸¸æ•°v * å‘é‡v1
+	 * \param v è¾“å…¥å¸¸æ•°
+	 * \param v1 è¾“å…¥å‘é‡
+	 * \return è¿”å› v * v1çš„å€¼
 	 */
 	__host__ __device__ __forceinline__ float3 operator*(const float& v, const float3& v1)
 	{
 		return make_float3(v * v1.x, v * v1.y, v * v1.z);
 	}
 	/**
-	 * \brief ÖØÔØ¡°*¡±£ºÏòÁ¿v1 * ³£Êıv
-	 * \param v1 ÊäÈëÏòÁ¿v1
-	 * \param v ÊäÈë³£Êıv
-	 * \return ·µ»Ø v1 * vµÄÖµ
+	 * \brief é‡è½½â€œ*â€ï¼šå‘é‡v1 * å¸¸æ•°v
+	 * \param v1 è¾“å…¥å‘é‡v1
+	 * \param v è¾“å…¥å¸¸æ•°v
+	 * \return è¿”å› v1 * vçš„å€¼
 	 */
 	__host__ __device__ __forceinline__ float3 operator*(const float3& v1, const float& v)
 	{
 		return make_float3(v1.x * v, v1.y * v, v1.z * v);
 	}
 	/**
-	 * \brief ÖØÔØ¡°*¡±£º³£Êıv * ÏòÁ¿v1
-	 * \param v ÊäÈë³£Êıv
-	 * \param v1 ÊäÈëÏòÁ¿v1
-	 * \return ·µ»Ø v * v1µÄÖµ
+	 * \brief é‡è½½â€œ*â€ï¼šå¸¸æ•°v * å‘é‡v1
+	 * \param v è¾“å…¥å¸¸æ•°v
+	 * \param v1 è¾“å…¥å‘é‡v1
+	 * \return è¿”å› v * v1çš„å€¼
 	 */
 	__host__ __device__ __forceinline__ float2 operator*(const float& v, const float2& v1)
 	{
 		return make_float2(v * v1.x, v * v1.y);
 	}
 	/**
-	 * \brief ÖØÔØ¡°*¡±£ºÏòÁ¿v1 * ³£Êıv
-	 * \param v1 ÊäÈëÏòÁ¿v1
-	 * \param v ÊäÈë³£Êıv
-	 * \return ·µ»Ø v1 * vµÄÖµ
+	 * \brief é‡è½½â€œ*â€ï¼šå‘é‡v1 * å¸¸æ•°v
+	 * \param v1 è¾“å…¥å‘é‡v1
+	 * \param v è¾“å…¥å¸¸æ•°v
+	 * \return è¿”å› v1 * vçš„å€¼
 	 */
 	__host__ __device__ __forceinline__ float2 operator*(const float2& v1, const float& v)
 	{
@@ -307,10 +307,10 @@ namespace SparseSurfelFusion {
 	}
 
 	/**
-	 * \brief ÖØÔØ¡°*=¡±£º¼ÆËã3Î¬ÏòÁ¿vec *= ³£Êıv£¬×¢Òâ´ËÊ±ÊäÈëÏòÁ¿µÄÖµÒ²±ä»¯ÁË£¬´«ÈëµÄÊÇÊµ²Î
-	 * \param vec ÊäÈëÏòÁ¿
-	 * \param v ÊäÈë³£Êı
-	 * \return ·µ»ØvecµÄÖµ£ºvec = vec * v
+	 * \brief é‡è½½â€œ*=â€ï¼šè®¡ç®—3ç»´å‘é‡vec *= å¸¸æ•°vï¼Œæ³¨æ„æ­¤æ—¶è¾“å…¥å‘é‡çš„å€¼ä¹Ÿå˜åŒ–äº†ï¼Œä¼ å…¥çš„æ˜¯å®å‚
+	 * \param vec è¾“å…¥å‘é‡
+	 * \param v è¾“å…¥å¸¸æ•°
+	 * \return è¿”å›vecçš„å€¼ï¼švec = vec * v
 	 */
 	__host__ __device__ __forceinline__ float3& operator*=(float3& vec, const float& v)
 	{
@@ -321,10 +321,10 @@ namespace SparseSurfelFusion {
 	}
 
 	/**
-	 * \brief ÖØÔØ¡°*=¡±£º¼ÆËã4Î¬ÏòÁ¿vec *= ³£Êıv£¬×¢Òâ´ËÊ±ÊäÈëÏòÁ¿vecµÄÖµÒ²±ä»¯ÁË£¬´«ÈëµÄÊÇÊµ²Î
-	 * \param vec ÊäÈëµÄ4Î¬ÏòÁ¿vec
-	 * \param v ÊäÈë³£Êıv
-	 * \return ·µ»ØvecµÄÖµ£ºvec = vec * v
+	 * \brief é‡è½½â€œ*=â€ï¼šè®¡ç®—4ç»´å‘é‡vec *= å¸¸æ•°vï¼Œæ³¨æ„æ­¤æ—¶è¾“å…¥å‘é‡vecçš„å€¼ä¹Ÿå˜åŒ–äº†ï¼Œä¼ å…¥çš„æ˜¯å®å‚
+	 * \param vec è¾“å…¥çš„4ç»´å‘é‡vec
+	 * \param v è¾“å…¥å¸¸æ•°v
+	 * \return è¿”å›vecçš„å€¼ï¼švec = vec * v
 	 */
 	__host__ __device__ __forceinline__ float4& operator*=(float4& vec, const float& v)
 	{
@@ -335,10 +335,10 @@ namespace SparseSurfelFusion {
 		return vec;
 	}
 	/**
-	 * \brief ÖØÔØ¡°+=¡±£ºÏòÁ¿vec_0 + ÏòÁ¿vec_1£¬×¢Òâ´ËÊ±vec_0Öµ±äÁË£¬´«ÈëµÄÊÇÊµ²Î
-	 * \param vec_0 ÊäÈëÏòÁ¿vec_0
-	 * \param vec_1 ÊäÈëÏòÁ¿vec_1
-	 * \return ·µ»Øvec_0µÄÖµ£ºvec_0 = vec_0 + vec_1
+	 * \brief é‡è½½â€œ+=â€ï¼šå‘é‡vec_0 + å‘é‡vec_1ï¼Œæ³¨æ„æ­¤æ—¶vec_0å€¼å˜äº†ï¼Œä¼ å…¥çš„æ˜¯å®å‚
+	 * \param vec_0 è¾“å…¥å‘é‡vec_0
+	 * \param vec_1 è¾“å…¥å‘é‡vec_1
+	 * \return è¿”å›vec_0çš„å€¼ï¼švec_0 = vec_0 + vec_1
 	 */
 	__host__ __device__ __forceinline__ float3& operator+=(float3& vec_0, const float3& vec_1)
 	{
@@ -349,9 +349,9 @@ namespace SparseSurfelFusion {
 	}
 
 	/**
-	 * \brief ÏòÁ¿È¡·´
-	 * \param vec ÊäÈëÏòÁ¿
-	 * \return Êä³ö·´ÏòÏòÁ¿
+	 * \brief å‘é‡å–å
+	 * \param vec è¾“å…¥å‘é‡
+	 * \return è¾“å‡ºåå‘å‘é‡
 	 */
 	__host__ __device__ __forceinline__ float3 operator-(const float3& vec)
 	{
@@ -364,19 +364,19 @@ namespace SparseSurfelFusion {
 
 
 	/**
-	 * \brief 3Î¬ÏòÁ¿µã³Ë
-	 * \param v1 ÊäÈëÏòÁ¿
-	 * \param v2 ÊäÈëÏòÁ¿
-	 * \return Êä³öµã³Ë½á¹û
+	 * \brief 3ç»´å‘é‡ç‚¹ä¹˜
+	 * \param v1 è¾“å…¥å‘é‡
+	 * \param v2 è¾“å…¥å‘é‡
+	 * \return è¾“å‡ºç‚¹ä¹˜ç»“æœ
 	 */
 	__host__ __device__ __forceinline__ float dot(const float3& v1, const float3& v2) {
 		return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 	}
 	/**
-	 * \brief 4Î¬ÏòÁ¿µã³Ë
-	 * \param v1 ÊäÈëÏòÁ¿
-	 * \param v2 ÊäÈëÏòÁ¿
-	 * \return Êä³öµã³Ë½á¹û
+	 * \brief 4ç»´å‘é‡ç‚¹ä¹˜
+	 * \param v1 è¾“å…¥å‘é‡
+	 * \param v2 è¾“å…¥å‘é‡
+	 * \return è¾“å‡ºç‚¹ä¹˜ç»“æœ
 	 */
 	__host__ __device__ __forceinline__ float dot(const float4& v1, const float4& v2) {
 		return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w;
@@ -384,20 +384,20 @@ namespace SparseSurfelFusion {
 
 
 	/**
-	 * \brief 4Î¬ÏòÁ¿Ö»µã³Ëx,y,zÈı¸ö·ÖÁ¿
-	 * \param v1 ÊäÈëÏòÁ¿v1
-	 * \param v2 ÊäÈëÏòÁ¿v2
-	 * \return ÊäÈëx,y,z·ÖÁ¿µÄµã³Ë
+	 * \brief 4ç»´å‘é‡åªç‚¹ä¹˜x,y,zä¸‰ä¸ªåˆ†é‡
+	 * \param v1 è¾“å…¥å‘é‡v1
+	 * \param v2 è¾“å…¥å‘é‡v2
+	 * \return è¾“å…¥x,y,zåˆ†é‡çš„ç‚¹ä¹˜
 	 */
 	__host__ __device__ __forceinline__ float dotxyz(const float4& v1, const float4& v2)
 	{
 		return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 	}
 	/**
-	 * \brief 3Î¬ÏòÁ¿µÄµã³Ë
-	 * \param v1 ÊäÈëÏòÁ¿v1
-	 * \param v2 ÊäÈëÏòÁ¿v2
-	 * \return Êä³öv1¡¤v2
+	 * \brief 3ç»´å‘é‡çš„ç‚¹ä¹˜
+	 * \param v1 è¾“å…¥å‘é‡v1
+	 * \param v2 è¾“å…¥å‘é‡v2
+	 * \return è¾“å‡ºv1ãƒ»v2
 	 */
 	__host__ __device__ __forceinline__ float dotxyz(const float3& v1, const float4& v2)
 	{
@@ -405,20 +405,20 @@ namespace SparseSurfelFusion {
 	}
 
 	/**
-	 * \brief 3Î¬ÏòÁ¿²æ³Ë
-	 * \param v1 ÊäÈëÏòÁ¿v1
-	 * \param v2 ÊäÈëÏòÁ¿v2
-	 * \return Êä³öv1¡Áv2
+	 * \brief 3ç»´å‘é‡å‰ä¹˜
+	 * \param v1 è¾“å…¥å‘é‡v1
+	 * \param v2 è¾“å…¥å‘é‡v2
+	 * \return è¾“å‡ºv1Ã—v2
 	 */
 	__host__ __device__ __forceinline__ float3 cross(const float3& v1, const float3& v2)
 	{
 		return make_float3(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
 	}
 	/**
-	 * \brief 3Î¬ÏòÁ¿²æ³Ë4Î¬ÏòÁ¿µÄx,y,z·ÖÁ¿
-	 * \param v1 ÊäÈë3Î¬ÏòÁ¿
-	 * \param v2 ÊäÈë4Î¬ÏòÁ¿
-	 * \return Êä³ö3Î¬ÏòÁ¿²æ³Ë4Î¬ÏòÁ¿µÄx,y,z·ÖÁ¿µÄ½á¹û
+	 * \brief 3ç»´å‘é‡å‰ä¹˜4ç»´å‘é‡çš„x,y,zåˆ†é‡
+	 * \param v1 è¾“å…¥3ç»´å‘é‡
+	 * \param v2 è¾“å…¥4ç»´å‘é‡
+	 * \return è¾“å‡º3ç»´å‘é‡å‰ä¹˜4ç»´å‘é‡çš„x,y,zåˆ†é‡çš„ç»“æœ
 	 */
 	__host__ __device__ __forceinline__ float3 cross_xyz(const float3& v1, const float4& v2)
 	{
@@ -426,27 +426,27 @@ namespace SparseSurfelFusion {
 	}
 
 	/**
-	 * \brief 3Î¬ÏòÁ¿µÄ1-·¶Êı£º|x| + |y| + |z|
-	 * \param vecÊäÈëÏòÁ¿
-	 * \return ·µ»ØÏòÁ¿vecµÄ1-·¶Êı
+	 * \brief 3ç»´å‘é‡çš„1-èŒƒæ•°ï¼š|x| + |y| + |z|
+	 * \param vecè¾“å…¥å‘é‡
+	 * \return è¿”å›å‘é‡vecçš„1-èŒƒæ•°
 	 */
 	__host__ __device__ __forceinline__ float fabsf_sum(const float3& vec) {
 		return fabsf(vec.x) + fabsf(vec.y) + fabsf(vec.z);
 	}
 	/**
-	 * \brief 4Î¬ÏòÁ¿µÄ1-·¶Êı£º|x| + |y| + |z| + |w|
-	 * \param vecÊäÈëÏòÁ¿
-	 * \return Êä³öÏòÁ¿µÄ1-·¶Êı
+	 * \brief 4ç»´å‘é‡çš„1-èŒƒæ•°ï¼š|x| + |y| + |z| + |w|
+	 * \param vecè¾“å…¥å‘é‡
+	 * \return è¾“å‡ºå‘é‡çš„1-èŒƒæ•°
 	 */
 	__host__ __device__ __forceinline__ float fabsf_sum(const float4& vec) {
 		return fabsf(vec.x) + fabsf(vec.y) + fabsf(vec.z) + fabsf(vec.w);
 	}
 
 	/**
-	 * \brief 3Î¬ÏòÁ¿Óë4Î¬ÏòÁ¿(x,y,z·ÖÁ¿)µÄÆ½¾ù¾ø¶ÔÎó²î(MAS) L1 Error
-	 * \param vec_0 ÊäÈëµÄ3Î¬ÏòÁ¿
-	 * \param vec_1 ÊäÈëµÄ4Î¬ÏòÁ¿
-	 * \return ·µ»ØÏòÁ¿µÄL1 Error
+	 * \brief 3ç»´å‘é‡ä¸4ç»´å‘é‡(x,y,zåˆ†é‡)çš„å¹³å‡ç»å¯¹è¯¯å·®(MAS) L1 Error
+	 * \param vec_0 è¾“å…¥çš„3ç»´å‘é‡
+	 * \param vec_1 è¾“å…¥çš„4ç»´å‘é‡
+	 * \return è¿”å›å‘é‡çš„L1 Error
 	 */
 	__host__ __device__ __forceinline__ float fabsf_diff_xyz(const float3& vec_0, const float4& vec_1) {
 		return fabsf(vec_0.x - vec_1.x) + fabsf(vec_0.y - vec_1.y) + fabsf(vec_0.z - vec_1.z);

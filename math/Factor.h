@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   Factor.h
- * \brief  ·½³ÌÇó½â
+ * \brief  æ–¹ç¨‹æ±‚è§£
  * 
  * \author LUOJIAXUAN
  * \date   May 21st 2024
@@ -12,116 +12,116 @@ namespace SparseSurfelFusion{
 	class Factor {
 	public:
 		struct FactorConstants {
-			static const double SQRT_3;	// ¸ùºÅÈı
+			static const double SQRT_3;	// æ ¹å·ä¸‰
 			static const double PI;		// pi
 		};
 	public:
 		/**
-		  * \brief Ò»´Î·½³Ì ( a0 * x^0 + a1 * x^1 = 0 ) , »ñµÃ¸ù x = ( roots[0][0] + roots[0][1] * i )
+		  * \brief ä¸€æ¬¡æ–¹ç¨‹ ( a0 * x^0 + a1 * x^1 = 0 ) , è·å¾—æ ¹ x = ( roots[0][0] + roots[0][1] * i )
 		  *
-		  * \param a1 Ò»´ÎÏîÏµÊı
-		  * \param a0 ³£ÊıÏî
-		  * \param roots Çó½âµÄ¸ù
-		  * \param Á½¸ö¸ù¾àÀëĞ¡ÓÚESP£¬¾ÍÅĞ¶¨ÊÇÒ»¸ö¸ù
-		  * \return ·µ»Ø·½³Ì¸ùµÄÊıÁ¿
+		  * \param a1 ä¸€æ¬¡é¡¹ç³»æ•°
+		  * \param a0 å¸¸æ•°é¡¹
+		  * \param roots æ±‚è§£çš„æ ¹
+		  * \param ä¸¤ä¸ªæ ¹è·ç¦»å°äºESPï¼Œå°±åˆ¤å®šæ˜¯ä¸€ä¸ªæ ¹
+		  * \return è¿”å›æ–¹ç¨‹æ ¹çš„æ•°é‡
 		  */
 		int FactorSolver(double a1, double a0, double roots[1][2], const double& EPS);
 		/**
-		  * \brief ¶ş´Î·½³Ì ( a0 * x^0 + a1 * x^1 + a2 * x^2 = 0 ),
-		  *        »ñµÃ¸ù: x1 = ( roots[0][0] + roots[0][1] * i )
+		  * \brief äºŒæ¬¡æ–¹ç¨‹ ( a0 * x^0 + a1 * x^1 + a2 * x^2 = 0 ),
+		  *        è·å¾—æ ¹: x1 = ( roots[0][0] + roots[0][1] * i )
 		  *               x2 = ( roots[1][0] + roots[1][1] * i )
-		  * \param a2 ¶ş´ÎÏîÏµÊı
-		  * \param a1 Ò»´ÎÏîÏµÊı
-		  * \param a0 ³£ÊıÏî
-		  * \param roots Çó½âµÄ¸ù
-		  * \param Á½¸ö¸ù¾àÀëĞ¡ÓÚESP£¬¾ÍÅĞ¶¨ÊÇÒ»¸ö¸ù
-		  * \return ·µ»Ø·½³Ì¸ùµÄÊıÁ¿
+		  * \param a2 äºŒæ¬¡é¡¹ç³»æ•°
+		  * \param a1 ä¸€æ¬¡é¡¹ç³»æ•°
+		  * \param a0 å¸¸æ•°é¡¹
+		  * \param roots æ±‚è§£çš„æ ¹
+		  * \param ä¸¤ä¸ªæ ¹è·ç¦»å°äºESPï¼Œå°±åˆ¤å®šæ˜¯ä¸€ä¸ªæ ¹
+		  * \return è¿”å›æ–¹ç¨‹æ ¹çš„æ•°é‡
 		  */
 		int FactorSolver(double a2, double a1, double a0, double roots[2][2], const double& EPS);
 
 		/**
-		 * \brief Èı´Î·½³Ì ( a0 * x^0 + a1 * x^1 + a2 * x^2 + a3 * x^3 = 0 ).
-		  *        »ñµÃ¸ù: x1 = ( roots[0][0] + roots[0][1] * i )
+		 * \brief ä¸‰æ¬¡æ–¹ç¨‹ ( a0 * x^0 + a1 * x^1 + a2 * x^2 + a3 * x^3 = 0 ).
+		  *        è·å¾—æ ¹: x1 = ( roots[0][0] + roots[0][1] * i )
 		  *               x2 = ( roots[1][0] + roots[1][1] * i )
 		  *               x3 = ( roots[2][0] + roots[2][1] * i )
 		  *
-		  * \param a3 Èı´ÎÏîÏµÊı
-		  * \param a2 ¶ş´ÎÏîÏµÊı
-		  * \param a1 Ò»´ÎÏîÏµÊı
-		  * \param a0 ³£ÊıÏî
-		  * \param roots Çó½âµÄ¸ù
-		  * \param Á½¸ö¸ù¾àÀëĞ¡ÓÚESP£¬¾ÍÅĞ¶¨ÊÇÒ»¸ö¸ù
-		  * \return ·µ»Ø·½³Ì¸ùµÄÊıÁ¿
+		  * \param a3 ä¸‰æ¬¡é¡¹ç³»æ•°
+		  * \param a2 äºŒæ¬¡é¡¹ç³»æ•°
+		  * \param a1 ä¸€æ¬¡é¡¹ç³»æ•°
+		  * \param a0 å¸¸æ•°é¡¹
+		  * \param roots æ±‚è§£çš„æ ¹
+		  * \param ä¸¤ä¸ªæ ¹è·ç¦»å°äºESPï¼Œå°±åˆ¤å®šæ˜¯ä¸€ä¸ªæ ¹
+		  * \return è¿”å›æ–¹ç¨‹æ ¹çš„æ•°é‡
 		 */
 		int FactorSolver(double a3, double a2, double a1, double a0, double roots[3][2], const double& EPS);
 
 		/**
-		 * \brief ËÄ´Î·½³Ì ( a0 * x^0 + a1 * x^1 + a2 * x^2 + a3 * x^3 + a4 * x^4 = 0 ).
-		  *        »ñµÃ¸ù: x1 = ( roots[0][0] + roots[0][1] * i )
+		 * \brief å››æ¬¡æ–¹ç¨‹ ( a0 * x^0 + a1 * x^1 + a2 * x^2 + a3 * x^3 + a4 * x^4 = 0 ).
+		  *        è·å¾—æ ¹: x1 = ( roots[0][0] + roots[0][1] * i )
 		  *               x2 = ( roots[1][0] + roots[1][1] * i )
 		  *               x3 = ( roots[2][0] + roots[2][1] * i )
 		  *               x4 = ( roots[3][0] + roots[3][1] * i )
 		  *
-		  * \param a4 ËÄ´ÎÏîÏµÊı
-		  * \param a3 Èı´ÎÏîÏµÊı
-		  * \param a2 ¶ş´ÎÏîÏµÊı
-		  * \param a1 Ò»´ÎÏîÏµÊı
-		  * \param a0 ³£ÊıÏî
-		  * \param roots Çó½âµÄ¸ù
-		  * \param Á½¸ö¸ù¾àÀëĞ¡ÓÚESP£¬¾ÍÅĞ¶¨ÊÇÒ»¸ö¸ù
-		  * \return ·µ»Ø·½³Ì¸ùµÄÊıÁ¿
+		  * \param a4 å››æ¬¡é¡¹ç³»æ•°
+		  * \param a3 ä¸‰æ¬¡é¡¹ç³»æ•°
+		  * \param a2 äºŒæ¬¡é¡¹ç³»æ•°
+		  * \param a1 ä¸€æ¬¡é¡¹ç³»æ•°
+		  * \param a0 å¸¸æ•°é¡¹
+		  * \param roots æ±‚è§£çš„æ ¹
+		  * \param ä¸¤ä¸ªæ ¹è·ç¦»å°äºESPï¼Œå°±åˆ¤å®šæ˜¯ä¸€ä¸ªæ ¹
+		  * \return è¿”å›æ–¹ç¨‹æ ¹çš„æ•°é‡
 		 */
 		int FactorSolver(double a4, double a3, double a2, double a1, double a0, double roots[4][2], const double& EPS);
 
 		/**
-			»ñµÃ dim ´Î·½³ÌµÄ½â
-			¼ÙÉè  ·½³Ì½âÎª x1, x2 = [1, 2]
+			è·å¾— dim æ¬¡æ–¹ç¨‹çš„è§£
+			å‡è®¾  æ–¹ç¨‹è§£ä¸º x1, x2 = [1, 2]
 			3 x1 + 7 x2 = 17
 			8 x1 + 2 x2 = 12
 			[    3   7   ][  x1   ]   =   [   17  ]
 			[    8   2   ][  x2   ]       [   12  ]
-			ÏµÊı¾ØÕó [ dim * dim ]     =   { 3, 7, 8, 2 }
-			³£Êı¾ØÕó [ dim ]           =   { 17, 12 }
+			ç³»æ•°çŸ©é˜µ [ dim * dim ]     =   { 3, 7, 8, 2 }
+			å¸¸æ•°çŸ©é˜µ [ dim ]           =   { 17, 12 }
 			=>
-			·½³Ì½â¾ØÕó   [ dim ]       =   { 1, 2 }
-			Èç¹ûÓĞÄ³¸öÎ¨Ò»½â, ·µ»Øtrue
-			Èç¹ûÃ»ÓĞ½â»òÓĞÎŞÊı¸ö½â, ·µ»Øfalse
+			æ–¹ç¨‹è§£çŸ©é˜µ   [ dim ]       =   { 1, 2 }
+			å¦‚æœæœ‰æŸä¸ªå”¯ä¸€è§£, è¿”å›true
+			å¦‚æœæ²¡æœ‰è§£æˆ–æœ‰æ— æ•°ä¸ªè§£, è¿”å›false
 		  */
 		bool Solve(const double* eqns, const double* values, double* solutions, const int& dim);
 
 		/**
-		 * \brief Çóµã(x,y)µÄ½Ç¶È(»¡¶È = ¶È * PI / 180).
+		 * \brief æ±‚ç‚¹(x,y)çš„è§’åº¦(å¼§åº¦ = åº¦ * PI / 180).
 		 */
 		double ArcTan2(const double& y, const double& x);
 
 		/**
-		 * \brief Çó(in[0], in[1])µÄ½Ç¶È(»¡¶È = ¶È * PI / 180).
+		 * \brief æ±‚(in[0], in[1])çš„è§’åº¦(å¼§åº¦ = åº¦ * PI / 180).
 		 */
 		double Angle(const double in[2]);
 
 		/**
-		  * \brief out±»¸²¸Ç, ½«µã (in[0],in[1]) µÄÏòÁ¿µÄ½Ç¶È¼õ°ë, ĞÂµã (out[0],out[1]) ÓëÔ­µã (0,0) µÄ¾àÀë
-		  *        ½«ÊÇÔ­µã (0,0) ÓëÔ­Ê¼µã (in[0],in[1]) Ö®¼ä¾àÀëµÄÆ½·½¸ù
+		  * \brief outè¢«è¦†ç›–, å°†ç‚¹ (in[0],in[1]) çš„å‘é‡çš„è§’åº¦å‡åŠ, æ–°ç‚¹ (out[0],out[1]) ä¸åŸç‚¹ (0,0) çš„è·ç¦»
+		  *        å°†æ˜¯åŸç‚¹ (0,0) ä¸åŸå§‹ç‚¹ (in[0],in[1]) ä¹‹é—´è·ç¦»çš„å¹³æ–¹æ ¹
 		  */
 		void Sqrt(const double in[2], double out[2]);
 
 		/**
-		 * \brief out±»¸²¸Ç, (out[0], out[1]) = (in1[0] + in2[0], in1[1] + in2[1]).
+		 * \brief outè¢«è¦†ç›–, (out[0], out[1]) = (in1[0] + in2[0], in1[1] + in2[1]).
 		 */
 		void Add(const double in1[2], const double in2[2], double out[2]);
 
 		/**
-		 * \brief out±»¸²¸Ç, (out[0], out[1]) = (in1[0] - in2[0], in1[1] - in2[1]).
+		 * \brief outè¢«è¦†ç›–, (out[0], out[1]) = (in1[0] - in2[0], in1[1] - in2[1]).
 		 */
 		void Subtract(const double in1[2], const double in2[2], double out[2]);
 
 		/**
-		 * \brief out±»¸²¸Ç.
+		 * \brief outè¢«è¦†ç›–.
 		 */
 		void Multiply(const double in1[2], const double in2[2], double out[2]);
 
 		/**
-		 * \brief out±»¸²¸Ç,.
+		 * \brief outè¢«è¦†ç›–,.
 		 */
 		void Divide(const double in1[2], const double in2[2], double out[2]);
 

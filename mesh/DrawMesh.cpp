@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   DrawMesh.cpp
- * \brief  OpenGL»æÖÆäÖÈ¾Íø¸ñ
+ * \brief  OpenGLç»˜åˆ¶æ¸²æŸ“ç½‘æ ¼
  * 
  * \author LUOJIAXUAN
  * \date   June 5th 2024
@@ -9,7 +9,7 @@
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
-	glViewport(0, 0, width, height);															// ÉèÖÃÊÓ¿Ú
+	glViewport(0, 0, width, height);															// è®¾ç½®è§†å£
 }
 
 SparseSurfelFusion::DrawMesh::DrawMesh()
@@ -22,47 +22,47 @@ SparseSurfelFusion::DrawMesh::DrawMesh()
 	int glfwSate = glfwInit();
 	if (glfwSate == GLFW_FALSE)
 	{
-		std::cout << "GLFW ³õÊ¼»¯Ê§°Ü!" << std::endl;
+		std::cout << "GLFW åˆå§‹åŒ–å¤±è´¥!" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
-	// opengl°æ±¾Îª4.6
+	// openglç‰ˆæœ¬ä¸º4.6
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-	// ÉèÖÃ OpenGL ÅäÖÃÎÄ¼şÎªºËĞÄÅäÖÃÎÄ¼ş
+	// è®¾ç½® OpenGL é…ç½®æ–‡ä»¶ä¸ºæ ¸å¿ƒé…ç½®æ–‡ä»¶
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	// Ä¬ÈÏµÄframebufferÊôĞÔ
-	glfwWindowHint(GLFW_VISIBLE, GL_TRUE);		// ´°¿Ú¿É¼û
+	// é»˜è®¤çš„framebufferå±æ€§
+	glfwWindowHint(GLFW_VISIBLE, GL_TRUE);		// çª—å£å¯è§
 	glfwWindowHint(GLFW_SAMPLES, 1);
 	glfwWindowHint(GLFW_STEREO, GL_FALSE);
 	glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);	// ´°¿Ú´óĞ¡²»¿Éµ÷Õû
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);	// çª—å£å¤§å°ä¸å¯è°ƒæ•´
 
 	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "MeshRender", NULL, NULL);
 
 	if (window == NULL) {
-		LOGGING(FATAL) << "Î´ÕıÈ·´´½¨GLFW´°¿Ú£¡";
+		LOGGING(FATAL) << "æœªæ­£ç¡®åˆ›å»ºGLFWçª—å£ï¼";
 	}
-	else std::cout << "´°¿Ú MeshRender ´´½¨Íê³É£¡" << std::endl;
+	else std::cout << "çª—å£ MeshRender åˆ›å»ºå®Œæˆï¼" << std::endl;
 
 	glfwMakeContextCurrent(window);
 
-	// ³õÊ¼»¯ GLAD
+	// åˆå§‹åŒ– GLAD
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		LOGGING(FATAL) << "GLAD ³õÊ¼»¯Ê§°Ü£¡";
+		LOGGING(FATAL) << "GLAD åˆå§‹åŒ–å¤±è´¥ï¼";
 		glfwDestroyWindow(window);
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
 
 
-	// ¿ªÆôÉî¶È²âÊÔ, ½ûÓÃ¡°ÃæÌŞ³ı¡±¹¦ÄÜ
-	glEnable(GL_DEPTH_TEST);				// ÆôÓÃÉî¶È²âÊÔºó£¬OpenGL»áÔÚ»æÖÆÏñËØÖ®Ç°£¬¸ù¾İËüÃÇµÄÉî¶ÈÖµ½øĞĞ±È½Ï£¬²¢Ö»»æÖÆÉî¶È²âÊÔÍ¨¹ıµÄÏñËØ£¬´Ó¶ø²úÉúÕıÈ·µÄäÖÈ¾Ğ§¹û
-	glDepthFunc(GL_LESS);					// ÓÃÓÚÉî¶È²âÊÔ£¬Ëü¾ö¶¨ÄÄĞ©Æ¬¶Î£¨ÏñËØ£©Ó¦¸Ã±»ÏÔÊ¾£¬ÄÄĞ©Ó¦¸Ã±»¶ªÆú£¬»ùÓÚËüÃÇµÄÉî¶ÈÖµ
-	//glPolygonMode(GL_FRONT, GL_LINE);		// Ìî³äÃæ
-	//glEnable(GL_CULL_FACE);					// ÒâÎ¶×ÅOpenGL½«äÖÈ¾ËùÓĞµÄÈı½ÇĞÎÃæ£¬¶ø²»¹ÜËüÃÇµÄ¶¥µãË³Ğò£¬²»¹ÜÆäÊÇ·ñ±»ÕÚµ²
-	//glEnable(GL_PROGRAM_POINT_SIZE);		// µ÷ÓÃ glEnable(GL_PROGRAM_POINT_SIZE) º¯Êı»áÆôÓÃ³ÌĞò¿ØÖÆµÄµã´óĞ¡¹¦ÄÜ£¬ÔÊĞíÄúÔÚ×ÅÉ«Æ÷³ÌĞòÖĞÊ¹ÓÃÄÚÖÃ±äÁ¿ gl_PointSize À´¿ØÖÆµãµÄ´óĞ¡
+	// å¼€å¯æ·±åº¦æµ‹è¯•, ç¦ç”¨â€œé¢å‰”é™¤â€åŠŸèƒ½
+	glEnable(GL_DEPTH_TEST);				// å¯ç”¨æ·±åº¦æµ‹è¯•åï¼ŒOpenGLä¼šåœ¨ç»˜åˆ¶åƒç´ ä¹‹å‰ï¼Œæ ¹æ®å®ƒä»¬çš„æ·±åº¦å€¼è¿›è¡Œæ¯”è¾ƒï¼Œå¹¶åªç»˜åˆ¶æ·±åº¦æµ‹è¯•é€šè¿‡çš„åƒç´ ï¼Œä»è€Œäº§ç”Ÿæ­£ç¡®çš„æ¸²æŸ“æ•ˆæœ
+	glDepthFunc(GL_LESS);					// ç”¨äºæ·±åº¦æµ‹è¯•ï¼Œå®ƒå†³å®šå“ªäº›ç‰‡æ®µï¼ˆåƒç´ ï¼‰åº”è¯¥è¢«æ˜¾ç¤ºï¼Œå“ªäº›åº”è¯¥è¢«ä¸¢å¼ƒï¼ŒåŸºäºå®ƒä»¬çš„æ·±åº¦å€¼
+	//glPolygonMode(GL_FRONT, GL_LINE);		// å¡«å……é¢
+	//glEnable(GL_CULL_FACE);					// æ„å‘³ç€OpenGLå°†æ¸²æŸ“æ‰€æœ‰çš„ä¸‰è§’å½¢é¢ï¼Œè€Œä¸ç®¡å®ƒä»¬çš„é¡¶ç‚¹é¡ºåºï¼Œä¸ç®¡å…¶æ˜¯å¦è¢«é®æŒ¡
+	//glEnable(GL_PROGRAM_POINT_SIZE);		// è°ƒç”¨ glEnable(GL_PROGRAM_POINT_SIZE) å‡½æ•°ä¼šå¯ç”¨ç¨‹åºæ§åˆ¶çš„ç‚¹å¤§å°åŠŸèƒ½ï¼Œå…è®¸æ‚¨åœ¨ç€è‰²å™¨ç¨‹åºä¸­ä½¿ç”¨å†…ç½®å˜é‡ gl_PointSize æ¥æ§åˆ¶ç‚¹çš„å¤§å°
 
 	const std::string vertexShaderPath = SHADER_PATH_PREFIX + std::string("MeshShader.vert");
 	const std::string fragmentShaderPath = SHADER_PATH_PREFIX + std::string("MeshShader.frag");
@@ -111,15 +111,15 @@ void SparseSurfelFusion::DrawMesh::DrawRenderedMesh(cudaStream_t stream)
 
 void SparseSurfelFusion::DrawMesh::initialCoordinateSystem()
 {
-	std::vector<float> pvalues;			// µã×ø±ê	
+	std::vector<float> pvalues;			// ç‚¹åæ ‡	
 
-	// LiveÓòÖĞµÄµã£¬²é¿´ÖĞ¼ä¹ı³ÌµÄ¶¥µã×ÅÉ«Æ÷
+	// LiveåŸŸä¸­çš„ç‚¹ï¼ŒæŸ¥çœ‹ä¸­é—´è¿‡ç¨‹çš„é¡¶ç‚¹ç€è‰²å™¨
 	const std::string coordinate_vert_path = SHADER_PATH_PREFIX + std::string("CoordinateSystemShader.vert");
-	// LiveÓòÖĞµÄµã£¬²é¿´ÖĞ¼ä¹ı³ÌµÄÆ¬¶Î×ÅÉ«Æ÷
+	// LiveåŸŸä¸­çš„ç‚¹ï¼ŒæŸ¥çœ‹ä¸­é—´è¿‡ç¨‹çš„ç‰‡æ®µç€è‰²å™¨
 	const std::string coordinate_frag_path = SHADER_PATH_PREFIX + std::string("CoordinateSystemShader.frag");
 	coordinateShader.Compile(coordinate_vert_path, coordinate_frag_path);
-	glGenVertexArrays(1, &coordinateSystemVAO);	// Éú³ÉVAO
-	glGenBuffers(1, &coordinateSystemVBO);		// Éú³ÉVBO
+	glGenVertexArrays(1, &coordinateSystemVAO);	// ç”ŸæˆVAO
+	glGenBuffers(1, &coordinateSystemVBO);		// ç”ŸæˆVBO
 	const unsigned int Num = sizeof(box) / sizeof(box[0]);
 	for (int i = 0; i < Num; i++) {
 		pvalues.push_back(box[i][0]);
@@ -129,67 +129,67 @@ void SparseSurfelFusion::DrawMesh::initialCoordinateSystem()
 	//std::cout << "Num = " << Num << "     pvalues.size() = " << pvalues.size() << std::endl;
 	glBindVertexArray(coordinateSystemVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, coordinateSystemVBO);
-	GLsizei bufferSize = sizeof(GLfloat) * pvalues.size();		// floatÊı¾İµÄÊıÁ¿
-	glBufferData(GL_ARRAY_BUFFER, bufferSize, pvalues.data(), GL_DYNAMIC_DRAW);	// ¶¯Ì¬»æÖÆ£¬Ä¿Ç°Ö»ÊÇÏÈ¿ª±Ù¸ö´óĞ¡
+	GLsizei bufferSize = sizeof(GLfloat) * pvalues.size();		// floatæ•°æ®çš„æ•°é‡
+	glBufferData(GL_ARRAY_BUFFER, bufferSize, pvalues.data(), GL_DYNAMIC_DRAW);	// åŠ¨æ€ç»˜åˆ¶ï¼Œç›®å‰åªæ˜¯å…ˆå¼€è¾Ÿä¸ªå¤§å°
 
-	// Î»ÖÃ
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(0 * sizeof(GLfloat)));	// ÉèÖÃVAO½âÊÍÆ÷
+	// ä½ç½®
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(0 * sizeof(GLfloat)));	// è®¾ç½®VAOè§£é‡Šå™¨
 	glEnableVertexAttribArray(0);	// layout (location = 0)
-	// ÑÕÉ«
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));		// ÉèÖÃVAO½âÊÍÆ÷
+	// é¢œè‰²
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));		// è®¾ç½®VAOè§£é‡Šå™¨
 	glEnableVertexAttribArray(1);	// layout (location = 1)
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);			// ½â°óVBO
-	glBindVertexArray(0);						// ½â°óVAO
+	glBindBuffer(GL_ARRAY_BUFFER, 0);			// è§£ç»‘VBO
+	glBindVertexArray(0);						// è§£ç»‘VAO
 }
 
 void SparseSurfelFusion::DrawMesh::registerCudaResources()
 {
 	glfwMakeContextCurrent(window);
 
-	glGenVertexArrays(1, &GeometryVAO);	// Éú³ÉVAO
-	glBindVertexArray(GeometryVAO);		// °ó¶¨VAO
+	glGenVertexArrays(1, &GeometryVAO);	// ç”ŸæˆVAO
+	glBindVertexArray(GeometryVAO);		// ç»‘å®šVAO
 
-	glGenBuffers(1, &GeometryVBO);		// Éú³ÉVBO
-	glGenBuffers(1, &GeometryIBO);		// ´´½¨1¸öIBO£¬²¢½«±êÊ¶·û´æ´¢ÔÚIBO±äÁ¿ÖĞ
+	glGenBuffers(1, &GeometryVBO);		// ç”ŸæˆVBO
+	glGenBuffers(1, &GeometryIBO);		// åˆ›å»º1ä¸ªIBOï¼Œå¹¶å°†æ ‡è¯†ç¬¦å­˜å‚¨åœ¨IBOå˜é‡ä¸­
 
-	glBindBuffer(GL_ARRAY_BUFFER, GeometryVBO);	// °ó¶¨VBO
+	glBindBuffer(GL_ARRAY_BUFFER, GeometryVBO);	// ç»‘å®šVBO
 
-	// x,y,z,nx,ny,nz,r,g,b = 9¸öGLfloat
+	// x,y,z,nx,ny,nz,r,g,b = 9ä¸ªGLfloat
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * Constants::maxSurfelsNum * 9, NULL, GL_DYNAMIC_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat) * Constants::maxSurfelsNum * 0, sizeof(GLfloat) * Constants::maxSurfelsNum * 3, NULL);	// ·ÖÅú¼ÓÔØÊôĞÔÊı×é							// ·ÖÅú¼ÓÔØÊôĞÔÊı×é
-	glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat) * Constants::maxSurfelsNum * 3, sizeof(GLfloat) * Constants::maxSurfelsNum * 3, NULL);	// ·ÖÅú¼ÓÔØÊôĞÔÊı×é
-	glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat) * Constants::maxSurfelsNum * 6, sizeof(GLfloat) * Constants::maxSurfelsNum * 3, NULL);	// ·ÖÅú¼ÓÔØÊôĞÔÊı×é
+	glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat) * Constants::maxSurfelsNum * 0, sizeof(GLfloat) * Constants::maxSurfelsNum * 3, NULL);	// åˆ†æ‰¹åŠ è½½å±æ€§æ•°ç»„							// åˆ†æ‰¹åŠ è½½å±æ€§æ•°ç»„
+	glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat) * Constants::maxSurfelsNum * 3, sizeof(GLfloat) * Constants::maxSurfelsNum * 3, NULL);	// åˆ†æ‰¹åŠ è½½å±æ€§æ•°ç»„
+	glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat) * Constants::maxSurfelsNum * 6, sizeof(GLfloat) * Constants::maxSurfelsNum * 3, NULL);	// åˆ†æ‰¹åŠ è½½å±æ€§æ•°ç»„
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GeometryIBO);																	// ½«EBO°ó¶¨µ½GL_ELEMENT_ARRAY_BUFFERÄ¿±ê
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * Constants::maxMeshTrianglesNum * 3, NULL, GL_DYNAMIC_DRAW);	// ½«Ë÷ÒıÊı¾İ´ÓCPU´«Êäµ½GPU£¬»æÖÆ¶¥µã»¹ĞèÒªË÷ÒıÊı×é
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GeometryIBO);																	// å°†EBOç»‘å®šåˆ°GL_ELEMENT_ARRAY_BUFFERç›®æ ‡
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * Constants::maxMeshTrianglesNum * 3, NULL, GL_DYNAMIC_DRAW);	// å°†ç´¢å¼•æ•°æ®ä»CPUä¼ è¾“åˆ°GPUï¼Œç»˜åˆ¶é¡¶ç‚¹è¿˜éœ€è¦ç´¢å¼•æ•°ç»„
 
-	// Î»ÖÃ
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)(0 * sizeof(GLfloat) * Constants::maxSurfelsNum));	// ÉèÖÃVAO½âÊÍÆ÷
+	// ä½ç½®
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)(0 * sizeof(GLfloat) * Constants::maxSurfelsNum));	// è®¾ç½®VAOè§£é‡Šå™¨
 	glEnableVertexAttribArray(0);	// layout (location = 0)
-	// ·¨Ïß
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat) * Constants::maxSurfelsNum));	// ÉèÖÃVAO½âÊÍÆ÷
+	// æ³•çº¿
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat) * Constants::maxSurfelsNum));	// è®¾ç½®VAOè§£é‡Šå™¨
 	glEnableVertexAttribArray(1);	// layout (location = 1)
-	// ÑÕÉ«
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat) * Constants::maxSurfelsNum));	// ÉèÖÃVAO½âÊÍÆ÷
+	// é¢œè‰²
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat) * Constants::maxSurfelsNum));	// è®¾ç½®VAOè§£é‡Šå™¨
 	glEnableVertexAttribArray(2);	// layout (location = 2)
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);			// ½â°óVBO
-	glBindVertexArray(0);						// ½â°óVAO
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);	// ½â°óIBO
+	glBindBuffer(GL_ARRAY_BUFFER, 0);			// è§£ç»‘VBO
+	glBindVertexArray(0);						// è§£ç»‘VAO
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);	// è§£ç»‘IBO
 	CHECKCUDA(cudaGraphicsGLRegisterBuffer(&cudaVBOResources, GeometryVBO, cudaGraphicsRegisterFlagsNone));
 	CHECKCUDA(cudaGraphicsGLRegisterBuffer(&cudaIBOResources, GeometryIBO, cudaGraphicsRegisterFlagsNone));
 }
 
 void SparseSurfelFusion::DrawMesh::mapToCuda(DeviceArrayView<Point3D<float>> MeshVertices, DeviceArrayView<TriangleIndex> MeshTriangleIndices, cudaStream_t stream)
 {
-	CHECKCUDA(cudaGraphicsMapResources(1, &cudaVBOResources, stream));	//Ê×ÏÈÓ³Éä×ÊÔ´
-	CHECKCUDA(cudaGraphicsMapResources(1, &cudaIBOResources, stream));	//Ê×ÏÈÓ³Éä×ÊÔ´
+	CHECKCUDA(cudaGraphicsMapResources(1, &cudaVBOResources, stream));	//é¦–å…ˆæ˜ å°„èµ„æº
+	CHECKCUDA(cudaGraphicsMapResources(1, &cudaIBOResources, stream));	//é¦–å…ˆæ˜ å°„èµ„æº
 
-	// »ñµÃbuffer
-	Point3D<float>* ptr = NULL;			// ÓÃÓÚ»ñÈ¡cuda×ÊÔ´µÄµØÖ·(ÖØ¸´Ê¹ÓÃ)
-	size_t bufferSize = 0;				// ÓÃÓÚ»ñÈ¡cuda×ÊÔ´bufferµÄ´óĞ¡
-	// »ñµÃOpenGLÉÏµÄ×ÊÔ´Ö¸Õë
+	// è·å¾—buffer
+	Point3D<float>* ptr = NULL;			// ç”¨äºè·å–cudaèµ„æºçš„åœ°å€(é‡å¤ä½¿ç”¨)
+	size_t bufferSize = 0;				// ç”¨äºè·å–cudaèµ„æºbufferçš„å¤§å°
+	// è·å¾—OpenGLä¸Šçš„èµ„æºæŒ‡é’ˆ
 	CHECKCUDA(cudaGraphicsResourceGetMappedPointer(reinterpret_cast<void**>(&ptr), &bufferSize, cudaVBOResources));
 	CHECKCUDA(cudaMemcpyAsync(ptr, MeshVertices.RawPtr(), sizeof(Point3D<float>) * VerticesCount, cudaMemcpyDeviceToDevice, stream));
 	CHECKCUDA(cudaMemcpyAsync(ptr + Constants::maxSurfelsNum, VerticesAverageNormals.Ptr(), sizeof(Point3D<float>) * VerticesCount, cudaMemcpyDeviceToDevice, stream));
@@ -210,24 +210,24 @@ void SparseSurfelFusion::DrawMesh::unmapFromCuda(cudaStream_t stream)
 
 void SparseSurfelFusion::DrawMesh::clearWindow()
 {
-	// µ÷ÓÃÁËglClearColorÀ´ÉèÖÃÇå¿ÕÆÁÄ»ËùÓÃµÄÑÕÉ«
+	// è°ƒç”¨äº†glClearColoræ¥è®¾ç½®æ¸…ç©ºå±å¹•æ‰€ç”¨çš„é¢œè‰²
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); //RGBA
-	// Í¨¹ıµ÷ÓÃglClearº¯ÊıÀ´Çå¿ÕÆÁÄ»µÄÑÕÉ«»º³å£¬Ëü½ÓÊÜÒ»¸ö»º³åÎ»(Buffer Bit)À´Ö¸¶¨ÒªÇå¿ÕµÄ»º³å£¬¿ÉÄÜµÄ»º³åÎ»ÓĞGL_COLOR_BUFFER_BIT
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);// ÏÖÔÚÍ¬Ê±Çå³ıÉî¶È»º³åÇø!(²»Çå³ıÉî¶È»­²»³öÀ´Á¢ÌåÍ¼Ïñ)
+	// é€šè¿‡è°ƒç”¨glClearå‡½æ•°æ¥æ¸…ç©ºå±å¹•çš„é¢œè‰²ç¼“å†²ï¼Œå®ƒæ¥å—ä¸€ä¸ªç¼“å†²ä½(Buffer Bit)æ¥æŒ‡å®šè¦æ¸…ç©ºçš„ç¼“å†²ï¼Œå¯èƒ½çš„ç¼“å†²ä½æœ‰GL_COLOR_BUFFER_BIT
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);// ç°åœ¨åŒæ—¶æ¸…é™¤æ·±åº¦ç¼“å†²åŒº!(ä¸æ¸…é™¤æ·±åº¦ç”»ä¸å‡ºæ¥ç«‹ä½“å›¾åƒ)
 }
 
 void SparseSurfelFusion::DrawMesh::drawMesh(glm::mat4& view, glm::mat4& projection, glm::mat4& model)
 {
-	// ¼¤»î×ÅÉ«Æ÷
-	meshShader.BindProgram(); //renderer¹¹ÔìÊ±ÒÑ¾­±àÒë
+	// æ¿€æ´»ç€è‰²å™¨
+	meshShader.BindProgram(); //rendereræ„é€ æ—¶å·²ç»ç¼–è¯‘
 
-	meshShader.SetUniformVector("lightColor", 1.0f, 1.0f, 1.0f);	// ¹âÕÕÑÕÉ«
-	meshShader.SetUniformVector("lightPos", -1.2f, -1.0f, -2.0f);	// ¹âÕÕÎ»ÖÃ
+	meshShader.SetUniformVector("lightColor", 1.0f, 1.0f, 1.0f);	// å…‰ç…§é¢œè‰²
+	meshShader.SetUniformVector("lightPos", -1.2f, -1.0f, -2.0f);	// å…‰ç…§ä½ç½®
 
-	//ÉèÖÃÍ¸ÊÓ¾ØÕó
+	//è®¾ç½®é€è§†çŸ©é˜µ
 	projection = glm::perspective(glm::radians(30.0f), (float)WindowWidth / (float)WindowHeight, 0.1f, 100.0f);
-	meshShader.setUniformMat4(std::string("projection"), projection); // ×¢Òâ:Ä¿Ç°ÎÒÃÇÃ¿Ö¡ÉèÖÃÍ¶Ó°¾ØÕó£¬µ«ÓÉÓÚÍ¶Ó°¾ØÕóºÜÉÙ¸Ä±ä£¬ËùÒÔ×îºÃÔÚÖ÷Ñ­»·Ö®ÍâÉèÖÃËüÒ»´Î¡£
-	float radius = 3.0f;//ÉãÏñÍ·ÈÆµÄ°ë¾¶
+	meshShader.setUniformMat4(std::string("projection"), projection); // æ³¨æ„:ç›®å‰æˆ‘ä»¬æ¯å¸§è®¾ç½®æŠ•å½±çŸ©é˜µï¼Œä½†ç”±äºæŠ•å½±çŸ©é˜µå¾ˆå°‘æ”¹å˜ï¼Œæ‰€ä»¥æœ€å¥½åœ¨ä¸»å¾ªç¯ä¹‹å¤–è®¾ç½®å®ƒä¸€æ¬¡ã€‚
+	float radius = 3.0f;//æ‘„åƒå¤´ç»•çš„åŠå¾„
 	float camX = static_cast<float>(sin(glfwGetTime() * 0.5f) * radius);
 	float camZ = static_cast<float>(cos(glfwGetTime() * 0.5f) * radius);
 	view = glm::lookAt(glm::vec3(camX, radius, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -237,36 +237,36 @@ void SparseSurfelFusion::DrawMesh::drawMesh(glm::mat4& view, glm::mat4& projecti
 	meshShader.SetUniformVector("viewPos", glm::vec3(camX, radius, camZ));
 	//meshShader.SetUniformVector("viewPos", glm::vec3(0.0f, 0.0f, 3.0f));
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));//ÈÆUpÏòÁ¿(0,1,0)Ğı×ª
+	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));//ç»•Upå‘é‡(0,1,0)æ—‹è½¬
 	meshShader.setUniformMat4(std::string("model"), model);
 
-	glBindVertexArray(GeometryVAO); // °ó¶¨VAOºó»æÖÆ
+	glBindVertexArray(GeometryVAO); // ç»‘å®šVAOåç»˜åˆ¶
 	glDrawElements(GL_TRIANGLES, TranglesCount * 3, GL_UNSIGNED_INT, 0);
-	// Çå³ı°ó¶¨
+	// æ¸…é™¤ç»‘å®š
 	glBindVertexArray(0);
 	meshShader.UnbindProgram();
 }
 
 void SparseSurfelFusion::DrawMesh::drawCoordinateSystem(glm::mat4& view, glm::mat4& projection, glm::mat4& model)
 {
-	// »æÖÆ×ø±êÏµ
-	coordinateShader.BindProgram();	// °ó¶¨×ø±êÖáµÄshader
+	// ç»˜åˆ¶åæ ‡ç³»
+	coordinateShader.BindProgram();	// ç»‘å®šåæ ‡è½´çš„shader
 	coordinateShader.setUniformMat4(std::string("projection"), projection);
 	coordinateShader.setUniformMat4(std::string("view"), view);
 	coordinateShader.setUniformMat4(std::string("model"), model);
-	glBindVertexArray(coordinateSystemVAO); // °ó¶¨VAOºó»æÖÆ
+	glBindVertexArray(coordinateSystemVAO); // ç»‘å®šVAOåç»˜åˆ¶
 
 	glLineWidth(3.0f);
-	glDrawArrays(GL_LINES, 0, 34);	// boxÓĞ54¸öÔªËØ£¬»æÖÆÏß¶Î
+	glDrawArrays(GL_LINES, 0, 34);	// boxæœ‰54ä¸ªå…ƒç´ ï¼Œç»˜åˆ¶çº¿æ®µ
 
-	// Çå³ı°ó¶¨
+	// æ¸…é™¤ç»‘å®š
 	glBindVertexArray(0);
 	coordinateShader.UnbindProgram();
 }
 
 void SparseSurfelFusion::DrawMesh::swapBufferAndCatchEvent()
 {
-	// º¯Êı»á½»»»ÑÕÉ«»º³å£¨ËüÊÇÒ»¸ö´¢´æ×ÅGLFW´°¿ÚÃ¿Ò»¸öÏñËØÑÕÉ«ÖµµÄ´ó»º³å£©£¬ËüÔÚÕâÒ»µü´úÖĞ±»ÓÃÀ´»æÖÆ£¬²¢ÇÒ½«»á×÷ÎªÊä³öÏÔÊ¾ÔÚÆÁÄ»ÉÏ
+	// å‡½æ•°ä¼šäº¤æ¢é¢œè‰²ç¼“å†²ï¼ˆå®ƒæ˜¯ä¸€ä¸ªå‚¨å­˜ç€GLFWçª—å£æ¯ä¸€ä¸ªåƒç´ é¢œè‰²å€¼çš„å¤§ç¼“å†²ï¼‰ï¼Œå®ƒåœ¨è¿™ä¸€è¿­ä»£ä¸­è¢«ç”¨æ¥ç»˜åˆ¶ï¼Œå¹¶ä¸”å°†ä¼šä½œä¸ºè¾“å‡ºæ˜¾ç¤ºåœ¨å±å¹•ä¸Š
 	glfwSwapBuffers(window);
 	glfwPollEvents();
 }

@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   PoissonReconstruction.cu
- * \brief  GPUÇó½â²´ËÉÇúÃæÖØ½¨cudaËã·¨ÊµÏÖ
+ * \brief  GPUæ±‚è§£æ³Šæ¾æ›²é¢é‡å»ºcudaç®—æ³•å®ç°
  * 
  * \author LUOJIAXUAN
  * \date   May 4th 2024
@@ -31,7 +31,7 @@ __global__ void SparseSurfelFusion::device::buildOrientedDenseSurfelKernel(pcl::
 	surfel[idx].NormalAndRadius.z = normal[idx].normal_z;
 	surfel[idx].NormalAndRadius.w = normal[idx].curvature;
 
-	// ³õÊ¼»¯CURAND×´Ì¬
+	// åˆå§‹åŒ–CURANDçŠ¶æ€
 	curand_init(1234, idx, 0, &cudaStates[idx]);
 	surfel[idx].ColorAndTime.x = curand_uniform(&cudaStates[idx]);
 	surfel[idx].ColorAndTime.y = curand_uniform(&cudaStates[idx]);

@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   PoissonReconstruction.cpp
- * \brief  GPUÇó½â²´ËÉÇúÃæÖØ½¨
+ * \brief  GPUæ±‚è§£æ³Šæ¾æ›²é¢é‡å»º
  * 
  * \author LUOJIAXUAN
  * \date   May 4th 2024
@@ -9,7 +9,7 @@
 
 SparseSurfelFusion::PoissonReconstruction::PoissonReconstruction()
 {
-	initCudaStream();	// ³õÊ¼»¯Ö´ĞĞmeshÈÎÎñµÄcudaÁ÷
+	initCudaStream();	// åˆå§‹åŒ–æ‰§è¡Œmeshä»»åŠ¡çš„cudaæµ
 	
 	DrawConstructedMesh = std::make_shared<DrawMesh>();
 
@@ -17,7 +17,7 @@ SparseSurfelFusion::PoissonReconstruction::PoissonReconstruction()
 	normals = std::make_shared<pcl::PointCloud<pcl::Normal>>();
 
 	OctreePtr = std::make_shared<BuildOctree>();
-	VectorFieldPtr = std::make_shared<ComputeVectorField>(MeshStream[0]);	// ³õÊ¼»¯µÄÊ±ºò¼´¹¹½¨µã»ı±í
+	VectorFieldPtr = std::make_shared<ComputeVectorField>(MeshStream[0]);	// åˆå§‹åŒ–çš„æ—¶å€™å³æ„å»ºç‚¹ç§¯è¡¨
 	NodeDivergencePtr = std::make_shared<ComputeNodesDivergence>();
 	LaplacianSolverPtr = std::make_shared<LaplacianSolver>();
 	MeshGeometryPtr = std::make_shared<BuildMeshGeometry>();
@@ -63,7 +63,7 @@ void SparseSurfelFusion::PoissonReconstruction::synchronizeAllCudaStream()
 void SparseSurfelFusion::PoissonReconstruction::readTXTFile(std::string path)
 {
 	FILE* file;
-	if (fopen_s(&file, path.c_str(), "r") != 0) LOGGING(FATAL) << "µãÔÆ¶ÁÈ¡´íÎó";	// Ö»¶Á
+	if (fopen_s(&file, path.c_str(), "r") != 0) LOGGING(FATAL) << "ç‚¹äº‘è¯»å–é”™è¯¯";	// åªè¯»
 	else {
 		int count = 0;
 		float num;
@@ -72,7 +72,7 @@ void SparseSurfelFusion::PoissonReconstruction::readTXTFile(std::string path)
 			count++;
 		}
 		pointsNum = count / 3;
-		std::cout << "×Ü¹²¶ÁÈ¡µãÔÆ¸öÊı£º" << pointsNum << std::endl;
+		std::cout << "æ€»å…±è¯»å–ç‚¹äº‘ä¸ªæ•°ï¼š" << pointsNum << std::endl;
 		fclose(file);
 	}
 	PointCloudDevice.ResizeArrayOrException(pointsNum * 3);
@@ -82,16 +82,16 @@ void SparseSurfelFusion::PoissonReconstruction::readTXTFile(std::string path)
 
 void SparseSurfelFusion::PoissonReconstruction::readPCDFile(std::string path)
 {
-	// ¶ÁÈ¡ PCD ÎÄ¼ş
+	// è¯»å– PCD æ–‡ä»¶
 
 	pcl::io::loadPCDFile(path, *cloud);
 	CalculatePointCloudNormal(cloud, normals);
 
 	CHECKCUDA(cudaMalloc((void**)&cudaStates, cloud->size() * sizeof(curandState)));
 
-	printf("µãÔÆÊıÁ¿ = %zu   ·¨ÏßÊıÁ¿ = %zu\n", cloud->size(), normals->size());
+	printf("ç‚¹äº‘æ•°é‡ = %zu   æ³•çº¿æ•°é‡ = %zu\n", cloud->size(), normals->size());
 	std::cout << std::endl;
-	std::cout << "-----------------------------------------------------" << std::endl;	// Êä³ö
+	std::cout << "-----------------------------------------------------" << std::endl;	// è¾“å‡º
 	std::cout << std::endl;
 
 	const unsigned int pointsNum = cloud->size();
@@ -103,11 +103,11 @@ void SparseSurfelFusion::PoissonReconstruction::readPCDFile(std::string path)
 	buildDenseSurfel(PointCloudDevice, PointNormalDevice, DenseSurfel);
 	CHECKCUDA(cudaDeviceSynchronize());
 
-	//// ´´½¨ PCL ¿ÉÊÓ»¯¶ÔÏó
+	//// åˆ›å»º PCL å¯è§†åŒ–å¯¹è±¡
 	//pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));
-	//// Ìí¼ÓµãÔÆµ½¿ÉÊÓ»¯¶ÔÏó
+	//// æ·»åŠ ç‚¹äº‘åˆ°å¯è§†åŒ–å¯¹è±¡
 	//viewer->addPointCloud(cloud, "sample cloud");
-	//// ÏÔÊ¾µãÔÆ
+	//// æ˜¾ç¤ºç‚¹äº‘
 	//while (!viewer->wasStopped())
 	//{
 	//	viewer->spinOnce(100);
@@ -118,14 +118,14 @@ void SparseSurfelFusion::PoissonReconstruction::readPCDFile(std::string path)
 
 void SparseSurfelFusion::PoissonReconstruction::readPLYFile(std::string path)
 {
-	// ´´½¨PCL¿ÉÊÓ»¯¶ÔÏó
+	// åˆ›å»ºPCLå¯è§†åŒ–å¯¹è±¡
 	pcl::visualization::PCLVisualizer viewer("PLY Model Viewer");
-	// ¶ÁÈ¡PLYÎÄ¼ş
+	// è¯»å–PLYæ–‡ä»¶
 	pcl::PolygonMesh mesh;
 	pcl::io::loadPLYFile(path, mesh);
-	// Ìí¼ÓÍø¸ñÄ£ĞÍ
+	// æ·»åŠ ç½‘æ ¼æ¨¡å‹
 	viewer.addPolygonMesh(mesh, "mesh");
-	// ÏÔÊ¾¿ÉÊÓ»¯½çÃæ
+	// æ˜¾ç¤ºå¯è§†åŒ–ç•Œé¢
 	while (!viewer.wasStopped())
 	{
 		viewer.spinOnce();
@@ -137,45 +137,45 @@ void SparseSurfelFusion::PoissonReconstruction::readPLYFile(std::string path)
 void SparseSurfelFusion::PoissonReconstruction::CalculatePointCloudNormal(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, pcl::PointCloud<pcl::Normal>::Ptr normals)
 {
 
-	// ¼ÇÂ¼¿ªÊ¼Ê±¼äµã
+	// è®°å½•å¼€å§‹æ—¶é—´ç‚¹
 	auto start = std::chrono::high_resolution_clock::now();
-	//------------------¼ÆËã·¨Ïß----------------------
-	pcl::NormalEstimationOMP<pcl::PointXYZ, pcl::Normal> n;//OMP¼ÓËÙ
-	//½¨Á¢kdtreeÀ´½øĞĞ½üÁÚµã¼¯ËÑË÷
+	//------------------è®¡ç®—æ³•çº¿----------------------
+	pcl::NormalEstimationOMP<pcl::PointXYZ, pcl::Normal> n;//OMPåŠ é€Ÿ
+	//å»ºç«‹kdtreeæ¥è¿›è¡Œè¿‘é‚»ç‚¹é›†æœç´¢
 	pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>());
-	n.setNumberOfThreads(100);//ÉèÖÃopenMPµÄÏß³ÌÊı
-	//n.setViewPoint(0,0,0);//ÉèÖÃÊÓµã£¬Ä¬ÈÏÎª£¨0£¬0£¬0£©
+	n.setNumberOfThreads(100);//è®¾ç½®openMPçš„çº¿ç¨‹æ•°
+	//n.setViewPoint(0,0,0);//è®¾ç½®è§†ç‚¹ï¼Œé»˜è®¤ä¸ºï¼ˆ0ï¼Œ0ï¼Œ0ï¼‰
 	n.setInputCloud(cloud);
 	n.setSearchMethod(tree);
-	n.setKSearch(10);//µãÔÆ·¨Ïò¼ÆËãÊ±£¬ĞèÒªËùËÑµÄ½üÁÚµã´óĞ¡
-	//n.setRadiusSearch(0.01);//°ë¾¶ËÑËØ
-	n.compute(*normals);//¿ªÊ¼½øĞĞ·¨Ïò¼Æ
+	n.setKSearch(10);//ç‚¹äº‘æ³•å‘è®¡ç®—æ—¶ï¼Œéœ€è¦æ‰€æœçš„è¿‘é‚»ç‚¹å¤§å°
+	//n.setRadiusSearch(0.01);//åŠå¾„æœç´ 
+	n.compute(*normals);//å¼€å§‹è¿›è¡Œæ³•å‘è®¡
 
-	// ¼ÇÂ¼½áÊøÊ±¼äµã
+	// è®°å½•ç»“æŸæ—¶é—´ç‚¹
 	auto end = std::chrono::high_resolution_clock::now();
-	// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
+	// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
 	std::chrono::duration<double, std::milli> duration = end - start;
-	// Êä³öÖ´ĞĞÊ±¼ä
-	std::cout << "·¨Ïß¼ÆËãÊ±¼ä: " << duration.count() << " ms" << std::endl;
+	// è¾“å‡ºæ‰§è¡Œæ—¶é—´
+	std::cout << "æ³•çº¿è®¡ç®—æ—¶é—´: " << duration.count() << " ms" << std::endl;
 
 	saveCloudWithNormal(cloud, normals);
 
-	////----------------¿ÉÊÓ»¯--------------
+	////----------------å¯è§†åŒ–--------------
 	//boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer(new pcl::visualization::PCLVisualizer("Normal viewer"));
-	////viewer->initCameraParameters();//ÉèÖÃÕÕÏà»ú²ÎÊı£¬Ê¹ÓÃ»§´ÓÄ¬ÈÏµÄ½Ç¶ÈºÍ·½Ïò¹Û²ìµãÔÆ
-	////ÉèÖÃ±³¾°ÑÕÉ«
+	////viewer->initCameraParameters();//è®¾ç½®ç…§ç›¸æœºå‚æ•°ï¼Œä½¿ç”¨æˆ·ä»é»˜è®¤çš„è§’åº¦å’Œæ–¹å‘è§‚å¯Ÿç‚¹äº‘
+	////è®¾ç½®èƒŒæ™¯é¢œè‰²
 	//viewer->setBackgroundColor(0.3, 0.3, 0.3);
 	//viewer->addText("NORMAL", 10, 10, "text");
-	////ÉèÖÃµãÔÆÑÕÉ«
+	////è®¾ç½®ç‚¹äº‘é¢œè‰²
 	//pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> single_color(cloud, 0, 225, 0);
-	////Ìí¼Ó×ø±êÏµ
+	////æ·»åŠ åæ ‡ç³»
 	//viewer->addCoordinateSystem(0.1);
 	//viewer->addPointCloud<pcl::PointXYZ>(cloud, single_color, "sample cloud");
 
 
-	////Ìí¼ÓĞèÒªÏÔÊ¾µÄµãÔÆ·¨Ïò¡£cloudÎªÔ­Ê¼µãÔÆÄ£ĞÍ£¬normalÎª·¨ÏòĞÅÏ¢£¬20±íÊ¾ĞèÒªÏÔÊ¾·¨ÏòµÄµãÔÆ¼ä¸ô£¬¼´Ã¿20¸öµãÏÔÊ¾Ò»´Î·¨Ïò£¬0.02±íÊ¾·¨Ïò³¤¶È¡£
+	////æ·»åŠ éœ€è¦æ˜¾ç¤ºçš„ç‚¹äº‘æ³•å‘ã€‚cloudä¸ºåŸå§‹ç‚¹äº‘æ¨¡å‹ï¼Œnormalä¸ºæ³•å‘ä¿¡æ¯ï¼Œ20è¡¨ç¤ºéœ€è¦æ˜¾ç¤ºæ³•å‘çš„ç‚¹äº‘é—´éš”ï¼Œå³æ¯20ä¸ªç‚¹æ˜¾ç¤ºä¸€æ¬¡æ³•å‘ï¼Œ0.02è¡¨ç¤ºæ³•å‘é•¿åº¦ã€‚
 	//viewer->addPointCloudNormals<pcl::PointXYZ, pcl::Normal>(cloud, normals, 1, 0.01, "normals");
-	////ÉèÖÃµãÔÆ´óĞ¡
+	////è®¾ç½®ç‚¹äº‘å¤§å°
 	//viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "sample cloud");
 	//while (!viewer->wasStopped())
 	//{
@@ -196,16 +196,16 @@ void SparseSurfelFusion::PoissonReconstruction::SolvePoissionReconstructionMesh(
 {
 
 	const unsigned int DenseSurfelCount = denseSurfel.Size();
-	OctreePtr->BuildNodesArray(denseSurfel, cloud, normals, MeshStream[0]);						// ¹¹½¨Octree
-	DeviceArrayView<OrientedPoint3D<float>> orientedPoints = OctreePtr->GetOrientedPoints();	// »ñµÃÓĞÏòµãÔÆ
-	DeviceArrayView<OctNode> OctreeNodeArray = OctreePtr->GetOctreeNodeArray();					// »ñµÃ°Ë²æÊ÷µÄNodeArray
-	const int* NodeArrayCount = OctreePtr->GetNodeArrayCount();									// »ñµÃÃ¿Ò»²ã½ÚµãµÄÊıÁ¿£¬ÊÇÒ»¸ömaxDepth´óĞ¡µÄÊı×é
-	const int* BaseAddressArray = OctreePtr->GetBaseAddressArray();								// »ñµÃÃ¿²ã½ÚµãÔÚÊı×éÖĞµÄÆ«ÒÆ(Ã¿²ãµÚÒ»¸ö½ÚµãÔÚÊı×éÖĞµÄÎ»ÖÃ)
+	OctreePtr->BuildNodesArray(denseSurfel, cloud, normals, MeshStream[0]);						// æ„å»ºOctree
+	DeviceArrayView<OrientedPoint3D<float>> orientedPoints = OctreePtr->GetOrientedPoints();	// è·å¾—æœ‰å‘ç‚¹äº‘
+	DeviceArrayView<OctNode> OctreeNodeArray = OctreePtr->GetOctreeNodeArray();					// è·å¾—å…«å‰æ ‘çš„NodeArray
+	const int* NodeArrayCount = OctreePtr->GetNodeArrayCount();									// è·å¾—æ¯ä¸€å±‚èŠ‚ç‚¹çš„æ•°é‡ï¼Œæ˜¯ä¸€ä¸ªmaxDepthå¤§å°çš„æ•°ç»„
+	const int* BaseAddressArray = OctreePtr->GetBaseAddressArray();								// è·å¾—æ¯å±‚èŠ‚ç‚¹åœ¨æ•°ç»„ä¸­çš„åç§»(æ¯å±‚ç¬¬ä¸€ä¸ªèŠ‚ç‚¹åœ¨æ•°ç»„ä¸­çš„ä½ç½®)
 	DeviceArrayView<int> BaseAddressArrayDevice = OctreePtr->GetBaseAddressArrayDevice();
-	// ¼ÆËã½Úµã±àÂë¡¢¹¹½¨VectorField¡¢Éú³É¶¥µãArrayÍ¬Ê±½øĞĞ
-	OctreePtr->ComputeEncodedFunctionNodeIndex(MeshStream[0]);									// ¼ÆËã½Úµã»ùº¯ÊıË÷Òı
-	VectorFieldPtr->BuildVectorField(orientedPoints, OctreeNodeArray, NodeArrayCount, BaseAddressArray, MeshStream[1]);	// ¹¹½¨VectorField
-	CHECKCUDA(cudaDeviceSynchronize());	// ËùÓĞËã·¨Íê³É£¬Í¬²½Õû¸öGPU£¬VectorFieldPtrÖĞµÄÒ»Ğ©²ÎÊıºóÃæĞèÒªµ÷ÓÃ
+	// è®¡ç®—èŠ‚ç‚¹ç¼–ç ã€æ„å»ºVectorFieldã€ç”Ÿæˆé¡¶ç‚¹ArrayåŒæ—¶è¿›è¡Œ
+	OctreePtr->ComputeEncodedFunctionNodeIndex(MeshStream[0]);									// è®¡ç®—èŠ‚ç‚¹åŸºå‡½æ•°ç´¢å¼•
+	VectorFieldPtr->BuildVectorField(orientedPoints, OctreeNodeArray, NodeArrayCount, BaseAddressArray, MeshStream[1]);	// æ„å»ºVectorField
+	CHECKCUDA(cudaDeviceSynchronize());	// æ‰€æœ‰ç®—æ³•å®Œæˆï¼ŒåŒæ­¥æ•´ä¸ªGPUï¼ŒVectorFieldPträ¸­çš„ä¸€äº›å‚æ•°åé¢éœ€è¦è°ƒç”¨
 	DeviceArrayView<unsigned int> NodeArrayDepthIndex = OctreePtr->GetNodeArrayDepthIndex();
 	DeviceArrayView<Point3D<float>> NodeArrayNodeCenter = OctreePtr->GetNodeArrayNodeCenter();
 	DeviceBufferArray<OctNode>& OctreeNodeArrayHandle = OctreePtr->GetOctreeNodeArrayHandle();
@@ -224,7 +224,7 @@ void SparseSurfelFusion::PoissonReconstruction::SolvePoissionReconstructionMesh(
 	DeviceArrayView<ConfirmedPPolynomial<CONVTIMES + 1, CONVTIMES + 2>> baseFunctions = VectorFieldPtr->GetBaseFunction();
 	//pool->AddTask([=]() { NodeDivergencePtr->CalculateNodesDivergence(BaseAddressArray, NodeArrayCount, BaseAddressArrayDevice, encodeNodeIndexInFunction, OctreeNodeArray, vectorField, dot_F_dF, MeshStream[0], MeshStream[1]); });
 	NodeDivergencePtr->CalculateNodesDivergence(BaseAddressArray, NodeArrayCount, BaseAddressArrayDevice, encodeNodeIndexInFunction, OctreeNodeArray, vectorField, dot_F_dF, MeshStream[0], MeshStream[1]);
-	CHECKCUDA(cudaDeviceSynchronize());	// ËùÓĞËã·¨Íê³É£¬Í¬²½Õû¸öGPU£¬´Ë´¦ĞèÒªÍ¬²½£¬ÒòÎªºóÃæĞèÒªµ÷ÓÃdot_F_dF¡¢dot_F_F¡¢dot_F_d2F¡¢DivergencePtr
+	CHECKCUDA(cudaDeviceSynchronize());	// æ‰€æœ‰ç®—æ³•å®Œæˆï¼ŒåŒæ­¥æ•´ä¸ªGPUï¼Œæ­¤å¤„éœ€è¦åŒæ­¥ï¼Œå› ä¸ºåé¢éœ€è¦è°ƒç”¨dot_F_dFã€dot_F_Fã€dot_F_d2Fã€DivergencePtr
 	float* DivergencePtr = NodeDivergencePtr->GetDivergenceRawPtr();
 	DeviceArrayView<int> Point2NodeArray = OctreePtr->GetPoint2NodeArray();
 
@@ -232,7 +232,7 @@ void SparseSurfelFusion::PoissonReconstruction::SolvePoissionReconstructionMesh(
 	//pool->AddTask([&]() { LaplacianSolverPtr->CalculatePointsImplicitFunctionValue(orientedPoints, Point2NodeArray, OctreeNodeArray, encodeNodeIndexInFunction, baseFunctions, BaseAddressArray[Constants::maxDepth_Host], DenseSurfelCount, MeshStream[0]); });
 	LaplacianSolverPtr->LaplacianCGSolver(BaseAddressArray, NodeArrayCount, encodeNodeIndexInFunction, OctreeNodeArray, DivergencePtr, dot_F_F, dot_F_d2F, MeshStream[0]);
 	LaplacianSolverPtr->CalculatePointsImplicitFunctionValue(orientedPoints, Point2NodeArray, OctreeNodeArray, encodeNodeIndexInFunction, baseFunctions, BaseAddressArray[Constants::maxDepth_Host], DenseSurfelCount, MeshStream[0]);
-	CHECKCUDA(cudaDeviceSynchronize());	// ËùÓĞËã·¨Íê³É£¬Í¬²½Õû¸öGPU
+	CHECKCUDA(cudaDeviceSynchronize());	// æ‰€æœ‰ç®—æ³•å®Œæˆï¼ŒåŒæ­¥æ•´ä¸ªGPU
 
 	DeviceArrayView<VertexNode> vertexArray = MeshGeometryPtr->GetVertexArray();
 	DeviceArrayView<EdgeNode> edgeArray = MeshGeometryPtr->GetEdgeArray();
@@ -241,7 +241,7 @@ void SparseSurfelFusion::PoissonReconstruction::SolvePoissionReconstructionMesh(
 	const float isoValue = LaplacianSolverPtr->GetIsoValue();
 	TriangleIndicesPtr->calculateTriangleIndices(vertexArray, edgeArray, faceArray, OctreeNodeArrayHandle, baseFunctions, dx, encodeNodeIndexInFunction, NodeArrayDepthIndex, NodeArrayNodeCenter, isoValue, BaseAddressArray[Constants::maxDepth_Host], NodeArrayCount[Constants::maxDepth_Host], MeshStream[0]);
 
-	CHECKCUDA(cudaDeviceSynchronize());	// ËùÓĞËã·¨Íê³É£¬Í¬²½Õû¸öGPU
+	CHECKCUDA(cudaDeviceSynchronize());	// æ‰€æœ‰ç®—æ³•å®Œæˆï¼ŒåŒæ­¥æ•´ä¸ªGPU
 }
 
 
@@ -251,17 +251,17 @@ void SparseSurfelFusion::PoissonReconstruction::DrawRebuildMesh()
 	DeviceArrayView<TriangleIndex> MeshTriangleIndices = TriangleIndicesPtr->GetRebuildMeshTriangleIndices();
 	DeviceArrayView<OrientedPoint3D<float>> SampleDensePoints = OctreePtr->GetOrientedPoints();
 	DrawConstructedMesh->setInput(MeshVertices, MeshTriangleIndices, SampleDensePoints);
-	DrawConstructedMesh->CalculateMeshVerticesColor(SampleDensePoints, MeshVertices, MeshStream[0]); // ²¢ĞĞ½øĞĞ
-	DrawConstructedMesh->CalculateMeshNormals(MeshVertices, MeshTriangleIndices, MeshStream[1]);	 // ²¢ĞĞ½øĞĞ
-	CHECKCUDA(cudaStreamSynchronize(MeshStream[0]));	 // Á½¸öÁ÷Í¬²½
-	CHECKCUDA(cudaStreamSynchronize(MeshStream[1]));	 // Á½¸öÁ÷Í¬²½
+	DrawConstructedMesh->CalculateMeshVerticesColor(SampleDensePoints, MeshVertices, MeshStream[0]); // å¹¶è¡Œè¿›è¡Œ
+	DrawConstructedMesh->CalculateMeshNormals(MeshVertices, MeshTriangleIndices, MeshStream[1]);	 // å¹¶è¡Œè¿›è¡Œ
+	CHECKCUDA(cudaStreamSynchronize(MeshStream[0]));	 // ä¸¤ä¸ªæµåŒæ­¥
+	CHECKCUDA(cudaStreamSynchronize(MeshStream[1]));	 // ä¸¤ä¸ªæµåŒæ­¥
 	DrawConstructedMesh->DrawRenderedMesh(MeshStream[0]);
 	CHECKCUDA(cudaDeviceSynchronize());
 }
 
 void SparseSurfelFusion::PoissonReconstruction::saveCloudWithNormal(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, pcl::PointCloud<pcl::Normal>::Ptr normals)
 {
-	// ´´½¨´øÓĞ·¨ÏßµÄµãÔÆ
+	// åˆ›å»ºå¸¦æœ‰æ³•çº¿çš„ç‚¹äº‘
 	pcl::PointCloud<pcl::PointNormal>::Ptr cloud_with_normals(new pcl::PointCloud<pcl::PointNormal>());
 	for (size_t i = 0; i < cloud->points.size(); ++i) {
 		pcl::PointNormal point_normal;
@@ -274,14 +274,14 @@ void SparseSurfelFusion::PoissonReconstruction::saveCloudWithNormal(pcl::PointCl
 		cloud_with_normals->points.push_back(point_normal);
 	}
 
-	// ÉèÖÃµãÔÆ¿í¶ÈºÍ¸ß¶È
+	// è®¾ç½®ç‚¹äº‘å®½åº¦å’Œé«˜åº¦
 	cloud_with_normals->width = cloud_with_normals->points.size();
 	cloud_with_normals->height = 1;
 	cloud_with_normals->is_dense = true;
 
-	// ±£´æµ½ .ply ÎÄ¼ş
+	// ä¿å­˜åˆ° .ply æ–‡ä»¶
 	pcl::PLYWriter writer;
-	writer.write(PlySavePath, *cloud_with_normals, false); // true ±íÊ¾¶ş½øÖÆÄ£Ê½
+	writer.write(PlySavePath, *cloud_with_normals, false); // true è¡¨ç¤ºäºŒè¿›åˆ¶æ¨¡å¼
 
-	std::cout << "±£´æµãÔÆ·¨ÏßplyÎÄ¼ş" << std::endl;
+	std::cout << "ä¿å­˜ç‚¹äº‘æ³•çº¿plyæ–‡ä»¶" << std::endl;
 }

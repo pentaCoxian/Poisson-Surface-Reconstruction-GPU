@@ -54,7 +54,7 @@
     #define cudaSafeCall(expr)  pcl::gpu::___cudaSafeCall(expr, __FILE__, __LINE__)    
 #endif
 
-// »ñµÃCUDA³£ÓÃ²Ù×÷¶ÔÓ¦µÄ±¨´í
+// è·å¾—CUDAå¸¸ç”¨æ“ä½œå¯¹åº”çš„æŠ¥é”™
 #define CHECKCUDA(call)                                 \
 do                                                      \
 {                                                       \
@@ -62,15 +62,15 @@ do                                                      \
     if (error_code != cudaSuccess)                      \
     {                                                   \
         printf("CUDA Error:\n");                        \
-        printf("    ´íÎóÎÄ¼ş:       %s\n", __FILE__);   \
-        printf("    ´íÎóĞĞÊı:       %d\n", __LINE__);   \
-        printf("    ´íÎóÄÚÈİ:       %s\n",              \
+        printf("    é”™è¯¯æ–‡ä»¶:       %s\n", __FILE__);   \
+        printf("    é”™è¯¯è¡Œæ•°:       %d\n", __LINE__);   \
+        printf("    é”™è¯¯å†…å®¹:       %s\n",              \
             cudaGetErrorString(error_code));            \
         exit(1);                                        \
     }                                                   \
 } while (0)
 
-//¼ì²éCUDAÇı¶¯µÄAPIÊÇ·ñ±¨´í
+//æ£€æŸ¥CUDAé©±åŠ¨çš„APIæ˜¯å¦æŠ¥é”™
 #define CHECKCUDADRIVER(call)                           \
 do                                                      \
 {                                                       \
@@ -82,24 +82,24 @@ do                                                      \
     if (error != CUDA_SUCCESS)                          \
     {                                                   \
         printf("CUDA Driver Error:\n");                 \
-        printf("    ´íÎóÎÄ¼ş:       %s\n", __FILE__);   \
-        printf("    ´íÎóĞĞÊı:       %d\n", __LINE__);   \
-        printf("    ´íÎóÄÚÈİ:       %s£º%s\n",          \
+        printf("    é”™è¯¯æ–‡ä»¶:       %s\n", __FILE__);   \
+        printf("    é”™è¯¯è¡Œæ•°:       %d\n", __LINE__);   \
+        printf("    é”™è¯¯å†…å®¹:       %sï¼š%s\n",          \
             error_name, error_string);                  \
         exit(1);                                        \
     }                                                   \
 } while (0)                                             \
 
-//»ñµÃCUBLASµÄ±¨´í
+//è·å¾—CUBLASçš„æŠ¥é”™
 #define CHECKCUBLAS(call)                               \
 do                                                      \
 {                                                       \
     const cublasStatus_t error = call;                  \
     if(CUBLAS_STATUS_SUCCESS != error) {                \
         printf("CUBLAS Error:\n");                      \
-        printf("    ´íÎóÎÄ¼ş:       %s\n", __FILE__);   \
-        printf("    ´íÎóĞĞÊı:       %d\n", __LINE__);   \
-        printf("    ´íÎóÄÚÈİ:       %d\n", error);      \
+        printf("    é”™è¯¯æ–‡ä»¶:       %s\n", __FILE__);   \
+        printf("    é”™è¯¯è¡Œæ•°:       %d\n", __LINE__);   \
+        printf("    é”™è¯¯å†…å®¹:       %d\n", error);      \
         cudaDeviceReset();                              \
         exit(1);                                        \
     }                                                   \

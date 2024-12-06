@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   CGAlgorithm.cu
- * \brief  Ìİ¶ÈÏÂ½µ·¨cudaÊµÏÖ
+ * \brief  æ¢¯åº¦ä¸‹é™æ³•cudaå®ç°
  * 
  * \author LUOJIAXUAN
  * \date   May 28th 2024
@@ -152,7 +152,7 @@ __device__ void SparseSurfelFusion::device::gpuScaleVectorAndSaxpy(const float* 
 __global__ void SparseSurfelFusion::device::gpuGetTestSummary(int* I, int* J, float* val, float* x, float* rhs, int* err, int num)
 {
     const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
-    if (idx >= num)	return;	// 0²ãÁÚ¾ÓÒÑ¾­³õÊ¼»¯  
+    if (idx >= num)	return;	// 0å±‚é‚»å±…å·²ç»åˆå§‹åŒ–  
     float rsum = 0.0f;
 
     for (int i = I[idx]; i < I[idx + 1]; i++) {
@@ -287,8 +287,8 @@ bool SparseSurfelFusion::areAlmostEqual(float a, float b, float maxRelDiff)
         return true;
     }
     else {
-        printf("×î´óÕæÊµÏà²î(diff) = %.8e\n", maxRelDiff);
-        printf("diff %.8e > largest * maxRelDiff %.8e Òò´Ë %.8e and %.8e ²»ÏàÍ¬ \n", diff, largest * maxRelDiff, a, b);
+        printf("æœ€å¤§çœŸå®ç›¸å·®(diff) = %.8e\n", maxRelDiff);
+        printf("diff %.8e > largest * maxRelDiff %.8e å› æ­¤ %.8e and %.8e ä¸ç›¸åŒ \n", diff, largest * maxRelDiff, a, b);
         return false;
     }
 }
@@ -296,13 +296,13 @@ bool SparseSurfelFusion::areAlmostEqual(float a, float b, float maxRelDiff)
 void SparseSurfelFusion::solverCG_DeviceToDevice(const int& N, const int& nz, int* I, int* J, float* val, float* rhs, float* x, cudaStream_t stream)
 {
     const float tol = 1e-5f;
-    double r1 = 0;      // ¼ÇÂ¼²Ğ²î
-    float* r = NULL;    // ÔËĞĞ CG Ëã·¨µÄÁÙÊ±ÄÚ´æ
-    float* p = NULL;    // ÔËĞĞ CG Ëã·¨µÄÁÙÊ±ÄÚ´æ
-    float* Ax = NULL;   // ÔËĞĞ CG Ëã·¨µÄÁÙÊ±ÄÚ´æ
+    double r1 = 0;      // è®°å½•æ®‹å·®
+    float* r = NULL;    // è¿è¡Œ CG ç®—æ³•çš„ä¸´æ—¶å†…å­˜
+    float* p = NULL;    // è¿è¡Œ CG ç®—æ³•çš„ä¸´æ—¶å†…å­˜
+    float* Ax = NULL;   // è¿è¡Œ CG ç®—æ³•çš„ä¸´æ—¶å†…å­˜
     //cudaEvent_t start, stop;
 
-    //printf("¿ªÊ¼ [%s]...\n", "¹²éîÌİ¶È¶à¿é¼ÆËã (Conjugate Gradient MultiBlock CG)");
+    //printf("å¼€å§‹ [%s]...\n", "å…±è½­æ¢¯åº¦å¤šå—è®¡ç®— (Conjugate Gradient MultiBlock CG)");
 
     // This will pick the best possible CUDA capable device
     cudaDeviceProp deviceProp;
@@ -311,24 +311,24 @@ void SparseSurfelFusion::solverCG_DeviceToDevice(const int& N, const int& nz, in
 
     if (!deviceProp.managedMemory) {
         // This sample requires being run on a device that supports Unified Memory
-        fprintf(stderr, "´ËÉè±¸²»Ö§³ÖÍ³Ò»ÄÚ´æ \n");
+        fprintf(stderr, "æ­¤è®¾å¤‡ä¸æ”¯æŒç»Ÿä¸€å†…å­˜ \n");
         exit(EXIT_WAIVED);
     }
 
     // This sample requires being run on a device that supports Cooperative Kernel Launch
     if (!deviceProp.cooperativeLaunch) {
-        printf( "\nÑ¡ÔñµÄ GPU (%d) ²»Ö§³ÖĞ­×÷ºËº¯ÊıÆô¶¯ (Cooperative Kernel Launch), ·ÅÆúÔËĞĞ\n", devID);
+        printf( "\né€‰æ‹©çš„ GPU (%d) ä¸æ”¯æŒåä½œæ ¸å‡½æ•°å¯åŠ¨ (Cooperative Kernel Launch), æ”¾å¼ƒè¿è¡Œ\n", devID);
         exit(EXIT_WAIVED);
     }
 
     // Statistics about the GPU device
-    //printf("> GPU Éè±¸ÓĞ %d ¸öÁ÷´¦ÀíÆ÷, Á÷´¦ÀíÆ÷¼ÆËãÄÜÁ¦ %d.%d \n\n", deviceProp.multiProcessorCount, deviceProp.major, deviceProp.minor);
+    //printf("> GPU è®¾å¤‡æœ‰ %d ä¸ªæµå¤„ç†å™¨, æµå¤„ç†å™¨è®¡ç®—èƒ½åŠ› %d.%d \n\n", deviceProp.multiProcessorCount, deviceProp.major, deviceProp.minor);
 
     double* dot_result = NULL;
     CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&dot_result), sizeof(double), stream));
     CHECKCUDA(cudaMemsetAsync(dot_result, 0.0, sizeof(double), stream));
 
-    // ÔËĞĞ CG Ëã·¨µÄÁÙÊ±ÄÚ´æ
+    // è¿è¡Œ CG ç®—æ³•çš„ä¸´æ—¶å†…å­˜
     CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&r) , N * sizeof(float), stream));
     CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&p) , N * sizeof(float), stream));
     CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&Ax), N * sizeof(float), stream));
@@ -370,7 +370,7 @@ void SparseSurfelFusion::solverCG_DeviceToDevice(const int& N, const int& nz, in
 
     //r1 = *dot_result;
 #ifdef CHECK_MESH_BUILD_TIME_COST
-    printf("²Ğ²î = %e  ", sqrt(r1));    // ¿ÆÑ§¼ÆÊı·¨Êä³ö
+    printf("æ®‹å·® = %e  ", sqrt(r1));    // ç§‘å­¦è®¡æ•°æ³•è¾“å‡º
 #endif // CHECK_MESH_BUILD_TIME_COST
 
 #if ENABLE_CPU_DEBUG_CODE
@@ -403,6 +403,6 @@ void SparseSurfelFusion::solverCG_DeviceToDevice(const int& N, const int& nz, in
 #endif
 
 #ifdef CHECK_MESH_BUILD_TIME_COST
-    printf("Îó²îÁ¿ = %e \n", errHost);
+    printf("è¯¯å·®é‡ = %e \n", errHost);
 #endif // CHECK_MESH_BUILD_TIME_COST
 }

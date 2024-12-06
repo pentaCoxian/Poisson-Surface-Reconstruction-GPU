@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   ComputeVectorField.cu
- * \brief  ¼ÆËãÏòÁ¿³¡cuda·½·¨ÊµÏÖ
+ * \brief  è®¡ç®—å‘é‡åœºcudaæ–¹æ³•å®ç°
  * 
  * \author LUOJIAXUAN
  * \date   May 15th 2024
@@ -40,18 +40,18 @@ __device__ float SparseSurfelFusion::device::FCenterWidthPoint(int idx, int i, i
 
 __device__ void SparseSurfelFusion::device::getFunctionIdxNode(const int& key, const int& maxDepth, int* index)
 {
-	// (¼ÙÉèdevice::maxDepth = 8)
-	index[0] = (1 << device::maxDepth) - 1;	// ³õÖµ:00011111111 
+	// (å‡è®¾device::maxDepth = 8)
+	index[0] = (1 << device::maxDepth) - 1;	// åˆå€¼:00011111111 
 	index[1] = index[0];
 	index[2] = index[1];
 
 	// (1 << (device::maxDepth - depth)) = 00011111111
 
 	for (int depth = device::maxDepth; depth >= 1; depth--) {
-		// »ñµÃ±àÂëµÄx,y,zµÄ·ÖÁ¿
-		int sonKeyX = (key >> (3 * (device::maxDepth - depth) + 2)) & 1;  // »ñµÃº¢×Ó½ÚµãKeyµÄX·ÖÁ¿
-		int sonKeyY = (key >> (3 * (device::maxDepth - depth) + 1)) & 1;  // »ñµÃº¢×Ó½ÚµãKeyµÄY·ÖÁ¿
-		int sonKeyZ = (key >> (3 * (device::maxDepth - depth))) & 1;	  // »ñµÃº¢×Ó½ÚµãKeyµÄZ·ÖÁ¿
+		// è·å¾—ç¼–ç çš„x,y,zçš„åˆ†é‡
+		int sonKeyX = (key >> (3 * (device::maxDepth - depth) + 2)) & 1;  // è·å¾—å­©å­èŠ‚ç‚¹Keyçš„Xåˆ†é‡
+		int sonKeyY = (key >> (3 * (device::maxDepth - depth) + 1)) & 1;  // è·å¾—å­©å­èŠ‚ç‚¹Keyçš„Yåˆ†é‡
+		int sonKeyZ = (key >> (3 * (device::maxDepth - depth))) & 1;	  // è·å¾—å­©å­èŠ‚ç‚¹Keyçš„Zåˆ†é‡
 		index[0] += sonKeyX * (1 << (device::maxDepth - depth));
 		index[1] += sonKeyY * (1 << (device::maxDepth - depth));
 		index[2] += sonKeyZ * (1 << (device::maxDepth - depth));
@@ -75,14 +75,14 @@ __global__ void SparseSurfelFusion::device::CalculateVectorFieldKernel(Confirmed
 	//	printf("index = %d   width = %.7f   o_c(%.7f, %.7f, %.7f)\n", idx, width, o_c.coords[0], o_c.coords[1], o_c.coords[2]);
 	//}
 
-	/** ¼ì²éindexÒÔ¼°o_c,ÎŞÎó **/
+	/** æ£€æŸ¥indexä»¥åŠo_c,æ— è¯¯ **/
 
 	Point3D<float> val;
 	for (int i = 0; i < 27; i++) {
 		int neighbor = NodeArray[offset].neighs[i];
 		if (neighbor != -1) {
 			for (int j = 0; j < NodeArray[neighbor].pnum; j++) {
-				int pointIdx = NodeArray[neighbor].pidx + j;	// ÔÚ³íÃÜµãÊı×éÖĞµÄÎ»ÖÃ
+				int pointIdx = NodeArray[neighbor].pidx + j;	// åœ¨ç¨ å¯†ç‚¹æ•°ç»„ä¸­çš„ä½ç½®
 				float weight = FCenterWidthPoint(idx, i, j, *BaseFunctionMaxDepth_Device, o_c, width, DenseOrientedPoints[pointIdx].point);
 				val.coords[0] += weight * DenseOrientedPoints[pointIdx].normal.coords[0];
 				val.coords[1] += weight * DenseOrientedPoints[pointIdx].normal.coords[1];

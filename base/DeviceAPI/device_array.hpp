@@ -41,7 +41,7 @@
 
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief @b DeviceArrayPCL class ´øÓĞÒıÓÃ¼ÆÊıµÄGPUÄÚ´æÀàĞÍÈİÆ÷
+/** \brief @b DeviceArrayPCL class å¸¦æœ‰å¼•ç”¨è®¡æ•°çš„GPUå†…å­˜ç±»å‹å®¹å™¨
   *
   * \note Typed container for GPU memory with reference counting.
   *
@@ -60,44 +60,44 @@ class DeviceArrayPCL : public DeviceMemory
         /** \brief Empty constructor. */
         DeviceArrayPCL();
 
-        /** \brief ÔÚGPUÄÚ´æÖĞ·ÖÅäÄÚ²¿»º³åÇø
-          * \param size_t: Òª·ÖÅäµÄÔªËØÊıÁ¿
+        /** \brief åœ¨GPUå†…å­˜ä¸­åˆ†é…å†…éƒ¨ç¼“å†²åŒº
+          * \param size_t: è¦åˆ†é…çš„å…ƒç´ æ•°é‡
           * */
         DeviceArrayPCL(size_t size);
 
-        /** \brief Ê¹ÓÃÓÃ»§·ÖÅäµÄ»º³åÇø³õÊ¼»¯¡£ÔÚÕâÖÖÇé¿öÏÂ½ûÓÃÒıÓÃ¼ÆÊı.
-          * \param ptr: Ö¸Ïò»º´æµÄÖ¸Õë
-          * \param size: ÔªËØÊıÁ¿
+        /** \brief ä½¿ç”¨ç”¨æˆ·åˆ†é…çš„ç¼“å†²åŒºåˆå§‹åŒ–ã€‚åœ¨è¿™ç§æƒ…å†µä¸‹ç¦ç”¨å¼•ç”¨è®¡æ•°.
+          * \param ptr: æŒ‡å‘ç¼“å­˜çš„æŒ‡é’ˆ
+          * \param size: å…ƒç´ æ•°é‡
           * */
         DeviceArrayPCL(T *ptr, size_t size);
 
-        /** \brief ¿½±´¹¹Ôìº¯Êı. Ö»ÊÇÔö¼ÓÒıÓÃ¼ÆÊıÆ÷. */
+        /** \brief æ‹·è´æ„é€ å‡½æ•°. åªæ˜¯å¢åŠ å¼•ç”¨è®¡æ•°å™¨. */
         DeviceArrayPCL(const DeviceArrayPCL& other);
 
-        /** \brief Ö¸¶¨²Ù×÷·û. Ö»ÊÇÔö¼ÓÒıÓÃ¼ÆÊıÆ÷. */
+        /** \brief æŒ‡å®šæ“ä½œç¬¦. åªæ˜¯å¢åŠ å¼•ç”¨è®¡æ•°å™¨. */
         DeviceArrayPCL& operator = (const DeviceArrayPCL& other);
 
-        /** \brief ÔÚGPUÄÚ´æÖĞ·ÖÅäÄÚ²¿»º³åÇø¡£Èç¹ûÄÚ²¿»º³åÇøÊÇÔÚº¯ÊıÓÃĞÂµÄ´óĞ¡ÖØĞÂ´´½¨Ö®Ç°´´½¨µÄ¡£Èç¹ûĞÂ¾É´óĞ¡ÏàµÈ£¬ËüÊ²Ã´Ò²²»×ö.
-          * \param size: ÔªËØÊıÁ¿
+        /** \brief åœ¨GPUå†…å­˜ä¸­åˆ†é…å†…éƒ¨ç¼“å†²åŒºã€‚å¦‚æœå†…éƒ¨ç¼“å†²åŒºæ˜¯åœ¨å‡½æ•°ç”¨æ–°çš„å¤§å°é‡æ–°åˆ›å»ºä¹‹å‰åˆ›å»ºçš„ã€‚å¦‚æœæ–°æ—§å¤§å°ç›¸ç­‰ï¼Œå®ƒä»€ä¹ˆä¹Ÿä¸åš.
+          * \param size: å…ƒç´ æ•°é‡
           * */
         void create(size_t size);
 
-        /** \brief Èç¹ûĞèÒª£¬¼õÉÙÒıÓÃ¼ÆÊıÆ÷²¢ÊÍ·ÅÄÚ²¿»º³åÇø. */
+        /** \brief å¦‚æœéœ€è¦ï¼Œå‡å°‘å¼•ç”¨è®¡æ•°å™¨å¹¶é‡Šæ”¾å†…éƒ¨ç¼“å†²åŒº. */
         void release();
 
-        /** \brief Ö´ĞĞÊı¾İ¸´ÖÆ¡£Èç¹ûÄ¿±ê´óĞ¡²»Í¬£¬Ëü½«±»ÖØĞÂ·ÖÅä.
-          * \param other_arg: ¿½±´µÄÄ¿±êÈİÆ÷
+        /** \brief æ‰§è¡Œæ•°æ®å¤åˆ¶ã€‚å¦‚æœç›®æ ‡å¤§å°ä¸åŒï¼Œå®ƒå°†è¢«é‡æ–°åˆ†é….
+          * \param other_arg: æ‹·è´çš„ç›®æ ‡å®¹å™¨
           * */
         void copyTo(DeviceArrayPCL& other) const;
 
-        /** \brief ÉÏ´«Êı¾İµ½GPUÄÚ´æµÄÄÚ²¿»º³åÇø¡£ËüÔÚÄÚ²¿µ÷ÓÃcreate()º¯ÊıÒÔÈ·±£ÄÚ²¿»º³åÇø´óĞ¡×ã¹».
-          * \param host_ptr_arg: hostÖĞĞèÒªÉÏ´«µ½GPUµÄÊı¾İµÄÖ¸Õë
-          * \param size: ÔªËØ¸öÊı
+        /** \brief ä¸Šä¼ æ•°æ®åˆ°GPUå†…å­˜çš„å†…éƒ¨ç¼“å†²åŒºã€‚å®ƒåœ¨å†…éƒ¨è°ƒç”¨create()å‡½æ•°ä»¥ç¡®ä¿å†…éƒ¨ç¼“å†²åŒºå¤§å°è¶³å¤Ÿ.
+          * \param host_ptr_arg: hostä¸­éœ€è¦ä¸Šä¼ åˆ°GPUçš„æ•°æ®çš„æŒ‡é’ˆ
+          * \param size: å…ƒç´ ä¸ªæ•°
           * */
         void upload(const T *host_ptr, size_t size);
 
-        /** \brief ´ÓGPUÏÂÔØ»º´æÖĞµÄÄÚÈİµ½CPU
-          * \param host_ptr_arg: Ö¸ÏòÏÂÔØºóÊı¾İµÄ»º´æÖ¸Õë
+        /** \brief ä»GPUä¸‹è½½ç¼“å­˜ä¸­çš„å†…å®¹åˆ°CPU
+          * \param host_ptr_arg: æŒ‡å‘ä¸‹è½½åæ•°æ®çš„ç¼“å­˜æŒ‡é’ˆ
           * */
         void download(T *host_ptr) const;
 
@@ -138,7 +138,7 @@ class DeviceArrayPCL : public DeviceMemory
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** \brief @b DeviceArray2DPCL class  ´øÒıÓÃ¼ÆÊıµÄÇãĞ±GPUÄÚ´æµÄÀàĞÍ»¯ÈİÆ÷
+/** \brief @b DeviceArray2DPCL class  å¸¦å¼•ç”¨è®¡æ•°çš„å€¾æ–œGPUå†…å­˜çš„ç±»å‹åŒ–å®¹å™¨
   *
   * \note Typed container for pitched GPU memory with reference counting.
   *

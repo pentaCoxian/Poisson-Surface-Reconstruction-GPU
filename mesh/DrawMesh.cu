@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   DrawMesh.cu
- * \brief  OpenGL»æÖÆäÖÈ¾Íø¸ñ
+ * \brief  OpenGLç»˜åˆ¶æ¸²æŸ“ç½‘æ ¼
  * 
  * \author LUOJIAXUAN
  * \date   June 5th 2024
@@ -34,10 +34,10 @@ __host__ __device__ __forceinline__ void SparseSurfelFusion::device::KnnHeapDevi
 
 __device__ __forceinline__ void SparseSurfelFusion::device::bruteForceSearch4KNN(const float3& vertex, DeviceArrayView<OrientedPoint3D<float>> samplePoint, const unsigned int samplePointsCount, float4& distance, uint4& sampleIndex)
 {
-	KnnHeapDevice heap(distance, sampleIndex);	// ¹¹½¨¶Ñ
+	KnnHeapDevice heap(distance, sampleIndex);	// æ„å»ºå †
 	const unsigned int padded_node_num = ((samplePointsCount + 3) / 4) * 4;
 	for (int k = 0; k < padded_node_num; k += 4) {
-		// ¼ÆËãµ½Ã¿Ò»¸ö²ÉÑùµãµÄ¾àÀë
+		// è®¡ç®—åˆ°æ¯ä¸€ä¸ªé‡‡æ ·ç‚¹çš„è·ç¦»
 		const float tmp0 = vertex.x - samplePoint[k + 0].point.coords[0];
 		const float tmp1 = vertex.y - samplePoint[k + 0].point.coords[1];
 		const float tmp2 = vertex.z - samplePoint[k + 0].point.coords[2];
@@ -69,7 +69,7 @@ __device__ __forceinline__ void SparseSurfelFusion::device::bruteForceSearch4KNN
 		const float dist_2 = __fmaf_rn(tmp14, tmp14, tmp16);
 		const float dist_3 = __fmaf_rn(tmp20, tmp20, tmp22);
 
-		// ¸üĞÂË÷Òı
+		// æ›´æ–°ç´¢å¼•
 		heap.update(k + 0, dist_0);
 		heap.update(k + 1, dist_1);
 		heap.update(k + 2, dist_2);
@@ -136,16 +136,16 @@ __global__ void SparseSurfelFusion::device::VerticesNormalsSumKernel(const Point
 {
 	const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
 	if (idx >= meshCount)	return;
-	// Èı½ÇmeshµÄÃ¿Ò»¸ö¶¥µã¶¼Ó¦¸Ã¼ÓÉÏÆä·¨Ïß
-	// Èı½ÇÃæÔªµÄµÚÒ»¸ö¶¥µã
+	// ä¸‰è§’meshçš„æ¯ä¸€ä¸ªé¡¶ç‚¹éƒ½åº”è¯¥åŠ ä¸Šå…¶æ³•çº¿
+	// ä¸‰è§’é¢å…ƒçš„ç¬¬ä¸€ä¸ªé¡¶ç‚¹
 	atomicAdd(&VerticesNormalsSum[indicesArray[idx].idx[0]].coords[0], meshNormals[idx].coords[0]);
 	atomicAdd(&VerticesNormalsSum[indicesArray[idx].idx[0]].coords[1], meshNormals[idx].coords[1]);
 	atomicAdd(&VerticesNormalsSum[indicesArray[idx].idx[0]].coords[2], meshNormals[idx].coords[2]);
-	// Èı½ÇÃæÔªµÄµÚ¶ş¸ö¶¥µã
+	// ä¸‰è§’é¢å…ƒçš„ç¬¬äºŒä¸ªé¡¶ç‚¹
 	atomicAdd(&VerticesNormalsSum[indicesArray[idx].idx[1]].coords[0], meshNormals[idx].coords[0]);
 	atomicAdd(&VerticesNormalsSum[indicesArray[idx].idx[1]].coords[1], meshNormals[idx].coords[1]);
 	atomicAdd(&VerticesNormalsSum[indicesArray[idx].idx[1]].coords[2], meshNormals[idx].coords[2]);
-	// Èı½ÇÃæÔªµÄµÚÈı¸ö¶¥µã
+	// ä¸‰è§’é¢å…ƒçš„ç¬¬ä¸‰ä¸ªé¡¶ç‚¹
 	atomicAdd(&VerticesNormalsSum[indicesArray[idx].idx[2]].coords[0], meshNormals[idx].coords[0]);
 	atomicAdd(&VerticesNormalsSum[indicesArray[idx].idx[2]].coords[1], meshNormals[idx].coords[1]);
 	atomicAdd(&VerticesNormalsSum[indicesArray[idx].idx[2]].coords[2], meshNormals[idx].coords[2]);
@@ -180,21 +180,21 @@ __global__ void SparseSurfelFusion::device::CalculateVerticesAverageColors(Devic
 {
 	const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
 	if (idx >= verticesCount)	return;
-	// Ê¹ÓÃ¶Ñ±£³ÖÓÅÏÈ¼¶¶ÓÁĞ
+	// ä½¿ç”¨å †ä¿æŒä¼˜å…ˆçº§é˜Ÿåˆ—
 	float4 knnDistance = make_float4(1e6f, 1e6f, 1e6f, 1e6f);
 	uint4 knnIndex = make_uint4(0, 0, 0, 0);
 	float3 vertex = make_float3(meshVertices[idx].coords[0], meshVertices[idx].coords[1], meshVertices[idx].coords[2]);
 
-	// knnIndexÖĞÊÇÓëvertex×î½üµÄËÄ¸ö³íÃÜµãÁÚ¾Ó
+	// knnIndexä¸­æ˜¯ä¸vertexæœ€è¿‘çš„å››ä¸ªç¨ å¯†ç‚¹é‚»å±…
 	bruteForceSearch4KNN(vertex, samplePoints, samplePointsCount, knnDistance, knnIndex);
 
-	// »ñµÃ×î½üµÄ4¸ö²ÉÑùµã
+	// è·å¾—æœ€è¿‘çš„4ä¸ªé‡‡æ ·ç‚¹
 	float3 nearestSample_1 = make_float3(samplePoints[knnIndex.x].point.coords[0], samplePoints[knnIndex.x].point.coords[1], samplePoints[knnIndex.x].point.coords[2]);
 	float3 nearestSample_2 = make_float3(samplePoints[knnIndex.y].point.coords[0], samplePoints[knnIndex.y].point.coords[1], samplePoints[knnIndex.y].point.coords[2]);
 	float3 nearestSample_3 = make_float3(samplePoints[knnIndex.z].point.coords[0], samplePoints[knnIndex.z].point.coords[1], samplePoints[knnIndex.z].point.coords[2]);
 	float3 nearestSample_4 = make_float3(samplePoints[knnIndex.w].point.coords[0], samplePoints[knnIndex.w].point.coords[1], samplePoints[knnIndex.w].point.coords[2]);
 
-	// ¼ÆËãËÄ¸öµãµÄ¾àÀë
+	// è®¡ç®—å››ä¸ªç‚¹çš„è·ç¦»
 	float4 nearestDistance;
 	nearestDistance.x = squared_norm(vertex - nearestSample_1);
 	nearestDistance.y = squared_norm(vertex - nearestSample_2);
@@ -217,25 +217,25 @@ void SparseSurfelFusion::DrawMesh::CalculateMeshNormals(DeviceArrayView<Point3D<
 {
 
 #ifdef CHECK_MESH_BUILD_TIME_COST
-	auto time1 = std::chrono::high_resolution_clock::now();					// ¼ÇÂ¼¿ªÊ¼Ê±¼äµã
+	auto time1 = std::chrono::high_resolution_clock::now();					// è®°å½•å¼€å§‹æ—¶é—´ç‚¹
 #endif // CHECK_MESH_BUILD_TIME_COST
 
 	CHECKCUDA(cudaMemcpyAsync(MeshVertices.Ptr(), meshVertices.RawPtr(), sizeof(Point3D<float>) * VerticesCount, cudaMemcpyDeviceToDevice, stream));
 	CHECKCUDA(cudaMemcpyAsync(MeshTriangleIndices.Ptr(), meshTriangleIndices.RawPtr(), sizeof(TriangleIndex) * TranglesCount, cudaMemcpyDeviceToDevice, stream));
 
-	Point3D<float>* MeshNormalsDevice = NULL;	// ¼ÇÂ¼¼ÆËãµÃµ½µÄÈı½ÇÍø¸ñµÄ·¨Ïß
+	Point3D<float>* MeshNormalsDevice = NULL;	// è®°å½•è®¡ç®—å¾—åˆ°çš„ä¸‰è§’ç½‘æ ¼çš„æ³•çº¿
 	CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&MeshNormalsDevice), sizeof(Point3D<float>) * TranglesCount, stream));
 
 	dim3 block_Mesh(256);
 	dim3 grid_Mesh(divUp(TranglesCount, block_Mesh.x));
 	device::CalculateMeshNormalsKernel << <grid_Mesh, block_Mesh, 0, stream >> > (MeshVertices.ArrayView(), MeshTriangleIndices.ArrayView(), TranglesCount, MeshNormalsDevice);
 
-	unsigned int* ConnectedTriangleNum = NULL;		// ¼ÇÂ¼Ò»¸ö¶¥µãÓĞ¶àÉÙÁÚ½ÓµÄÈı½ÇĞÎ
+	unsigned int* ConnectedTriangleNum = NULL;		// è®°å½•ä¸€ä¸ªé¡¶ç‚¹æœ‰å¤šå°‘é‚»æ¥çš„ä¸‰è§’å½¢
 	CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&ConnectedTriangleNum), sizeof(unsigned int) * VerticesCount, stream));
 	CHECKCUDA(cudaMemsetAsync(ConnectedTriangleNum, 0, sizeof(unsigned int) * VerticesCount, stream));
 	device::CountConnectedTriangleNumKernel << <grid_Mesh, block_Mesh, 0, stream >> > (MeshTriangleIndices.ArrayView(), TranglesCount, ConnectedTriangleNum);
 
-	Point3D<float>* VerticesNormalsSum = NULL;		// ¼ÇÂ¼ÆäÁÚ½ÓµÄÈı½ÇMeshµÄ·¨ÏßÏòÁ¿ºÍ
+	Point3D<float>* VerticesNormalsSum = NULL;		// è®°å½•å…¶é‚»æ¥çš„ä¸‰è§’Meshçš„æ³•çº¿å‘é‡å’Œ
 	CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&VerticesNormalsSum), sizeof(Point3D<float>) * VerticesCount, stream));
 	CHECKCUDA(cudaMemsetAsync(VerticesNormalsSum, 0.0f, sizeof(Point3D<float>) * VerticesCount, stream));
 	device::VerticesNormalsSumKernel << <grid_Mesh, block_Mesh, 0, stream >> > (MeshNormalsDevice, MeshTriangleIndices.ArrayView(), TranglesCount, VerticesNormalsSum);
@@ -252,16 +252,16 @@ void SparseSurfelFusion::DrawMesh::CalculateMeshNormals(DeviceArrayView<Point3D<
 
 #ifdef CHECK_MESH_BUILD_TIME_COST
 	CHECKCUDA(cudaStreamSynchronize(stream));
-	auto time2 = std::chrono::high_resolution_clock::now();					// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration1 = time2 - time1;		// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "¼ÆËãMesh·¨ÏòÁ¿Ê±¼ä: " << duration1.count() << " ms" << std::endl;
+	auto time2 = std::chrono::high_resolution_clock::now();					// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration1 = time2 - time1;		// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "è®¡ç®—Meshæ³•å‘é‡æ—¶é—´: " << duration1.count() << " ms" << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 }
 
 void SparseSurfelFusion::DrawMesh::CalculateMeshVerticesColor(DeviceArrayView<OrientedPoint3D<float>> sampleDensePoints, DeviceArrayView<Point3D<float>> meshVertices, cudaStream_t stream)
 {
 #ifdef CHECK_MESH_BUILD_TIME_COST
-	auto time1 = std::chrono::high_resolution_clock::now();					// ¼ÇÂ¼¿ªÊ¼Ê±¼äµã
+	auto time1 = std::chrono::high_resolution_clock::now();					// è®°å½•å¼€å§‹æ—¶é—´ç‚¹
 #endif // CHECK_MESH_BUILD_TIME_COST
 
 	VerticesAverageColors.ResizeArrayOrException(VerticesCount);
@@ -272,8 +272,8 @@ void SparseSurfelFusion::DrawMesh::CalculateMeshVerticesColor(DeviceArrayView<Or
 
 #ifdef CHECK_MESH_BUILD_TIME_COST
 	CHECKCUDA(cudaStreamSynchronize(stream));
-	auto time2 = std::chrono::high_resolution_clock::now();					// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration1 = time2 - time1;		// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "¼ÆËãMesh¶¥µãÑÕÉ«µÄÊ±¼ä: " << duration1.count() << " ms" << std::endl;
+	auto time2 = std::chrono::high_resolution_clock::now();					// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration1 = time2 - time1;		// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "è®¡ç®—Meshé¡¶ç‚¹é¢œè‰²çš„æ—¶é—´: " << duration1.count() << " ms" << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 }

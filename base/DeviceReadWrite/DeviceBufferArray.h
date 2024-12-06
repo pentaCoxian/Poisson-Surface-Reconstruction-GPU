@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   DeviceArrayBuffer.h
- * \brief  ¹ÜÀíGPUÄÚ´æ£¬°üÀ¨Ö»¶ÁÀàĞÍ£¬¶ÁĞ´ÀàĞÍ
+ * \brief  ç®¡ç†GPUå†…å­˜ï¼ŒåŒ…æ‹¬åªè¯»ç±»å‹ï¼Œè¯»å†™ç±»å‹
  * 
  * \author LUO
  * \date   January 31st 2024
@@ -17,65 +17,65 @@ namespace SparseSurfelFusion{
 	template<typename T>
 	class DeviceBufferArray {
 	private:
-		DeviceArray<T> buffer;		// arrayµÄÊ×µØÖ·£¬Õâ¸öÏàµ±ÓÚÊÇÒ»¸ö»º³åÇø£¬¶øarray²ÅÊÇÊı¾İÇø
-		DeviceArray<T> array;		// Éè±¸ÉÏµÄÊı×é£¨¸ù¾İ´óĞ¡·ÖÅäÄÚ´æÁË£©
+		DeviceArray<T> buffer;		// arrayçš„é¦–åœ°å€ï¼Œè¿™ä¸ªç›¸å½“äºæ˜¯ä¸€ä¸ªç¼“å†²åŒºï¼Œè€Œarrayæ‰æ˜¯æ•°æ®åŒº
+		DeviceArray<T> array;		// è®¾å¤‡ä¸Šçš„æ•°ç»„ï¼ˆæ ¹æ®å¤§å°åˆ†é…å†…å­˜äº†ï¼‰
 
 	public:
 		explicit DeviceBufferArray() : buffer(nullptr, 0), array(nullptr, 0) {}
 		//
 		explicit DeviceBufferArray(size_t capacity) {
 			AllocateBuffer(capacity);
-			array = DeviceArray<T>(buffer.ptr(), 0);//ÕâÀï·ÖÅäÁËGPU»º´æ£¬ÔªËØÊıÁ¿Îª0
+			array = DeviceArray<T>(buffer.ptr(), 0);//è¿™é‡Œåˆ†é…äº†GPUç¼“å­˜ï¼Œå…ƒç´ æ•°é‡ä¸º0
 		}
 		~DeviceBufferArray() = default;
 
-		//Ã»ÓĞÒşÊ½¸´ÖÆ/·ÖÅä/ÒÆ¶¯
+		//æ²¡æœ‰éšå¼å¤åˆ¶/åˆ†é…/ç§»åŠ¨
 		NO_COPY_ASSIGN_MOVE(DeviceBufferArray);
 
-		//·ÃÎÊ·½·¨
+		//è®¿é—®æ–¹æ³•
 		DeviceArray<T> Array() const { return array; }
 		DeviceArrayView<T> ArrayView() const { return DeviceArrayView<T>(array.ptr(), array.size()); }
 		DeviceArrayView<T> ArrayReadOnly() const { return DeviceArrayView<T>(array.ptr(), array.size()); }
 		DeviceArrayHandle<T> ArrayHandle() { return DeviceArrayHandle<T>(array.ptr(), array.size()); }
 		DeviceArray<T> Buffer() const { return buffer; }
 
-		//ÓëotherÀïµÄÊı¾İ½øĞĞ½»»»
+		//ä¸otheré‡Œçš„æ•°æ®è¿›è¡Œäº¤æ¢
 		void swap(DeviceBufferArray<float>& other) {
 			buffer.swap(other.buffer);
 			array.swap(other.array);
 		}
 
 
-		const T* Ptr() const { return buffer.ptr(); }			//×ª»»ÎªÔ­Ê¼Ö¸Õë
-		T* Ptr() { return buffer.ptr(); }						//×ª»»ÎªÔ­Ê¼Ö¸Õë
-		operator T* () { return buffer.ptr(); }					//×ª»»ÎªÔ­Ê¼Ö¸Õë
-		operator const T* () const { return buffer.ptr(); }		//×ª»»ÎªÔ­Ê¼Ö¸Õë
+		const T* Ptr() const { return buffer.ptr(); }			//è½¬æ¢ä¸ºåŸå§‹æŒ‡é’ˆ
+		T* Ptr() { return buffer.ptr(); }						//è½¬æ¢ä¸ºåŸå§‹æŒ‡é’ˆ
+		operator T* () { return buffer.ptr(); }					//è½¬æ¢ä¸ºåŸå§‹æŒ‡é’ˆ
+		operator const T* () const { return buffer.ptr(); }		//è½¬æ¢ä¸ºåŸå§‹æŒ‡é’ˆ
 
 		/**
-		 * \brief ²éÑ¯buffer´óĞ¡.
+		 * \brief æŸ¥è¯¢bufferå¤§å°.
 		 */
 		size_t Capacity() const { return buffer.size(); }
 		/**
-		 * \brief ²éÑ¯Buffer´óĞ¡.
+		 * \brief æŸ¥è¯¢Bufferå¤§å°.
 		 */
 		size_t BufferSize() const { return buffer.size(); }
 		/**
-		 * \brief ²éÑ¯Array´óĞ¡.
+		 * \brief æŸ¥è¯¢Arrayå¤§å°.
 		 */
 		size_t ArraySize() const { return array.size(); }
 
 		/**
-		 * \brief ·ÖÅä»º´æ£¬Èç¹ûµ±ÏÂ»º´æ´óÓÚËùĞèÔò·µ»Ø£¬Èç¹ûĞ¡ÓÚËùĞèÔò¿ª±Ù.
+		 * \brief åˆ†é…ç¼“å­˜ï¼Œå¦‚æœå½“ä¸‹ç¼“å­˜å¤§äºæ‰€éœ€åˆ™è¿”å›ï¼Œå¦‚æœå°äºæ‰€éœ€åˆ™å¼€è¾Ÿ.
 		 * 
-		 * \param capacity ĞèÒª·ÖÅä»º´æµÄÈİÁ¿
+		 * \param capacity éœ€è¦åˆ†é…ç¼“å­˜çš„å®¹é‡
 		 */
 		void AllocateBuffer(size_t capacity) {
-			if (buffer.size() > capacity) return;			// Èç¹ûDeviceBufferArrayÄÜ´¢´æµÄ±Ècapacity´ó£¬ÔòÖ±½Ó·µ»Ø
-			buffer.create(capacity);						// Èç¹ûGPUÄÚ´æ²»×ã£¬Ôò¿ª±ÙÄÚ´æ
-			array = DeviceArray<T>(buffer.ptr(), 0);		// ½«bufferµØÖ·¸øarray£¬²¢ÉèÖÃÔªËØÊıÁ¿Îª0
+			if (buffer.size() > capacity) return;			// å¦‚æœDeviceBufferArrayèƒ½å‚¨å­˜çš„æ¯”capacityå¤§ï¼Œåˆ™ç›´æ¥è¿”å›
+			buffer.create(capacity);						// å¦‚æœGPUå†…å­˜ä¸è¶³ï¼Œåˆ™å¼€è¾Ÿå†…å­˜
+			array = DeviceArray<T>(buffer.ptr(), 0);		// å°†bufferåœ°å€ç»™arrayï¼Œå¹¶è®¾ç½®å…ƒç´ æ•°é‡ä¸º0
 		}
 		/**
-		 * \brief ÊÍ·ÅBuffer.
+		 * \brief é‡Šæ”¾Buffer.
 		 * 
 		 */
 		void ReleaseBuffer() {
@@ -83,13 +83,13 @@ namespace SparseSurfelFusion{
 		}
 
 		/**
-		 * \brief µ÷ÕûÊı×é£¬Èç¹ûĞèÒªµ÷ÕûµÄ´óĞ¡Ğ¡ÓÚbuffer£¬Ôò½«»º³åÇøµÄÖµ¸øarray£¬·µ»Øtrue.
-		 *		  ĞèÒªµ÷ÕûµÄ´óĞ¡´óÓÚbuffer£¬ÈôÊÇallocateÊÇtrueÔò·ÖÅä1.5±¶µÄsize´óĞ¡£¬²¢°ÑbufferÖĞµÄÊı¾İ¸³¸øarray£¬²¢·µ»Øtrue.
-		 *		  Èç¹ûĞèÒªµ÷ÕûµÄ´óĞ¡Ğ¡ÓÚbuffer£¬²¢ÇÒallocateÊÇfalse£¬ÔòÎŞ·¨·ÖÅäÊı¾İ¸øarray£¬·µ»Øfalse.
+		 * \brief è°ƒæ•´æ•°ç»„ï¼Œå¦‚æœéœ€è¦è°ƒæ•´çš„å¤§å°å°äºbufferï¼Œåˆ™å°†ç¼“å†²åŒºçš„å€¼ç»™arrayï¼Œè¿”å›true.
+		 *		  éœ€è¦è°ƒæ•´çš„å¤§å°å¤§äºbufferï¼Œè‹¥æ˜¯allocateæ˜¯trueåˆ™åˆ†é…1.5å€çš„sizeå¤§å°ï¼Œå¹¶æŠŠbufferä¸­çš„æ•°æ®èµ‹ç»™arrayï¼Œå¹¶è¿”å›true.
+		 *		  å¦‚æœéœ€è¦è°ƒæ•´çš„å¤§å°å°äºbufferï¼Œå¹¶ä¸”allocateæ˜¯falseï¼Œåˆ™æ— æ³•åˆ†é…æ•°æ®ç»™arrayï¼Œè¿”å›false.
 		 * 
-		 * \param size ĞèÒªµ÷ÕûarrayµÄ´óĞ¡
-		 * \param allocate Èç¹ûsize´óÓÚbufferÊÇ·ñ½øĞĞÖØĞÂ·ÖÅäÄÚ´æ(Ä¬ÈÏ²»ÖØĞÂ·ÖÅä)
-		 * \return ·ÖÅäArrayÄÚ´æÊÇ·ñ³É¹¦
+		 * \param size éœ€è¦è°ƒæ•´arrayçš„å¤§å°
+		 * \param allocate å¦‚æœsizeå¤§äºbufferæ˜¯å¦è¿›è¡Œé‡æ–°åˆ†é…å†…å­˜(é»˜è®¤ä¸é‡æ–°åˆ†é…)
+		 * \return åˆ†é…Arrayå†…å­˜æ˜¯å¦æˆåŠŸ
 		 */
 		bool ResizeArray(size_t size, bool allocate = false) {
 			if (size <= buffer.size()) {
@@ -99,7 +99,7 @@ namespace SparseSurfelFusion{
 			else if (allocate) {
 				const size_t prev_size = array.size();
 
-				//ĞèÒª¸´ÖÆ¾ÉµÄÔªËØ
+				//éœ€è¦å¤åˆ¶æ—§çš„å…ƒç´ 
 				DeviceArray<T> old_buffer = buffer;
 				buffer.create(static_cast<size_t>(size * 1.5));
 				if (prev_size > 0) {
@@ -107,7 +107,7 @@ namespace SparseSurfelFusion{
 					old_buffer.release();
 				}
 
-				//·ÖÅäÕıÈ·µÄÕ»¿Õ¼ä
+				//åˆ†é…æ­£ç¡®çš„æ ˆç©ºé—´
 				array = DeviceArray<T>(buffer.ptr(), size);
 				return true;
 			}
@@ -118,16 +118,16 @@ namespace SparseSurfelFusion{
 
 
 		/**
-		 * \brief µ÷ÕûÊı×é´óĞ¡£ºÔ¤·ÖÅäBuffer²»¹»Ö±½Ó±¨´í£¬Ô¤·ÖÅäBuffer¹»Ôò½«array¸³ÉÏbufferµØÖ·£¬²¢ÇÒ¿ª±ÙÒ»¸ösize´óĞ¡µÄGPU(Array)»º´æ.
+		 * \brief è°ƒæ•´æ•°ç»„å¤§å°ï¼šé¢„åˆ†é…Bufferä¸å¤Ÿç›´æ¥æŠ¥é”™ï¼Œé¢„åˆ†é…Bufferå¤Ÿåˆ™å°†arrayèµ‹ä¸Šbufferåœ°å€ï¼Œå¹¶ä¸”å¼€è¾Ÿä¸€ä¸ªsizeå¤§å°çš„GPU(Array)ç¼“å­˜.
 		 * 
-		 * \param size ĞèÒªµ÷ÕûµÄ´óĞ¡
+		 * \param size éœ€è¦è°ƒæ•´çš„å¤§å°
 		 */
 		void ResizeArrayOrException(size_t size) {
 			if (size > buffer.size()) {
-				printf("Buffer ´óĞ¡ = %zd\n", buffer.size());
-				LOGGING(FATAL) << "Ô¤·ÖÅäµÄ»º³åÇø²»¹»";
+				printf("Buffer å¤§å° = %zd\n", buffer.size());
+				LOGGING(FATAL) << "é¢„åˆ†é…çš„ç¼“å†²åŒºä¸å¤Ÿ";
 			}
-			//Èç¹ûÔ¤·ÖÅäµÄ»º´æ×ã¹»¡£Ôò¸Ä±äÊı×éµÄ´óĞ¡
+			//å¦‚æœé¢„åˆ†é…çš„ç¼“å­˜è¶³å¤Ÿã€‚åˆ™æ”¹å˜æ•°ç»„çš„å¤§å°
 			array = DeviceArray<T>(buffer.ptr(), size);
 		}
 

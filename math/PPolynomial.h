@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   PPolynomial.h
- * \brief  ¶àÏîÊ½Çó½â
+ * \brief  å¤šé¡¹å¼æ±‚è§£
  * 
  * \author LUOJIAXUAN
  * \date   May 21st 2024
@@ -12,23 +12,23 @@
 namespace SparseSurfelFusion {
 
     /**
-     * \brief ´øÓĞÆğµãµÄ¶àÏîÊ½£¬start¾ÍÊÇ¸Ã¶àÏîÊ½¶¨ÒåÓòµÄ×ó±ß½ç£¬¼´p(x) = f(x)  x¡Ê[start, +¡Ş).
+     * \brief å¸¦æœ‰èµ·ç‚¹çš„å¤šé¡¹å¼ï¼Œstartå°±æ˜¯è¯¥å¤šé¡¹å¼å®šä¹‰åŸŸçš„å·¦è¾¹ç•Œï¼Œå³p(x) = f(x)  xâˆˆ[start, +âˆ).
      */
     template<int Degree>
     class StartingPolynomial
     {
     public:
-        Polynomial<Degree> p;   // ¶àÏîÊ½
-        float start;            // ¶àÏîÊ½µÄÆğµã
+        Polynomial<Degree> p;   // å¤šé¡¹å¼
+        float start;            // å¤šé¡¹å¼çš„èµ·ç‚¹
 
         /**	    return a StartingPolynomial
           *	    new start is the bigger start
           *	    polynomials are multiplied  */
         /**
-         * \brief ¶àÏîÊ½³Ë·¨£¬Æä¶àÏîÊ½ÎªÁ½¸ö¶àÏîÊ½µÄ³Ë»ı£¬ÆğÊ¼µãÎªÁ½¸öÆğÊ¼µãÖĞ½Ï´óµÄÒ»¸ö.
+         * \brief å¤šé¡¹å¼ä¹˜æ³•ï¼Œå…¶å¤šé¡¹å¼ä¸ºä¸¤ä¸ªå¤šé¡¹å¼çš„ä¹˜ç§¯ï¼Œèµ·å§‹ç‚¹ä¸ºä¸¤ä¸ªèµ·å§‹ç‚¹ä¸­è¾ƒå¤§çš„ä¸€ä¸ª.
          * 
-         * \param p ¶àÏîÊ½
-         * \return Ïà³ËºóµÄ½á¹û
+         * \param p å¤šé¡¹å¼
+         * \return ç›¸ä¹˜åçš„ç»“æœ
          */
         template<int Degree2>
         __host__ __device__ StartingPolynomial<Degree + Degree2>  operator * (const StartingPolynomial<Degree2>& p) const {
@@ -40,10 +40,10 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ÖØÔØ¶¨ÒåÁË¸³Öµ²Ù×÷£¬Ê¹µÃ¿ÉÒÔ½«Ò»¸ö StartingPolynomial ¶ÔÏóµÄÖµ¸³¸øÁíÒ»¸ö¶ÔÏó.
+         * \brief é‡è½½å®šä¹‰äº†èµ‹å€¼æ“ä½œï¼Œä½¿å¾—å¯ä»¥å°†ä¸€ä¸ª StartingPolynomial å¯¹è±¡çš„å€¼èµ‹ç»™å¦ä¸€ä¸ªå¯¹è±¡.
          * 
-         * \param sp ¸³ÖµÕß
-         * \return ±»¸³Öµ¶ÔÏó
+         * \param sp èµ‹å€¼è€…
+         * \return è¢«èµ‹å€¼å¯¹è±¡
          */
         __host__ __device__ StartingPolynomial& operator = (const StartingPolynomial& sp) {
             start = sp.start;
@@ -53,10 +53,10 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ÆğÊ¼µãºÍ¶àÏîÊ½¶¼°´±ÈÀı s Ëõ·Å.
+         * \brief èµ·å§‹ç‚¹å’Œå¤šé¡¹å¼éƒ½æŒ‰æ¯”ä¾‹ s ç¼©æ”¾.
          * 
-         * \param s Ëõ·Å±ÈÀı
-         * \return Ëõ·ÅºóµÄ¶àÏîÊ½
+         * \param s ç¼©æ”¾æ¯”ä¾‹
+         * \return ç¼©æ”¾åçš„å¤šé¡¹å¼
          */
         __host__ __device__ StartingPolynomial scale(const float& s) const {
             StartingPolynomial q;
@@ -66,10 +66,10 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ÆğµãÆ½ÒÆ¡¾start = start + t¡¿£¬¶àÏîÊ½Ò²Æ½ÒÆ¡¾f(x) -> f(x-t)¡¿.
+         * \brief èµ·ç‚¹å¹³ç§»ã€start = start + tã€‘ï¼Œå¤šé¡¹å¼ä¹Ÿå¹³ç§»ã€f(x) -> f(x-t)ã€‘.
          * 
-         * \param t Æ½ÒÆÁ¿
-         * \return Æ½ÒÆºóµÄ¶àÏîÊ½
+         * \param t å¹³ç§»é‡
+         * \return å¹³ç§»åçš„å¤šé¡¹å¼
          */
         __host__ __device__ StartingPolynomial shift(const float& t) const {
             StartingPolynomial q;
@@ -79,10 +79,10 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ±È½ÏÄÄ¸ö¶àÏîÊ½µÄÆğµã¸üĞ¡£¬Èç¹ûµ±Ç°¶ÔÏóµÄÆğÊ¼µãĞ¡ÓÚ sp µÄÆğÊ¼µã£¬Ôò·µ»Ø 1£¬·ñÔò·µ»Ø 0.
+         * \brief æ¯”è¾ƒå“ªä¸ªå¤šé¡¹å¼çš„èµ·ç‚¹æ›´å°ï¼Œå¦‚æœå½“å‰å¯¹è±¡çš„èµ·å§‹ç‚¹å°äº sp çš„èµ·å§‹ç‚¹ï¼Œåˆ™è¿”å› 1ï¼Œå¦åˆ™è¿”å› 0.
          * 
-         * \param sp ±È½Ï¶ÔÏó
-         * \return ÊÇ·ñ¸üĞ¡
+         * \param sp æ¯”è¾ƒå¯¹è±¡
+         * \return æ˜¯å¦æ›´å°
          */
         __host__ __device__ int operator < (const StartingPolynomial& sp) const {
             if (start < sp.start) {
@@ -97,11 +97,11 @@ namespace SparseSurfelFusion {
           *     v1 < v2 , return -1
           *     v1 = v2 , return 0  */
         /**
-         * \brief ±È½Ï¶àÏîÊ½µÄÆğµã´óĞ¡£ºv1 > v2 , return 1£»v1 < v2 , return -1£»v1 = v2 , return 0.
+         * \brief æ¯”è¾ƒå¤šé¡¹å¼çš„èµ·ç‚¹å¤§å°ï¼šv1 > v2 , return 1ï¼›v1 < v2 , return -1ï¼›v1 = v2 , return 0.
          * 
-         * \param v1 ¶àÏîÊ½v1
-         * \param v2 ¶àÏîÊ½v2
-         * \return ¶àÏîÊ½±È½ÏµÄ½á¹û
+         * \param v1 å¤šé¡¹å¼v1
+         * \param v2 å¤šé¡¹å¼v2
+         * \return å¤šé¡¹å¼æ¯”è¾ƒçš„ç»“æœ
          */
         __host__ __device__ static int Compare(const void* v1, const void* v2) {
             float d = ((StartingPolynomial*)(v1))->start - ((StartingPolynomial*)(v2))->start;
@@ -112,23 +112,23 @@ namespace SparseSurfelFusion {
     };
 
     /**
-     * \brief ¶àÏîÊ½¼¯ºÏ(¹¹³ÉBÑùÌõº¯ÊıµÄ»ùº¯Êı¼¯ºÏ).
+     * \brief å¤šé¡¹å¼é›†åˆ(æ„æˆBæ ·æ¡å‡½æ•°çš„åŸºå‡½æ•°é›†åˆ).
      */
     template<int Degree>
 	class PPolynomial
 	{
 	public:
-        size_t polyCount = 0;                       // ¶àÏîÊ½¼¯ºÏÔªËØµÄÊıÁ¿
-        StartingPolynomial<Degree>* polys = NULL;   // ´øÆğµã(ÓĞ¶¨ÒåÓòµÄ)µÄ¶àÏîÊ½(×é)
+        size_t polyCount = 0;                       // å¤šé¡¹å¼é›†åˆå…ƒç´ çš„æ•°é‡
+        StartingPolynomial<Degree>* polys = NULL;   // å¸¦èµ·ç‚¹(æœ‰å®šä¹‰åŸŸçš„)çš„å¤šé¡¹å¼(ç»„)
 
         PPolynomial(void) = default;
         /**
-         * \brief ½«¶àÏîÊ½p¿½±´¸³Öµ¸øµ±Ç°¶ÔÏó.
+         * \brief å°†å¤šé¡¹å¼pæ‹·è´èµ‹å€¼ç»™å½“å‰å¯¹è±¡.
          * 
-         * \param ¶àÏîÊ½p 
+         * \param å¤šé¡¹å¼p 
          */
         PPolynomial(const PPolynomial<Degree>& p) {
-            set(p.polyCount);   // ·ÖÅä»º´æ
+            set(p.polyCount);   // åˆ†é…ç¼“å­˜
             memcpy(polys, p.polys, sizeof(StartingPolynomial<Degree>) * p.polyCount);
         }
         ~PPolynomial(void) {
@@ -138,18 +138,18 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief »ñµÃµ±Ç°¶àÏîÊ½¼¯ºÏµÄbyte´óĞ¡.
+         * \brief è·å¾—å½“å‰å¤šé¡¹å¼é›†åˆçš„byteå¤§å°.
          * 
-         * \return ·µ»Øµ±Ç°¶àÏîÊ½¼¯ºÏµÄbyte´óĞ¡
+         * \return è¿”å›å½“å‰å¤šé¡¹å¼é›†åˆçš„byteå¤§å°
          */
         int size(void) const {
             return int(sizeof(StartingPolynomial<Degree>) * polyCount);
         }
 
         /**
-         * \param ÊÍ·ÅÖ®Ç°µÄ¶àÏîÊ½£¬²¢ÖØĞÂ·ÖÅäµ±Ç°¶àÏîÊ½µÄÄÚ´æ.
+         * \param é‡Šæ”¾ä¹‹å‰çš„å¤šé¡¹å¼ï¼Œå¹¶é‡æ–°åˆ†é…å½“å‰å¤šé¡¹å¼çš„å†…å­˜.
          * 
-         * \param size ¶àÏîÊ½µÄÏîÊı
+         * \param size å¤šé¡¹å¼çš„é¡¹æ•°
          */
         void set(const size_t& size) {
             if (polyCount) {
@@ -166,16 +166,16 @@ namespace SparseSurfelFusion {
 
 
         /**
-         * \brief ¶ÔÊäÈëµÄ StartingPolynomial ¶ÔÏóÊı×é½øĞĞÉıĞòÅÅĞò£¬²¢½«¾ßÓĞÏàÍ¬ÆğµãµÄ¶àÏîÊ½ºÏ²¢ÔÚÒ»Æğ.
+         * \brief å¯¹è¾“å…¥çš„ StartingPolynomial å¯¹è±¡æ•°ç»„è¿›è¡Œå‡åºæ’åºï¼Œå¹¶å°†å…·æœ‰ç›¸åŒèµ·ç‚¹çš„å¤šé¡¹å¼åˆå¹¶åœ¨ä¸€èµ·.
          * 
-         * \param sps Æğµã¶àÏîÊ½
-         * \param count ¶àÏîÊ½ÊıÁ¿
+         * \param sps èµ·ç‚¹å¤šé¡¹å¼
+         * \param count å¤šé¡¹å¼æ•°é‡
          */
         void set(StartingPolynomial<Degree>* sps, const int& count) {
-            int i = 0;  // Æğµã¶àÏîÊ½Êı×éµÄindex
-            int c = 0;  // ¼ÇÂ¼²»Í¬ÆğµãµÄ¶àÏîÊ½µÄÆ«ÒÆ
+            int i = 0;  // èµ·ç‚¹å¤šé¡¹å¼æ•°ç»„çš„index
+            int c = 0;  // è®°å½•ä¸åŒèµ·ç‚¹çš„å¤šé¡¹å¼çš„åç§»
             set(count);
-            // ¸ù¾İStartingPolynomial<Degree>::CompareµÄ·½Ê½½øĞĞÅÅĞò£º¼´¸ù¾İstartµÄ´óĞ¡
+            // æ ¹æ®StartingPolynomial<Degree>::Compareçš„æ–¹å¼è¿›è¡Œæ’åºï¼šå³æ ¹æ®startçš„å¤§å°
             qsort(sps, count, sizeof(StartingPolynomial<Degree>), StartingPolynomial<Degree>::Compare);
             for (i = 0; i < count; i++) {
                 if (!c || sps[i].start != polys[c - 1].start) {
@@ -189,9 +189,9 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ÖØĞÂ·ÖÅäÀ©Õ¹¶àÏîÊ½µÄÄÚ´æ´óĞ¡£¬ÆäÖĞ¾É¶àÏîÊ½µÄÊı¾İ»á±»±£Áô.
+         * \brief é‡æ–°åˆ†é…æ‰©å±•å¤šé¡¹å¼çš„å†…å­˜å¤§å°ï¼Œå…¶ä¸­æ—§å¤šé¡¹å¼çš„æ•°æ®ä¼šè¢«ä¿ç•™.
          * 
-         * \param newSize ĞÂ¶àÏîÊ½µÄ´óĞ¡
+         * \param newSize æ–°å¤šé¡¹å¼çš„å¤§å°
          */
         void reset(const size_t& newSize) {
             polyCount = newSize;
@@ -203,10 +203,10 @@ namespace SparseSurfelFusion {
           *     calculate f0(t) + f1(t) + f2(t) + ... + fn(t)
           *     StartPolynomial n+1's start >= t    */
         /**
-         * \brief ¡¾¼ÙÉèÆğÊ¼¶àÏîÊ½¼¯ºÏ±»setº¯ÊıÅÅĞò¡¿»ñµÃ¶àÏîÊ½¼¯ºÏÖĞÂú×ãstart < tµÄ¶àÏîÊ½£¬ÕâĞ©¶àÏîÊ½ÔÚtµã´¦µÄÊıÖµºÍ(f0(t) + f1(t) + f2(t) + ... + fn(t)).
+         * \brief ã€å‡è®¾èµ·å§‹å¤šé¡¹å¼é›†åˆè¢«setå‡½æ•°æ’åºã€‘è·å¾—å¤šé¡¹å¼é›†åˆä¸­æ»¡è¶³start < tçš„å¤šé¡¹å¼ï¼Œè¿™äº›å¤šé¡¹å¼åœ¨tç‚¹å¤„çš„æ•°å€¼å’Œ(f0(t) + f1(t) + f2(t) + ... + fn(t)).
          * 
-         * \param t ×Ô±äÁ¿t£¬ãĞÖµt
-         * \return ·µ»Ø¶àÏîÊ½¼¯ºÏÖĞÂú×ãstart < tµÄ¶àÏîÊ½µÄºÍ
+         * \param t è‡ªå˜é‡tï¼Œé˜ˆå€¼t
+         * \return è¿”å›å¤šé¡¹å¼é›†åˆä¸­æ»¡è¶³start < tçš„å¤šé¡¹å¼çš„å’Œ
          */
         float operator()(const float& t) const {
             float v = 0;
@@ -222,35 +222,35 @@ namespace SparseSurfelFusion {
           *     tMin can be bigger than tMax    */
 
         /**
-         * \brief Õâ¸ö integral º¯ÊıÓÃÓÚ¼ÆËãÔÚ¸ø¶¨Çø¼ä [tMin,tMax] ÄÚµÄ¶à¸ö StartingPolynomial ¶ÔÏóµÄ¶¨»ı·ÖµÄ×ÜºÍ¡£
+         * \brief è¿™ä¸ª integral å‡½æ•°ç”¨äºè®¡ç®—åœ¨ç»™å®šåŒºé—´ [tMin,tMax] å†…çš„å¤šä¸ª StartingPolynomial å¯¹è±¡çš„å®šç§¯åˆ†çš„æ€»å’Œã€‚
          * 
-         * \param tMin »ı·ÖÇø¼äµÄÆğµã
-         * \param tMax »ı·ÖÇø¼äµÄÖÕµã
-         * \return »ı·ÖµÄ½á¹û
+         * \param tMin ç§¯åˆ†åŒºé—´çš„èµ·ç‚¹
+         * \param tMax ç§¯åˆ†åŒºé—´çš„ç»ˆç‚¹
+         * \return ç§¯åˆ†çš„ç»“æœ
          */
         float integral(const float& tMin, const float& tMax) const {
-            int m = 1;  // ¶¨»ı·Ö·ûºÅ
+            int m = 1;  // å®šç§¯åˆ†ç¬¦å·
             float start, end, s, v = 0;
             start = tMin;
             end = tMax;
-            if (tMin > tMax) {  // ¶¨»ı·ÖÉÏÏÂ½çÈ·¶¨·ûºÅ
+            if (tMin > tMax) {  // å®šç§¯åˆ†ä¸Šä¸‹ç•Œç¡®å®šç¬¦å·
                 m = -1;
                 start = tMax;
                 end = tMin;
             }
             for (int i = 0; i < int(polyCount) && polys[i].start < end; i++) {
-                if (start < polys[i].start) { s = polys[i].start; } // »¹Î´µ½´ïÏÂ½ç£¬½«¶àÏîÊ½µÄÆğµã¸³Öµ¸øs
+                if (start < polys[i].start) { s = polys[i].start; } // è¿˜æœªåˆ°è¾¾ä¸‹ç•Œï¼Œå°†å¤šé¡¹å¼çš„èµ·ç‚¹èµ‹å€¼ç»™s
                 else { s = start; }
-                v += polys[i].p.integral(s, end);   // ÔÚ¶¨ÒåÓò·¶Î§ÄÚµÄ»ı·Ö
+                v += polys[i].p.integral(s, end);   // åœ¨å®šä¹‰åŸŸèŒƒå›´å†…çš„ç§¯åˆ†
             }
             return v * m;
         }
 
 
         /**
-         * \brief ÕâÀïÓ¦¸ÃÊÇ¼ÆËãº¯Êı¼¯ºÏÖĞËùÓĞÔªËØ·Ç¹«¹²Çø¼äµÄ»ı·Ö¡¾Ç°ÌáÊÇº¯ÊıÒÑ¾­ÅÅĞò¡¿.
+         * \brief è¿™é‡Œåº”è¯¥æ˜¯è®¡ç®—å‡½æ•°é›†åˆä¸­æ‰€æœ‰å…ƒç´ éå…¬å…±åŒºé—´çš„ç§¯åˆ†ã€å‰ææ˜¯å‡½æ•°å·²ç»æ’åºã€‘.
          * 
-         * \return º¯Êı¼¯ºÏÖĞËùÓĞÔªËØ·Ç¹«¹²Çø¼äµÄ»ı·Ö¡¾Ç°ÌáÊÇº¯ÊıÒÑ¾­ÅÅĞò¡¿
+         * \return å‡½æ•°é›†åˆä¸­æ‰€æœ‰å…ƒç´ éå…¬å…±åŒºé—´çš„ç§¯åˆ†ã€å‰ææ˜¯å‡½æ•°å·²ç»æ’åºã€‘
          */
         float Integral(void) const {
             return integral(polys[0].start, polys[polyCount - 1].start);
@@ -382,8 +382,8 @@ namespace SparseSurfelFusion {
             return *this;
         }
 
-        /**     Ëõ·Å*thisÖĞµÄÃ¿¸ö¶àÏîÊ½
-          *     Ã¿Ò»¸östart¶¼Îªstart * s   */
+        /**     ç¼©æ”¾*thisä¸­çš„æ¯ä¸ªå¤šé¡¹å¼
+          *     æ¯ä¸€ä¸ªstartéƒ½ä¸ºstart * s   */
         PPolynomial scale(const float& s) const {
             PPolynomial q;
             q.set(polyCount);
@@ -477,76 +477,76 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief »ñµÃ2¸ö³õÊ¼¶àÏîÊ½¡¾³£º¯Êı¡¿£¬¶àÏîÊ½f0 = 1 x¡Ê[-radius, +¡Ş)£¬¶àÏîÊ½f1 = -1 x¡Ê[radius, +¡Ş)
+         * \brief è·å¾—2ä¸ªåˆå§‹å¤šé¡¹å¼ã€å¸¸å‡½æ•°ã€‘ï¼Œå¤šé¡¹å¼f0 = 1 xâˆˆ[-radius, +âˆ)ï¼Œå¤šé¡¹å¼f1 = -1 xâˆˆ[radius, +âˆ)
          * 
-         * \param radius Çø¼ä°ë¾¶
-         * \return ³õÊ¼¶àÏîÊ½
+         * \param radius åŒºé—´åŠå¾„
+         * \return åˆå§‹å¤šé¡¹å¼
          */
         static PPolynomial ConstantFunction(const float& radius = 0.5) {
             if (Degree < 0) {
-                fprintf(stderr, "²»ÄÜ½«½×ÊıÎª %d µÄ¶àÏîÊ½ÉèÖÃÎª³£Êı\n", Degree);
+                fprintf(stderr, "ä¸èƒ½å°†é˜¶æ•°ä¸º %d çš„å¤šé¡¹å¼è®¾ç½®ä¸ºå¸¸æ•°\n", Degree);
                 exit(0);
             }
             PPolynomial q;
-            q.set(2);   // ¿ª±Ù¿Õ¼ä
+            q.set(2);   // å¼€è¾Ÿç©ºé—´
 
-            q.polys[0].start = -radius;             // ¶àÏîÊ½0ÆğÊ¼×ø±êÔÚ-radius
-            q.polys[1].start = radius;              // ¶àÏîÊ½1ÆğÊ¼×ø±êÔÚradius
+            q.polys[0].start = -radius;             // å¤šé¡¹å¼0èµ·å§‹åæ ‡åœ¨-radius
+            q.polys[1].start = radius;              // å¤šé¡¹å¼1èµ·å§‹åæ ‡åœ¨radius
 
-            q.polys[0].p.coefficients[0] = 1.0;     // ¶àÏîÊ½0³£ÊıÎª1
-            q.polys[1].p.coefficients[0] = -1.0;    // ¶àÏîÊ½1³£ÊıÎª-1
+            q.polys[0].p.coefficients[0] = 1.0;     // å¤šé¡¹å¼0å¸¸æ•°ä¸º1
+            q.polys[1].p.coefficients[0] = -1.0;    // å¤šé¡¹å¼1å¸¸æ•°ä¸º-1
             return q;
         }
 
         /**
-         * \brief Éú³É¸ßË¹Æ½»¬µÄ½üËÆ.
+         * \brief ç”Ÿæˆé«˜æ–¯å¹³æ»‘çš„è¿‘ä¼¼.
          * 
-         * \param width Æ½»¬µÄ°ë¾¶
-         * \return Æ½»¬µÄ¶àÏîÊ½
+         * \param width å¹³æ»‘çš„åŠå¾„
+         * \return å¹³æ»‘çš„å¤šé¡¹å¼
          */
         static PPolynomial GaussianApproximation(const float& width = 0.5);
 
         /**
-         * \brief ÓÃÓÚ¼ÆËã¶àÏîÊ½µÄÒÆ¶¯Æ½¾ùÖµ¡£ËüµÄ×÷ÓÃÊÇ¶Ô¸ø¶¨°ë¾¶·¶Î§ÄÚµÄ¶àÏîÊ½½øĞĞ»ı·ÖºÍÆ½¾ù£¬´Ó¶øÆ½»¬Ô­Ê¼¶àÏîÊ½Êı¾İ.
+         * \brief ç”¨äºè®¡ç®—å¤šé¡¹å¼çš„ç§»åŠ¨å¹³å‡å€¼ã€‚å®ƒçš„ä½œç”¨æ˜¯å¯¹ç»™å®šåŠå¾„èŒƒå›´å†…çš„å¤šé¡¹å¼è¿›è¡Œç§¯åˆ†å’Œå¹³å‡ï¼Œä»è€Œå¹³æ»‘åŸå§‹å¤šé¡¹å¼æ•°æ®.
          * 
-         * \param radius Æ½»¬µÄ°ë¾¶
-         * \return Æ½»¬µÄ¶àÏîÊ½
+         * \param radius å¹³æ»‘çš„åŠå¾„
+         * \return å¹³æ»‘çš„å¤šé¡¹å¼
          */
         PPolynomial<Degree + 1> MovingAverage(const float& radius) {
-            PPolynomial<Degree + 1> A;              // ¶àÏîÊ½¼¯ºÏ¶ÔÏó(¶ş´ÎBÑùÌõº¯Êı)
-            Polynomial<Degree + 1> p;               // ¶àÏîÊ½¶ÔÏó
-            StartingPolynomial<Degree + 1>* sps;    // ´øÓĞÆğÊ¼Î»ÖÃµÄ¶àÏîÊ½£¬Ö÷ÒªÊÇ¼ÇÂ¼¶àÏîÊ½º¯ÊıÔÚÇø¼ä¶ÎµÄÆ½ÒÆ£¬´Ó¶øÇó³ö[-radius, radius]µÄ»ı·Ö
+            PPolynomial<Degree + 1> A;              // å¤šé¡¹å¼é›†åˆå¯¹è±¡(äºŒæ¬¡Bæ ·æ¡å‡½æ•°)
+            Polynomial<Degree + 1> p;               // å¤šé¡¹å¼å¯¹è±¡
+            StartingPolynomial<Degree + 1>* sps;    // å¸¦æœ‰èµ·å§‹ä½ç½®çš„å¤šé¡¹å¼ï¼Œä¸»è¦æ˜¯è®°å½•å¤šé¡¹å¼å‡½æ•°åœ¨åŒºé—´æ®µçš„å¹³ç§»ï¼Œä»è€Œæ±‚å‡º[-radius, radius]çš„ç§¯åˆ†
             sps = (StartingPolynomial<Degree + 1>*)malloc(sizeof(StartingPolynomial<Degree + 1>) * polyCount * 2);
             for (int i = 0; i < int(polyCount); i++)  {
-                sps[2 * i].start = polys[i].start - radius;       // ¶àÏîÊ½¶¨ÒåÓòÆğµã(×ó±ß½ç)Æ«ÒÆ
-                sps[2 * i + 1].start = polys[i].start + radius;   // ¶àÏîÊ½¶¨ÒåÓòÆğµã(×ó±ß½ç)Æ«ÒÆ
-                // p = ¶àÏîÊ½iµÄÔ­º¯Êı - ¶àÏîÊ½iµÄÔ­º¯ÊıÔÚstart´¦µÄÖµ   -->   È·±£¶àÏîÊ½Ô­º¯ÊıÔÚstart´¦µÄÖµÎª0
+                sps[2 * i].start = polys[i].start - radius;       // å¤šé¡¹å¼å®šä¹‰åŸŸèµ·ç‚¹(å·¦è¾¹ç•Œ)åç§»
+                sps[2 * i + 1].start = polys[i].start + radius;   // å¤šé¡¹å¼å®šä¹‰åŸŸèµ·ç‚¹(å·¦è¾¹ç•Œ)åç§»
+                // p = å¤šé¡¹å¼içš„åŸå‡½æ•° - å¤šé¡¹å¼içš„åŸå‡½æ•°åœ¨startå¤„çš„å€¼   -->   ç¡®ä¿å¤šé¡¹å¼åŸå‡½æ•°åœ¨startå¤„çš„å€¼ä¸º0
                 p = polys[i].p.integral() - polys[i].p.integral()(polys[i].start);
-                sps[2 * i].p = p.shift(-radius);                  // ¶àÏîÊ½Æ«ÒÆµÃµ½ĞÂµÄ¶àÏîÊ½
-                sps[2 * i + 1].p = p.shift(radius) * -1;          // ¶àÏîÊ½Æ«ÒÆµÃµ½ĞÂµÄ¶àÏîÊ½
+                sps[2 * i].p = p.shift(-radius);                  // å¤šé¡¹å¼åç§»å¾—åˆ°æ–°çš„å¤šé¡¹å¼
+                sps[2 * i + 1].p = p.shift(radius) * -1;          // å¤šé¡¹å¼åç§»å¾—åˆ°æ–°çš„å¤šé¡¹å¼
                 //if (int(Degree) == 0) {
                 //    printf("Degree = %d  Poly[%d] = %.3fx + %.3f\n", int(Degree), i, p.coefficients[1], p.coefficients[0]);
-                //    printf("            sps [%d] = %.3fx + %.3f  x ¡Ê [%.3f, ¡Ş)\n            sps [%d] = %.3fx + %.3f  x ¡Ê [%.3f, ¡Ş)\n",
+                //    printf("            sps [%d] = %.3fx + %.3f  x âˆˆ [%.3f, âˆ)\n            sps [%d] = %.3fx + %.3f  x âˆˆ [%.3f, âˆ)\n",
                 //        2 * i, sps[2 * i].p.coefficients[1], sps[2 * i].p.coefficients[0], sps[2 * i].start,
                 //        2 * i + 1, sps[2 * i + 1].p.coefficients[1], sps[2 * i + 1].p.coefficients[0], sps[2 * i + 1].start);
                 //}
                 //if (int(Degree) == 1) {
                 //    printf("Degree = %d  Poly[%d] = %.3fx^2 + %.3fx + %.3f\n", int(Degree), i, p.coefficients[2], p.coefficients[1], p.coefficients[0]);
-                //    printf("            sps [%d] = %.3fx^2 + %.3fx + %.3f  x ¡Ê [%.3f, ¡Ş)\n            sps [%d] = %.3fx^2 + %.3fx + %.3f  x ¡Ê [%.3f, ¡Ş)\n",
+                //    printf("            sps [%d] = %.3fx^2 + %.3fx + %.3f  x âˆˆ [%.3f, âˆ)\n            sps [%d] = %.3fx^2 + %.3fx + %.3f  x âˆˆ [%.3f, âˆ)\n",
                 //        2 * i, sps[2 * i].p.coefficients[2], sps[2 * i].p.coefficients[1], sps[2 * i].p.coefficients[0], sps[2 * i].start,
                 //        2 * i + 1, sps[2 * i + 1].p.coefficients[2], sps[2 * i + 1].p.coefficients[1], sps[2 * i + 1].p.coefficients[0], sps[2 * i + 1].start);
                 //}
                 //else if (int(Degree) == 2) {
                 //    printf("Degree = %d  Poly[%d] = %.3fx^3 + %.3fx^2 + %.3fx + %.3f\n", int(Degree), i, p.coefficients[3], p.coefficients[2], p.coefficients[1], p.coefficients[0]);
-                //    printf("            sps [%d] = %.3fx^3 + %.3fx^2 + %.3fx + %.3f  x ¡Ê [%.3f, ¡Ş)\n            sps [%d] = %.3fx^3 + %.3fx^2 + %.3fx + %.3f  x ¡Ê [%.3f, ¡Ş)\n",
+                //    printf("            sps [%d] = %.3fx^3 + %.3fx^2 + %.3fx + %.3f  x âˆˆ [%.3f, âˆ)\n            sps [%d] = %.3fx^3 + %.3fx^2 + %.3fx + %.3f  x âˆˆ [%.3f, âˆ)\n",
                 //        2 * i, sps[2 * i].p.coefficients[3], sps[2 * i].p.coefficients[2], sps[2 * i].p.coefficients[1], sps[2 * i].p.coefficients[0], sps[2 * i].start,
                 //        2 * i + 1, sps[2 * i + 1].p.coefficients[3], sps[2 * i + 1].p.coefficients[2], sps[2 * i + 1].p.coefficients[1], sps[2 * i + 1].p.coefficients[0], sps[2 * i + 1].start);
                 //}
             }
-            A.set(sps, int(polyCount * 2)); // ºÏ²¢Æ«ÒÆµÄ¶àÏîÊ½
+            A.set(sps, int(polyCount * 2)); // åˆå¹¶åç§»çš„å¤šé¡¹å¼
             free(sps);
 
-            return A * 1.0 / (2 * radius);  // ¶àÏîÊ½ÔÚ[-radius, radius]Çø¼äÄÚÇóÆ½¾ùÃæ»ı£¬±¾ÉíÇóµÄÒ²ÊÇ¶àÏîÊ½ÔÚÇø¼äÄÚµÄÆ½¾ùÖµ
+            return A * 1.0 / (2 * radius);  // å¤šé¡¹å¼åœ¨[-radius, radius]åŒºé—´å†…æ±‚å¹³å‡é¢ç§¯ï¼Œæœ¬èº«æ±‚çš„ä¹Ÿæ˜¯å¤šé¡¹å¼åœ¨åŒºé—´å†…çš„å¹³å‡å€¼
         }
 
         void write(FILE* fp, const int& samples, const float& min, const float& max) const {
@@ -560,10 +560,10 @@ namespace SparseSurfelFusion {
 	};
 
     /**
-     * \brief ¡¾Í¨ÓÃ°æ±¾µÄ GaussianApproximation º¯ÊıÊµÏÖ¡¿ÓÃÔÚÄ³¸öÇø¼äÉÏµÄÆ½¾ùÖµ½üËÆµÄ×÷Îª¸ßË¹·Ö²¼.
+     * \brief ã€é€šç”¨ç‰ˆæœ¬çš„ GaussianApproximation å‡½æ•°å®ç°ã€‘ç”¨åœ¨æŸä¸ªåŒºé—´ä¸Šçš„å¹³å‡å€¼è¿‘ä¼¼çš„ä½œä¸ºé«˜æ–¯åˆ†å¸ƒ.
      * 
-     * \param radius Çø¼äµÄ¿í¶È/2
-     * \return (½üËÆ)¸ßË¹Æ½»¬ºóµÄ¶àÏîÊ½
+     * \param radius åŒºé—´çš„å®½åº¦/2
+     * \return (è¿‘ä¼¼)é«˜æ–¯å¹³æ»‘åçš„å¤šé¡¹å¼
      */
     template<int Degree>
     PPolynomial<Degree> PPolynomial<Degree>::GaussianApproximation(const float& radius) {
@@ -571,10 +571,10 @@ namespace SparseSurfelFusion {
     }
 
     /**
-     * \brief ¡¾ÌØ»¯°æ±¾µÄ GaussianApproximation º¯ÊıÊµÏÖ¡¿µü´úµÄ×îºóÒ»²ã£¬³õÊ¼¶àÏîÊ½¡¾³£Êı¶àÏîÊ½¡¿.
+     * \brief ã€ç‰¹åŒ–ç‰ˆæœ¬çš„ GaussianApproximation å‡½æ•°å®ç°ã€‘è¿­ä»£çš„æœ€åä¸€å±‚ï¼Œåˆå§‹å¤šé¡¹å¼ã€å¸¸æ•°å¤šé¡¹å¼ã€‘.
      * 
-     * \param radius Çø¼äµÄ¿í¶È/2
-     * \return ³õÊ¼¶àÏîÊ½¡¾³£Êı¶àÏîÊ½¡¿
+     * \param radius åŒºé—´çš„å®½åº¦/2
+     * \return åˆå§‹å¤šé¡¹å¼ã€å¸¸æ•°å¤šé¡¹å¼ã€‘
      */
     template<>
     inline PPolynomial<0> PPolynomial<0>::GaussianApproximation(const float& radius) {

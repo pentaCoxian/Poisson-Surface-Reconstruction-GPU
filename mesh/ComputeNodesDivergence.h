@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   ComputeNodesDivergence.h
- * \brief  ¼ÆËã½ÚµãµÄÉ¢¶È
+ * \brief  è®¡ç®—èŠ‚ç‚¹çš„æ•£åº¦
  * 
  * \author LUOJIAXUAN
  * \date   May 24th 2024
@@ -18,63 +18,63 @@ namespace SparseSurfelFusion {
 
 	namespace device {
 		/**
-		 * \brief ¼ÆËã¾«Ï¸½ÚµãµÄÉ¢¶ÈºËº¯Êı.
+		 * \brief è®¡ç®—ç²¾ç»†èŠ‚ç‚¹çš„æ•£åº¦æ ¸å‡½æ•°.
 		 * 
-		 * \param BaseAddressArray ½ÚµãÆ«ÒÆÊı×é
-		 * \param encodeNodeIndexInFunction ±àÂë½ÚµãµÄÔÚº¯ÊıÖĞË÷Òı
-		 * \param NodeArray °Ë²æÊ÷Ò»Î¬½Úµã
-		 * \param VectorField ÏòÁ¿³¡
-		 * \param dot_F_DF µã»ı±í
-		 * \param begin ÔÚNodeArrayÆ«ÒÆ¿ªÊ¼
-		 * \param calculatedNodeNum ĞèÒª²ÎÓë¼ÆËãµÄ½Úµã×ÜÊı
-		 * \param Divergence ½ÚµãÉ¢¶È
+		 * \param BaseAddressArray èŠ‚ç‚¹åç§»æ•°ç»„
+		 * \param encodeNodeIndexInFunction ç¼–ç èŠ‚ç‚¹çš„åœ¨å‡½æ•°ä¸­ç´¢å¼•
+		 * \param NodeArray å…«å‰æ ‘ä¸€ç»´èŠ‚ç‚¹
+		 * \param VectorField å‘é‡åœº
+		 * \param dot_F_DF ç‚¹ç§¯è¡¨
+		 * \param begin åœ¨NodeArrayåç§»å¼€å§‹
+		 * \param calculatedNodeNum éœ€è¦å‚ä¸è®¡ç®—çš„èŠ‚ç‚¹æ€»æ•°
+		 * \param Divergence èŠ‚ç‚¹æ•£åº¦
 		 */
 		__global__ void computeFinerNodesDivergenceKernel(DeviceArrayView<int> BaseAddressArray, DeviceArrayView<int> encodeNodeIndexInFunction, DeviceArrayView<OctNode> NodeArray, DeviceArrayView<Point3D<float>> VectorField, DeviceArrayView<double> dot_F_DF, const unsigned int begin, const unsigned int calculatedNodeNum, float* Divergence);
 
 		/**
-		 * \brief Á½¸öÏòÁ¿µã³Ë.
+		 * \brief ä¸¤ä¸ªå‘é‡ç‚¹ä¹˜.
 		 * 
-		 * \param p1 ÏòÁ¿1
-		 * \param p2 ÏòÁ¿2
+		 * \param p1 å‘é‡1
+		 * \param p2 å‘é‡2
 		 */
 		__device__ float DotProduct(const Point3D<float>& p1, const Point3D<float>& p2);
 
 		/**
-		 * \brief ¼ÆËã¸Ã½Úµã¼°ÆäÁÚ¾Ó½ÚµãËù¸²¸ÇµÄmaxDepth²ã½ÚµãµÄÊıÁ¿.
+		 * \brief è®¡ç®—è¯¥èŠ‚ç‚¹åŠå…¶é‚»å±…èŠ‚ç‚¹æ‰€è¦†ç›–çš„maxDepthå±‚èŠ‚ç‚¹çš„æ•°é‡.
 		 * 
-		 * \param NodeArray °Ë²æÊ÷Ò»Î¬½Úµã
-		 * \param index µ±Ç°µãÔÚNodeArrayÖĞµÄÎ»ÖÃ
-		 * \param coverNums ¸²¸ÇµÄ½ÚµãÊıÁ¿
+		 * \param NodeArray å…«å‰æ ‘ä¸€ç»´èŠ‚ç‚¹
+		 * \param index å½“å‰ç‚¹åœ¨NodeArrayä¸­çš„ä½ç½®
+		 * \param coverNums è¦†ç›–çš„èŠ‚ç‚¹æ•°é‡
 		 */
 		__global__ void computeCoverNums(DeviceArrayView<OctNode> NodeArray, const unsigned int index, unsigned int* coverNums);
 
 		/**
-		 * \brief Éú³É£ºidx = [0, totalCoverNum)¸öD²ã½Úµã£¬½«ÕâĞ©½ÚµãÓ³Éäµ½D²ã¶ÔÓ¦µÄD_idx.
+		 * \brief ç”Ÿæˆï¼šidx = [0, totalCoverNum)ä¸ªDå±‚èŠ‚ç‚¹ï¼Œå°†è¿™äº›èŠ‚ç‚¹æ˜ å°„åˆ°Då±‚å¯¹åº”çš„D_idx.
 		 * 
-		 * \param NodeArray °Ë²æÊ÷Ò»Î¬½Úµã
-		 * \param index µ±Ç°µãÔÚNodeArrayÖĞµÄÎ»ÖÃ
-		 * \param coverNums ¸²¸ÇµÄ½ÚµãÊıÁ¿
-		 * \param totalCoverNum µ±Ç°½Úµã¼°ÆäÁÚ¾Ó½Úµã¸²¸ÇµÄD²ã½ÚµãµÄ½Úµã×ÜÊı
-		 * \param DLevelIndexArray Ó³Éä¹ØÏµÊı×é
+		 * \param NodeArray å…«å‰æ ‘ä¸€ç»´èŠ‚ç‚¹
+		 * \param index å½“å‰ç‚¹åœ¨NodeArrayä¸­çš„ä½ç½®
+		 * \param coverNums è¦†ç›–çš„èŠ‚ç‚¹æ•°é‡
+		 * \param totalCoverNum å½“å‰èŠ‚ç‚¹åŠå…¶é‚»å±…èŠ‚ç‚¹è¦†ç›–çš„Då±‚èŠ‚ç‚¹çš„èŠ‚ç‚¹æ€»æ•°
+		 * \param DLevelIndexArray æ˜ å°„å…³ç³»æ•°ç»„
 		 */
 		__global__ void generateDLevelIndexArrayKernel(DeviceArrayView<OctNode> NodeArray, const unsigned int index, const unsigned int* coverNums, const unsigned int totalCoverNum, unsigned int* DLevelIndexArray);
 
 		/**
-		 * \brief ¼ÆËãµ±Ç°½ÚµãÉ¢¶ÈµÄºËº¯Êı.
+		 * \brief è®¡ç®—å½“å‰èŠ‚ç‚¹æ•£åº¦çš„æ ¸å‡½æ•°.
 		 * 
-		 * \param BaseAddressArrayDevice ½ÚµãÆ«ÒÆÊı×é
-		 * \param encodeNodeIndexInFunction ±àÂë½ÚµãµÄÔÚº¯ÊıÖĞË÷Òı
-		 * \param VectorField ÏòÁ¿³¡
-		 * \param dot_F_DF µã»ı±í
-		 * \param index µ±Ç°ËùĞèÒª¼ÆËãµÄ½ÚµãÔÚNodeArrayÖĞµÄindex
-		 * \param DLevelIndexArray Ó³Éä¹ØÏµÊı×é
-		 * \param totalCoverNum µ±Ç°½Úµã¼°ÆäÁÚ¾Ó½Úµã¸²¸ÇµÄD²ã½ÚµãµÄ½Úµã×ÜÊı
-		 * \param divg ĞèÒª¼ÆËãµÄÉ¢¶ÈÖµ£¬¶à¸öÖµ
+		 * \param BaseAddressArrayDevice èŠ‚ç‚¹åç§»æ•°ç»„
+		 * \param encodeNodeIndexInFunction ç¼–ç èŠ‚ç‚¹çš„åœ¨å‡½æ•°ä¸­ç´¢å¼•
+		 * \param VectorField å‘é‡åœº
+		 * \param dot_F_DF ç‚¹ç§¯è¡¨
+		 * \param index å½“å‰æ‰€éœ€è¦è®¡ç®—çš„èŠ‚ç‚¹åœ¨NodeArrayä¸­çš„index
+		 * \param DLevelIndexArray æ˜ å°„å…³ç³»æ•°ç»„
+		 * \param totalCoverNum å½“å‰èŠ‚ç‚¹åŠå…¶é‚»å±…èŠ‚ç‚¹è¦†ç›–çš„Då±‚èŠ‚ç‚¹çš„èŠ‚ç‚¹æ€»æ•°
+		 * \param divg éœ€è¦è®¡ç®—çš„æ•£åº¦å€¼ï¼Œå¤šä¸ªå€¼
 		 */
 		__global__ void computeCoarserNodesDivergenceKernel(DeviceArrayView<int> BaseAddressArrayDevice, DeviceArrayView<int> encodeNodeIndexInFunction, DeviceArrayView<Point3D<float>> VectorField, DeviceArrayView<double> dot_F_DF, const unsigned int index, const unsigned int* DLevelIndexArray, const unsigned int totalCoverNum, float* divg);
 	}
 	/**
-	 * \brief ¼ÆËã½ÚµãµÄÉ¢¶È.
+	 * \brief è®¡ç®—èŠ‚ç‚¹çš„æ•£åº¦.
 	 */
 	class ComputeNodesDivergence
 	{
@@ -87,61 +87,61 @@ namespace SparseSurfelFusion {
 
 
 		/**
-		 * \brief ¼ÆËã½ÚµãµÄÉ¢¶È¡¾Á½¸öÁ÷·Ö±ğ²¢ĞĞÖ´ĞĞ£ºÊ±¼ä¼õÉÙ44%¡¿.
+		 * \brief è®¡ç®—èŠ‚ç‚¹çš„æ•£åº¦ã€ä¸¤ä¸ªæµåˆ†åˆ«å¹¶è¡Œæ‰§è¡Œï¼šæ—¶é—´å‡å°‘44%ã€‘.
 		 *
-		 * \param BaseAddressArrayDevice ½ÚµãÆ«ÒÆÊı×é(Host)
-		 * \param NodeArrayCount Ã¿Ò»²ã½ÚµãÊıÁ¿(Host)
-		 * \param encodeNodeIndexInFunction ±àÂë½ÚµãµÄÔÚº¯ÊıÖĞË÷Òı
-		 * \param NodeArray °Ë²æÊ÷Ò»Î¬½Úµã
-		 * \param VectorField ÏòÁ¿³¡
-		 * \param dot_F_DF µã»ı±í
-		 * \param stream_1 cudaÁ÷1
-		 * \param stream_2 cudaÁ÷2
+		 * \param BaseAddressArrayDevice èŠ‚ç‚¹åç§»æ•°ç»„(Host)
+		 * \param NodeArrayCount æ¯ä¸€å±‚èŠ‚ç‚¹æ•°é‡(Host)
+		 * \param encodeNodeIndexInFunction ç¼–ç èŠ‚ç‚¹çš„åœ¨å‡½æ•°ä¸­ç´¢å¼•
+		 * \param NodeArray å…«å‰æ ‘ä¸€ç»´èŠ‚ç‚¹
+		 * \param VectorField å‘é‡åœº
+		 * \param dot_F_DF ç‚¹ç§¯è¡¨
+		 * \param stream_1 cudaæµ1
+		 * \param stream_2 cudaæµ2
 		 */
 		void CalculateNodesDivergence(const int* BaseAddressArray, const int* NodeArrayCount, DeviceArrayView<int> BaseAddressArrayDevice, DeviceArrayView<int> encodeNodeIndexInFunction, DeviceArrayView<OctNode> NodeArray, DeviceArrayView<Point3D<float>> VectorField, DeviceArrayView<double> dot_F_DF, cudaStream_t stream_1, cudaStream_t stream_2);
 
 		/**
-		 * \brief »ñµÃ½ÚµãÉ¢¶È(Ö»¶Á).
+		 * \brief è·å¾—èŠ‚ç‚¹æ•£åº¦(åªè¯»).
 		 * 
-		 * \return NodeArrayÖĞ½ÚµãµÄÉ¢¶È
+		 * \return NodeArrayä¸­èŠ‚ç‚¹çš„æ•£åº¦
 		 */
 		DeviceArrayView<float> GetDivergenceView() { return Divergence.ArrayView(); }
 
 		/**
-		 * \brief »ñµÃ½ÚµãÉ¢¶ÈÖ¸Õë.
+		 * \brief è·å¾—èŠ‚ç‚¹æ•£åº¦æŒ‡é’ˆ.
 		 * 
-		 * \return ½ÚµãÉ¢¶ÈÖ¸Õë
+		 * \return èŠ‚ç‚¹æ•£åº¦æŒ‡é’ˆ
 		 */
 		float* GetDivergenceRawPtr() { return Divergence.Array().ptr(); }
 	private:
 
-		DeviceBufferArray<float> Divergence;			// ½ÚµãµÄÉ¢¶È
+		DeviceBufferArray<float> Divergence;			// èŠ‚ç‚¹çš„æ•£åº¦
 
 		/**
-		 * \brief ¼ÆËã¾«Ï¸½ÚµãµÄÉ¢¶È¡¾¼ÆËã[maxDepth - FinerLevelNum, maxDepth]²ãµÄ½ÚµãÉ¢¶È£¬Êı¾İÓĞÏà²î30%£¬¶àÊıÊÇ1¡ë¡¿.
+		 * \brief è®¡ç®—ç²¾ç»†èŠ‚ç‚¹çš„æ•£åº¦ã€è®¡ç®—[maxDepth - FinerLevelNum, maxDepth]å±‚çš„èŠ‚ç‚¹æ•£åº¦ï¼Œæ•°æ®æœ‰ç›¸å·®30%ï¼Œå¤šæ•°æ˜¯1â€°ã€‘.
 		 *
-		 * \param BaseAddressArrayDevice ½ÚµãÆ«ÒÆÊı×é(GPU)
-		 * \param encodeNodeIndexInFunction ±àÂë½ÚµãµÄÔÚº¯ÊıÖĞË÷Òı
-		 * \param NodeArray °Ë²æÊ÷Ò»Î¬½Úµã
-		 * \param VectorField ÏòÁ¿³¡
-		 * \param dot_F_DF µã»ı±í
-		 * \param left ²ÎÓë¼ÆËãµÄ°Ë²æÊ÷½ÚµãÊı×éµÄ×ó±ß½çindex  ¡¾²ÎÓë¼ÆËã½ÚµãindexµÄÇø¼ä·¶Î§Îª[left, right]¡¿
-		 * \param right ²ÎÓë¼ÆËãµÄ°Ë²æÊ÷½ÚµãÊı×éµÄÓÒ±ß½çindex ¡¾²ÎÓë¼ÆËã½ÚµãindexµÄÇø¼ä·¶Î§Îª[left, right]¡¿
-		 * \param cudaÁ÷
+		 * \param BaseAddressArrayDevice èŠ‚ç‚¹åç§»æ•°ç»„(GPU)
+		 * \param encodeNodeIndexInFunction ç¼–ç èŠ‚ç‚¹çš„åœ¨å‡½æ•°ä¸­ç´¢å¼•
+		 * \param NodeArray å…«å‰æ ‘ä¸€ç»´èŠ‚ç‚¹
+		 * \param VectorField å‘é‡åœº
+		 * \param dot_F_DF ç‚¹ç§¯è¡¨
+		 * \param left å‚ä¸è®¡ç®—çš„å…«å‰æ ‘èŠ‚ç‚¹æ•°ç»„çš„å·¦è¾¹ç•Œindex  ã€å‚ä¸è®¡ç®—èŠ‚ç‚¹indexçš„åŒºé—´èŒƒå›´ä¸º[left, right]ã€‘
+		 * \param right å‚ä¸è®¡ç®—çš„å…«å‰æ ‘èŠ‚ç‚¹æ•°ç»„çš„å³è¾¹ç•Œindex ã€å‚ä¸è®¡ç®—èŠ‚ç‚¹indexçš„åŒºé—´èŒƒå›´ä¸º[left, right]ã€‘
+		 * \param cudaæµ
 		 */
 		void computeFinerNodesDivergence(DeviceArrayView<int> BaseAddressArrayDevice, DeviceArrayView<int> encodeNodeIndexInFunction, DeviceArrayView<OctNode> NodeArray, DeviceArrayView<Point3D<float>> VectorField, DeviceArrayView<double> dot_F_DF, const unsigned int left, const unsigned int right, cudaStream_t stream);
 
 		/**
-		 * \brief ¼ÆËã´Ö²Ú½ÚµãµÄÉ¢¶È¡¾¼ÆËã[1, CoarserLevelNum]²ã½ÚµãµÄÉ¢¶È¡¿¡¾²»×èÈûÏß³Ì¡¿.
+		 * \brief è®¡ç®—ç²—ç³™èŠ‚ç‚¹çš„æ•£åº¦ã€è®¡ç®—[1, CoarserLevelNum]å±‚èŠ‚ç‚¹çš„æ•£åº¦ã€‘ã€ä¸é˜»å¡çº¿ç¨‹ã€‘.
 		 *
-		 * \param BaseAddressArrayDevice ½ÚµãÆ«ÒÆÊı×é(GPU)
-		 * \param encodeNodeIndexInFunction ±àÂë½ÚµãµÄÔÚº¯ÊıÖĞË÷Òı
-		 * \param NodeArray °Ë²æÊ÷Ò»Î¬½Úµã
-		 * \param VectorField ÏòÁ¿³¡
-		 * \param dot_F_DF µã»ı±í
-		 * \param left ²ÎÓë¼ÆËãµÄ°Ë²æÊ÷½ÚµãÊı×éµÄ×ó±ß½çindex  ¡¾²ÎÓë¼ÆËã½ÚµãindexµÄÇø¼ä·¶Î§Îª[left, right]¡¿
-		 * \param right ²ÎÓë¼ÆËãµÄ°Ë²æÊ÷½ÚµãÊı×éµÄÓÒ±ß½çindex ¡¾²ÎÓë¼ÆËã½ÚµãindexµÄÇø¼ä·¶Î§Îª[left, right]¡¿
-		 * \param stream cudaÁ÷
+		 * \param BaseAddressArrayDevice èŠ‚ç‚¹åç§»æ•°ç»„(GPU)
+		 * \param encodeNodeIndexInFunction ç¼–ç èŠ‚ç‚¹çš„åœ¨å‡½æ•°ä¸­ç´¢å¼•
+		 * \param NodeArray å…«å‰æ ‘ä¸€ç»´èŠ‚ç‚¹
+		 * \param VectorField å‘é‡åœº
+		 * \param dot_F_DF ç‚¹ç§¯è¡¨
+		 * \param left å‚ä¸è®¡ç®—çš„å…«å‰æ ‘èŠ‚ç‚¹æ•°ç»„çš„å·¦è¾¹ç•Œindex  ã€å‚ä¸è®¡ç®—èŠ‚ç‚¹indexçš„åŒºé—´èŒƒå›´ä¸º[left, right]ã€‘
+		 * \param right å‚ä¸è®¡ç®—çš„å…«å‰æ ‘èŠ‚ç‚¹æ•°ç»„çš„å³è¾¹ç•Œindex ã€å‚ä¸è®¡ç®—èŠ‚ç‚¹indexçš„åŒºé—´èŒƒå›´ä¸º[left, right]ã€‘
+		 * \param stream cudaæµ
 		 */
 		void computeCoarserNodesDivergence(const int* BaseAddressArray, DeviceArrayView<int> BaseAddressArrayDevice, DeviceArrayView<int> encodeNodeIndexInFunction, DeviceArrayView<OctNode> NodeArray, DeviceArrayView<Point3D<float>> VectorField, DeviceArrayView<double> dot_F_DF, const unsigned int left, const unsigned int right, cudaStream_t stream);
 	};

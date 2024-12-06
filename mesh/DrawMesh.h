@@ -1,23 +1,23 @@
 /*****************************************************************//**
  * \file   DrawMesh.h
- * \brief  OpenGL»æÖÆäÖÈ¾Íø¸ñ
+ * \brief  OpenGLç»˜åˆ¶æ¸²æŸ“ç½‘æ ¼
  * 
  * \author LUOJIAXUAN
  * \date   June 5th 2024
  *********************************************************************/
 #pragma once
-#include <glad/glad.h>			// <GLFW/glfw3.h>»á×Ô¶¯°üº¬ºÜ¶àÀÏ°æ±¾£¬Èç¹û<glad/glad.h>ÔÚÇ°Ãæ£¬ÄÇÃ´¾ÍÊ¹ÓÃglad¶ÔÓ¦×îĞÂ°æ±¾µÄOpenGL£¬ÕâÒ²ÊÇÎªÊ²Ã´<glad/glad.h>±ØĞëÔÚ<GLFW/glfw3.h>Ö®Ç°
-//#define GLFW_INCLUDE_NONE		// ÏÔÊ¾µÄ½ûÓÃ <GLFW/glfw3.h> ×Ô¶¯°üº¬¿ª·¢»·¾³µÄ¹¦ÄÜ£¬Ê¹ÓÃÕâ¸ö¹¦ÄÜÖ®ºó¾Í²»»áÔÙ´Ó¿ª·¢»·¾³ÖĞ°üº¬£¬¼´<GLFW/glfw3.h>Ò²¿ÉÒÔÔÚ<glad/glad.h>Ö®Ç°
+#include <glad/glad.h>			// <GLFW/glfw3.h>ä¼šè‡ªåŠ¨åŒ…å«å¾ˆå¤šè€ç‰ˆæœ¬ï¼Œå¦‚æœ<glad/glad.h>åœ¨å‰é¢ï¼Œé‚£ä¹ˆå°±ä½¿ç”¨gladå¯¹åº”æœ€æ–°ç‰ˆæœ¬çš„OpenGLï¼Œè¿™ä¹Ÿæ˜¯ä¸ºä»€ä¹ˆ<glad/glad.h>å¿…é¡»åœ¨<GLFW/glfw3.h>ä¹‹å‰
+//#define GLFW_INCLUDE_NONE		// æ˜¾ç¤ºçš„ç¦ç”¨ <GLFW/glfw3.h> è‡ªåŠ¨åŒ…å«å¼€å‘ç¯å¢ƒçš„åŠŸèƒ½ï¼Œä½¿ç”¨è¿™ä¸ªåŠŸèƒ½ä¹‹åå°±ä¸ä¼šå†ä»å¼€å‘ç¯å¢ƒä¸­åŒ…å«ï¼Œå³<GLFW/glfw3.h>ä¹Ÿå¯ä»¥åœ¨<glad/glad.h>ä¹‹å‰
 #include <GLFW/glfw3.h>
 
-#include <glm/glm.hpp>//OpenGL¾ØÕóÔËËã¿â
+#include <glm/glm.hpp>//OpenGLçŸ©é˜µè¿ç®—åº“
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <cuda_runtime.h>
 #include <cuda_runtime_api.h>
-#include <cuda_gl_interop.h>	// CUDAÓëOpenGLÏÔ´æ¹²Ïí
-#include <tuple>				// tupleÊÇÒ»¸ö¹Ì¶¨´óĞ¡µÄ²»Í¬ÀàĞÍÖµµÄ¼¯ºÏ£¬ÊÇ·º»¯µÄstd::pair
+#include <cuda_gl_interop.h>	// CUDAä¸OpenGLæ˜¾å­˜å…±äº«
+#include <tuple>				// tupleæ˜¯ä¸€ä¸ªå›ºå®šå¤§å°çš„ä¸åŒç±»å‹å€¼çš„é›†åˆï¼Œæ˜¯æ³›åŒ–çš„std::pair
 
 #include "Geometry.h"
 #include <chrono>
@@ -27,7 +27,7 @@
 #include <math/VectorUtils.h>
 
 static glm::vec3 box[68] = {
-	// xÖá								xÖáÑÕÉ«
+	// xè½´								xè½´é¢œè‰²
 	{ 0.0f,   0.0f,   0.0f },			{1.0f,   0.0f,   0.0f},
 	{ 1.0f,   0.0f,   0.0f },			{1.0f,   0.0f,   0.0f},
 	{ 1.0f,   0.0f,   0.0f },			{1.0f,   0.0f,   0.0f},
@@ -70,56 +70,56 @@ namespace SparseSurfelFusion {
 	namespace device {
 
 		/**
-		 * \brief GPU±©Á¦Çó½âKNN.
+		 * \brief GPUæš´åŠ›æ±‚è§£KNN.
 		 */
 		struct KnnHeapDevice {
 			float4& distance;
 			uint4& index;
 
-			// ¹¹Ôìº¯ÊıÖ»ÊÇ¸´ÖÆÖ¸Õë£¬Àà»áĞŞ¸ÄËü
+			// æ„é€ å‡½æ•°åªæ˜¯å¤åˆ¶æŒ‡é’ˆï¼Œç±»ä¼šä¿®æ”¹å®ƒ
 			__host__ __device__ KnnHeapDevice(float4& dist, uint4& node_idx) : distance(dist), index(node_idx) {}
 
-			// ¸üĞÂº¯Êı
+			// æ›´æ–°å‡½æ•°
 			__host__ __device__ __forceinline__ void update(unsigned int idx, float dist);
 		};
 
 		/**
-		 * \brief ±©Á¦Çó½â¾àÀë¶¥µã×î½üµÄ4¸ö²ÉÑùµã.
+		 * \brief æš´åŠ›æ±‚è§£è·ç¦»é¡¶ç‚¹æœ€è¿‘çš„4ä¸ªé‡‡æ ·ç‚¹.
 		 */
 		__device__ __forceinline__ void bruteForceSearch4KNN(const float3& vertex, DeviceArrayView<OrientedPoint3D<float>> samplePoint, const unsigned int samplePointsCount, float4& distance, uint4& sampleIndex);
 
 		/**
-		 * \brief ÏòÁ¿¹éÒ»»¯.
+		 * \brief å‘é‡å½’ä¸€åŒ–.
 		 */
 		__device__ float3 VectorNormalize(const float3& normal);
 
 		/**
-		 * \brief ÏòÁ¿²æ³Ë.
+		 * \brief å‘é‡å‰ä¹˜.
 		 */
 		__device__ float3 CrossProduct(const float3& Vector_OA, const float3& Vector_OB);
 
 		/**
-		 * \brief ¼ÆËãÍø¸ñ·¨ÏßºËº¯Êı.
+		 * \brief è®¡ç®—ç½‘æ ¼æ³•çº¿æ ¸å‡½æ•°.
 		 */
 		__global__ void CalculateMeshNormalsKernel(const Point3D<float>* verticesArray, const TriangleIndex* indicesArray, const unsigned int meshCount, Point3D<float>* normalsArray);
 
 		/**
-		 * \brief ¼ÆËã¶¥µãÁÚ½Ó¶àÉÙ¸öÈı½ÇĞÎ.
+		 * \brief è®¡ç®—é¡¶ç‚¹é‚»æ¥å¤šå°‘ä¸ªä¸‰è§’å½¢.
 		 */
 		__global__ void CountConnectedTriangleNumKernel(const TriangleIndex* indicesArray, const unsigned int meshCount, unsigned int* ConnectedTriangleNum);
 
 		/**
-		 * \brief ¼ÆËãÁÚ½ÓÈı½ÇĞÎ·¨ÏòÁ¿ºÍ.
+		 * \brief è®¡ç®—é‚»æ¥ä¸‰è§’å½¢æ³•å‘é‡å’Œ.
 		 */
 		__global__ void VerticesNormalsSumKernel(const Point3D<float>* meshNormals, const TriangleIndex* indicesArray, const unsigned int meshCount, Point3D<float>* VerticesNormalsSum);
 
 		/**
-		 * \brief Í¨¹ıÆ½¾ùÁÚ½ÓÈı½ÇMeshµÄ·¨Ïß£¬¼ÆËãµ±Ç°¶¥µãµÄ·¨Ïß.
+		 * \brief é€šè¿‡å¹³å‡é‚»æ¥ä¸‰è§’Meshçš„æ³•çº¿ï¼Œè®¡ç®—å½“å‰é¡¶ç‚¹çš„æ³•çº¿.
 		 */
 		__global__ void CalculateVerticesAverageNormals(const unsigned int* ConnectedTriangleNum, const Point3D<float>* VerticesNormalsSum, const unsigned int verticesCount, Point3D<float>* VerticesAverageNormals);
 
 		/**
-		 * \brief ¸ù¾İ¶¥µã×î½üµÄ²ÉÑùµãÁÚ¾Ó¼ÆËã¶¥µãµÄÑÕÉ«.
+		 * \brief æ ¹æ®é¡¶ç‚¹æœ€è¿‘çš„é‡‡æ ·ç‚¹é‚»å±…è®¡ç®—é¡¶ç‚¹çš„é¢œè‰².
 		 */
 		__global__ void CalculateVerticesAverageColors(DeviceArrayView<Point3D<float>> meshVertices, DeviceArrayView<OrientedPoint3D<float>> samplePoints, const unsigned int verticesCount, const unsigned int samplePointsCount, Point3D<float>* VerticesAverageColors);
 	}
@@ -132,127 +132,127 @@ namespace SparseSurfelFusion {
 		using Ptr = std::shared_ptr<DrawMesh>;
 
 		/**
-		 * \brief ÉèÖÃ²ÎÊı.
+		 * \brief è®¾ç½®å‚æ•°.
 		 * 
-		 * \param meshVertices Íø¸ñ¶¥µã
-		 * \param meshTriangleIndices Èı½ÇÃæÔªË÷Òı
-		 * \param samplePoints ³íÃÜÓĞÏòRGB²ÉÑùµã
+		 * \param meshVertices ç½‘æ ¼é¡¶ç‚¹
+		 * \param meshTriangleIndices ä¸‰è§’é¢å…ƒç´¢å¼•
+		 * \param samplePoints ç¨ å¯†æœ‰å‘RGBé‡‡æ ·ç‚¹
 		 */
 		void setInput(DeviceArrayView<Point3D<float>> meshVertices, DeviceArrayView<TriangleIndex> meshTriangleIndices, DeviceArrayView<OrientedPoint3D<float>> samplePoints);
 
 		/**
-		 * \brief ¼ÆËãÖØ½¨Èı½ÇÍø¸ñµÄ·¨Ïß.
+		 * \brief è®¡ç®—é‡å»ºä¸‰è§’ç½‘æ ¼çš„æ³•çº¿.
 		 * 
-		 * \param meshVertices Íø¸ñÖØ½¨ºóµÄ¶¥µã
-		 * \param meshTriangleIndices Íø¸ñÖØ½¨ºóµÄÈı½ÇĞÎË÷Òı
-		 * \param stream cudaÁ÷
+		 * \param meshVertices ç½‘æ ¼é‡å»ºåçš„é¡¶ç‚¹
+		 * \param meshTriangleIndices ç½‘æ ¼é‡å»ºåçš„ä¸‰è§’å½¢ç´¢å¼•
+		 * \param stream cudaæµ
 		 */
 		void CalculateMeshNormals(DeviceArrayView<Point3D<float>> meshVertices, DeviceArrayView<TriangleIndex> meshTriangleIndices, cudaStream_t stream = 0);
 
 		/**
-		 * \brief ¼ÆËãÍø¸ñµÄ¶¥µãÑÕÉ«£¬Í¨¹ıÑ°ÕÒ×î½üµÄ(KNN)²ÉÑùµã£¬²¢¶ÔÆäÑÕÉ«¼ÓÈ¨Æ½¾ù.
+		 * \brief è®¡ç®—ç½‘æ ¼çš„é¡¶ç‚¹é¢œè‰²ï¼Œé€šè¿‡å¯»æ‰¾æœ€è¿‘çš„(KNN)é‡‡æ ·ç‚¹ï¼Œå¹¶å¯¹å…¶é¢œè‰²åŠ æƒå¹³å‡.
 		 * 
-		 * \param sampleDensePoints ²ÉÑùµÄ³íÃÜµã
-		 * \param meshVertices Íø¸ñ¶¥µã
-		 * \param stream cudaÁ÷
+		 * \param sampleDensePoints é‡‡æ ·çš„ç¨ å¯†ç‚¹
+		 * \param meshVertices ç½‘æ ¼é¡¶ç‚¹
+		 * \param stream cudaæµ
 		 */
 		void CalculateMeshVerticesColor(DeviceArrayView<OrientedPoint3D<float>> sampleDensePoints, DeviceArrayView<Point3D<float>> meshVertices, cudaStream_t stream = 0);
 
 		/**
-		 * \brief »æÖÆäÖÈ¾µÄÍø¸ñ.
+		 * \brief ç»˜åˆ¶æ¸²æŸ“çš„ç½‘æ ¼.
 		 * 
-		 * \param stream cudaÁ÷
+		 * \param stream cudaæµ
 		 */
 		void DrawRenderedMesh(cudaStream_t stream);
 
 	private:
 
-		DeviceBufferArray<Point3D<float>> VerticesAverageNormals;	// ¹éÒ»»¯µÄ¶¥µãÆ½¾ù·¨ÏòÁ¿
-		DeviceBufferArray<Point3D<float>> VerticesAverageColors;	// ¶¥µãÑÕÉ«
-		DeviceBufferArray<Point3D<float>> MeshVertices;				// Íø¸ñ¶¥µã
-		DeviceBufferArray<TriangleIndex> MeshTriangleIndices;		// Íø¸ñÈı½ÇÃæÔªË÷Òı
+		DeviceBufferArray<Point3D<float>> VerticesAverageNormals;	// å½’ä¸€åŒ–çš„é¡¶ç‚¹å¹³å‡æ³•å‘é‡
+		DeviceBufferArray<Point3D<float>> VerticesAverageColors;	// é¡¶ç‚¹é¢œè‰²
+		DeviceBufferArray<Point3D<float>> MeshVertices;				// ç½‘æ ¼é¡¶ç‚¹
+		DeviceBufferArray<TriangleIndex> MeshTriangleIndices;		// ç½‘æ ¼ä¸‰è§’é¢å…ƒç´¢å¼•
 
 		const unsigned int WindowWidth = 1920 * 0.9;
 		const unsigned int WindowHeight = 1080 * 0.9;
 
-		GLFWwindow* window;					// ´°¿ÚÖ¸Õë
-		GLShaderProgram meshShader;			// Íø¸ñäÖÈ¾
-		GLShaderProgram coordinateShader;	// ×ø±êÏµäÖÈ¾
+		GLFWwindow* window;					// çª—å£æŒ‡é’ˆ
+		GLShaderProgram meshShader;			// ç½‘æ ¼æ¸²æŸ“
+		GLShaderProgram coordinateShader;	// åæ ‡ç³»æ¸²æŸ“
 
-		// »æÖÆµãÔÆ
-		GLuint GeometryVAO;					// µãÔÆÉú³ÉµÄÍø¸ñµÄVAO
-		GLuint GeometryVBO;					// µãÔÆÉú³ÉµÄÍø¸ñµÄVBO
-		GLuint GeometryIBO;					// µãÔÆÉú³ÉµÄÍø¸ñµÄEBO/IBO
+		// ç»˜åˆ¶ç‚¹äº‘
+		GLuint GeometryVAO;					// ç‚¹äº‘ç”Ÿæˆçš„ç½‘æ ¼çš„VAO
+		GLuint GeometryVBO;					// ç‚¹äº‘ç”Ÿæˆçš„ç½‘æ ¼çš„VBO
+		GLuint GeometryIBO;					// ç‚¹äº‘ç”Ÿæˆçš„ç½‘æ ¼çš„EBO/IBO
 
-		cudaGraphicsResource_t cudaVBOResources;// ×¢²á»º³åÇø¶ÔÏóµ½CUDA
-		cudaGraphicsResource_t cudaIBOResources;// ×¢²áIBO¶ÔÏóµ½CUDA
+		cudaGraphicsResource_t cudaVBOResources;// æ³¨å†Œç¼“å†²åŒºå¯¹è±¡åˆ°CUDA
+		cudaGraphicsResource_t cudaIBOResources;// æ³¨å†ŒIBOå¯¹è±¡åˆ°CUDA
 
-		// »æÖÆäÖÈ¾´°¿Ú×ø±êÏµ
-		GLuint coordinateSystemVAO;			// ×ø±êÏµVAO
-		GLuint coordinateSystemVBO;			// ×ø±êÏµÖáµãÍø¸ñVBO
+		// ç»˜åˆ¶æ¸²æŸ“çª—å£åæ ‡ç³»
+		GLuint coordinateSystemVAO;			// åæ ‡ç³»VAO
+		GLuint coordinateSystemVBO;			// åæ ‡ç³»è½´ç‚¹ç½‘æ ¼VBO
 
-		unsigned int TranglesCount = 0;		// ´«ÈëÊµÊ±¶¥µãµÄÊıÁ¿
-		unsigned int VerticesCount = 0;		// ´«ÈëµãµÄÊıÁ¿
-		unsigned int DensePointsCount = 0;	// ³íÃÜµãµÄÊıÁ¿
+		unsigned int TranglesCount = 0;		// ä¼ å…¥å®æ—¶é¡¶ç‚¹çš„æ•°é‡
+		unsigned int VerticesCount = 0;		// ä¼ å…¥ç‚¹çš„æ•°é‡
+		unsigned int DensePointsCount = 0;	// ç¨ å¯†ç‚¹çš„æ•°é‡
 
-		// ´´½¨±ä»»
-		glm::mat4 view = glm::mat4(1.0f);		// È·±£³õÊ¼»¯¾ØÕóÊÇµ¥Î»¾ØÕó
-		glm::mat4 projection = glm::mat4(1.0f);	// Í¶Ó°¾ØÕó£¬Ñ¡ÔñÊÇÍ¸ÊÓ»¹ÊÇÕıÉä
-		glm::mat4 model = glm::mat4(1.0f);		// ¼ÆËãÃ¿¸ö¶ÔÏóµÄÄ£ĞÍ¾ØÕó£¬²¢ÔÚ»æÖÆÖ®Ç°½«Æä´«µİ¸ø×ÅÉ«Æ÷
+		// åˆ›å»ºå˜æ¢
+		glm::mat4 view = glm::mat4(1.0f);		// ç¡®ä¿åˆå§‹åŒ–çŸ©é˜µæ˜¯å•ä½çŸ©é˜µ
+		glm::mat4 projection = glm::mat4(1.0f);	// æŠ•å½±çŸ©é˜µï¼Œé€‰æ‹©æ˜¯é€è§†è¿˜æ˜¯æ­£å°„
+		glm::mat4 model = glm::mat4(1.0f);		// è®¡ç®—æ¯ä¸ªå¯¹è±¡çš„æ¨¡å‹çŸ©é˜µï¼Œå¹¶åœ¨ç»˜åˆ¶ä¹‹å‰å°†å…¶ä¼ é€’ç»™ç€è‰²å™¨
 
 		/**
-		 * \brief ³õÊ¼»¯²¢¼ÓÔØ×ø±êÏµ.
+		 * \brief åˆå§‹åŒ–å¹¶åŠ è½½åæ ‡ç³».
 		 *
 		 */
 		void initialCoordinateSystem();
 
 		/**
-		 * \brief ×¢²ácuda×ÊÔ´.
+		 * \brief æ³¨å†Œcudaèµ„æº.
 		 *
 		 */
 		void registerCudaResources();
 
 		/**
-		 * \brief ½«Êı¾İ×ÊÔ´Ó³Éäµ½cuda.
+		 * \brief å°†æ•°æ®èµ„æºæ˜ å°„åˆ°cuda.
 		 *
-		 * \param MeshVertices Íø¸ñ¶¥µ×
-		 * \param MeshTriangleIndices Íø¸ñÈı½ÇÃæÔªË÷Òı
-		 * \param stream cudaÁ÷
+		 * \param MeshVertices ç½‘æ ¼é¡¶åº•
+		 * \param MeshTriangleIndices ç½‘æ ¼ä¸‰è§’é¢å…ƒç´¢å¼•
+		 * \param stream cudaæµ
 		 */
 		void mapToCuda(DeviceArrayView<Point3D<float>> MeshVertices, DeviceArrayView<TriangleIndex> MeshTriangleIndices, cudaStream_t stream = 0);
 
 		/**
-		 * \brief ½«ĞèÒªäÖÈ¾µÄµãÓ³Éäµ½cuda×ÊÔ´ÉÏ.
+		 * \brief å°†éœ€è¦æ¸²æŸ“çš„ç‚¹æ˜ å°„åˆ°cudaèµ„æºä¸Š.
 		 *
 		 */
 		void unmapFromCuda(cudaStream_t stream = 0);
 
 		/**
-		 * \brief Çå¿Õ´°¿Ú.
+		 * \brief æ¸…ç©ºçª—å£.
 		 *
 		 */
 		void clearWindow();
 
 		/**
-		 * \brief »æÖÆÍø¸ñ.
+		 * \brief ç»˜åˆ¶ç½‘æ ¼.
 		 *
-		 * \param view ´«ÈëÊÓ½Ç¾ØÕó
-		 * \param projection ´«ÈëÍ¶Ó°¾ØÕó
-		 * \param model ´«ÈëÄ£ĞÍ¾ØÕó
+		 * \param view ä¼ å…¥è§†è§’çŸ©é˜µ
+		 * \param projection ä¼ å…¥æŠ•å½±çŸ©é˜µ
+		 * \param model ä¼ å…¥æ¨¡å‹çŸ©é˜µ
 		 */
 		void drawMesh(glm::mat4& view, glm::mat4& projection, glm::mat4& model);
 
 		/**
-		 * \brief »æÖÆ×ø±êÏµ.
+		 * \brief ç»˜åˆ¶åæ ‡ç³».
 		 *
-		 * \param view ´«ÈëÊÓ½Ç¾ØÕó
-		 * \param projection ´«ÈëÍ¶Ó°¾ØÕó
-		 * \param model ´«ÈëÄ£ĞÍ¾ØÕó
+		 * \param view ä¼ å…¥è§†è§’çŸ©é˜µ
+		 * \param projection ä¼ å…¥æŠ•å½±çŸ©é˜µ
+		 * \param model ä¼ å…¥æ¨¡å‹çŸ©é˜µ
 		 */
 		void drawCoordinateSystem(glm::mat4& view, glm::mat4& projection, glm::mat4& model);
 
 		/**
-		 * \param Ë«»º³å²¢²¶×½ÊÂ¼ş.
+		 * \param åŒç¼“å†²å¹¶æ•æ‰äº‹ä»¶.
 		 *
 		 */
 		void swapBufferAndCatchEvent();

@@ -1,12 +1,12 @@
 /*****************************************************************//**
  * \file   LaplacianSolver.cu
- * \brief  À­ÆÕÀ­Ë¹Çó½âÆ÷cuda·½·¨ÊµÏÖ
+ * \brief  æ‹‰æ™®æ‹‰æ–¯æ±‚è§£å™¨cudaæ–¹æ³•å®ç°
  * 
  * \author LUOJIAXUAN
  * \date   May 26th 2024
  *********************************************************************/
 #include "LaplacianSolver.h"
-#if defined(__CUDACC__)		//Èç¹ûÓÉNVCC±àÒëÆ÷±àÒë
+#if defined(__CUDACC__)		//å¦‚æœç”±NVCCç¼–è¯‘å™¨ç¼–è¯‘
 #include <cub/cub.cuh>
 #endif
 
@@ -42,9 +42,9 @@ __global__ void SparseSurfelFusion::device::GenerateSingleNodeLaplacian(const un
 	//}
 
 	for (int i = 0; i < 27; i++) {
-		int neighbor = NodeArray[offset].neighs[i];	// ½ÚµãµÄÁÚ¾Ó½Úµã
+		int neighbor = NodeArray[offset].neighs[i];	// èŠ‚ç‚¹çš„é‚»å±…èŠ‚ç‚¹
 		if (neighbor == -1) continue;
-		int colIdx = neighbor - begin;				// Ïà¶ÔÓÚÁÚ¾ÓµÄÆ«ÒÆ
+		int colIdx = neighbor - begin;				// ç›¸å¯¹äºé‚»å±…çš„åç§»
 		int idxO_2[3];
 		encodeIndex = encodeNodeIndexInFunction[neighbor];
 		idxO_2[0] = encodeIndex % device::decodeOffset_1;
@@ -120,72 +120,72 @@ __global__ void SparseSurfelFusion::device::CalculatePointsImplicitFunctionValue
 void SparseSurfelFusion::LaplacianSolver::LaplacianCGSolver(const int* BaseAddressArray, const int* NodeArrayCount, DeviceArrayView<int> encodeNodeIndexInFunction, DeviceArrayView<OctNode> NodeArray, float* Divergence, DeviceArrayView<double> dot_F_F, DeviceArrayView<double> dot_F_D2F, cudaStream_t stream)
 {
 #ifdef CHECK_MESH_BUILD_TIME_COST
-	auto start = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼¿ªÊ¼Ê±¼äµã
+	auto start = std::chrono::high_resolution_clock::now();						// è®°å½•å¼€å§‹æ—¶é—´ç‚¹
 #endif // CHECK_MESH_BUILD_TIME_COST
 
 	dx.ResizeArrayOrException(NodeArray.Size());
 
 	for (int depth = 0; depth <= Constants::maxDepth_Host; depth++) {
-		int CurrentLevelNodesNum = NodeArrayCount[depth];	// µ±Ç°²ã½Úµã×ÜÊı
+		int CurrentLevelNodesNum = NodeArrayCount[depth];	// å½“å‰å±‚èŠ‚ç‚¹æ€»æ•°
 		int CurrentLevelNodesNum_27 = CurrentLevelNodesNum * 27;
 		//cudaStream_t stream = streams[depth];
-		int* rowCount = NULL;	// ¡¾ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´ÊÍ·Å£¬³õÊ¼ÖµÎª0¡¿¼ÇÂ¼µ±Ç°½ÚµãµÄÁÚ¾Ó½ÚµãÓĞ¶àÉÙ¸öÂú×ã¹¹³ÉLaplace¾ØÕóµÄÔªËØ value ¡Ê [0, 26]
+		int* rowCount = NULL;	// ã€ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³é‡Šæ”¾ï¼Œåˆå§‹å€¼ä¸º0ã€‘è®°å½•å½“å‰èŠ‚ç‚¹çš„é‚»å±…èŠ‚ç‚¹æœ‰å¤šå°‘ä¸ªæ»¡è¶³æ„æˆLaplaceçŸ©é˜µçš„å…ƒç´  value âˆˆ [0, 26]
 		CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&rowCount), sizeof(int) * (CurrentLevelNodesNum + 2), stream));
 		CHECKCUDA(cudaMemsetAsync(rowCount, 0, sizeof(int) * (CurrentLevelNodesNum + 2), stream));
 
-		int* colIndex = NULL;	// ¡¾ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´ÊÍ·Å£¬³õÊ¼ÖµÎª-1¡¿¼ÇÂ¼µ±Ç°½ÚµãµÄÁÚ¾ÓÖĞÂú×ã"¹¹³ÉLaplace¾ØÕóµÄÔªËØ"ÕâÒ»Ìõ¼şµÄ½Úµã£¬¾àÀëÃ¿²ãÊ×½ÚµãµÄ¾àÀë(neighbor - begin)
+		int* colIndex = NULL;	// ã€ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³é‡Šæ”¾ï¼Œåˆå§‹å€¼ä¸º-1ã€‘è®°å½•å½“å‰èŠ‚ç‚¹çš„é‚»å±…ä¸­æ»¡è¶³"æ„æˆLaplaceçŸ©é˜µçš„å…ƒç´ "è¿™ä¸€æ¡ä»¶çš„èŠ‚ç‚¹ï¼Œè·ç¦»æ¯å±‚é¦–èŠ‚ç‚¹çš„è·ç¦»(neighbor - begin)
 		CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&colIndex), sizeof(int) * CurrentLevelNodesNum_27, stream));
 		CHECKCUDA(cudaMemsetAsync(colIndex, -1, sizeof(int) * CurrentLevelNodesNum_27, stream));
 
-		float* val = NULL;		// ¡¾ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´ÊÍ·Å¡¿¼ÇÂ¼½ÚµãµÄËùÓĞÁÚ¾ÓµÄLaplaceÔªËØµÄÖµ£¬ÓëcolIndddex¶ÔÓ¦
+		float* val = NULL;		// ã€ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³é‡Šæ”¾ã€‘è®°å½•èŠ‚ç‚¹çš„æ‰€æœ‰é‚»å±…çš„Laplaceå…ƒç´ çš„å€¼ï¼Œä¸colIndddexå¯¹åº”
 		CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&val), sizeof(float) * CurrentLevelNodesNum_27, stream));
 
 		dim3 block_1(128);
 		dim3 grid_1(divUp(CurrentLevelNodesNum, block_1.x));
 		device::GenerateSingleNodeLaplacian << <grid_1, block_1, 0, stream >> > (depth, dot_F_F, dot_F_D2F, encodeNodeIndexInFunction, NodeArray, BaseAddressArray[depth], NodeArrayCount[depth], rowCount + 1, colIndex, val);
 
-		int* RowBaseAddress = NULL;	//¡¾ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´ÊÍ·Å¡¿¼ÇÂ¼µ±Ç°½ÚµãÖ®Ç°µÄ½Úµã(¼°ÆäÁÚ¾Ó)£¬Âú×ãLaplaceÔªËØÖµµÄ£¬×Ü¹²ÓĞ¶àÉÙ¸ö(²»¼ÆËãµ±Ç°½Úµã£¬²¢ÇÒÊÇ´Óindex=1¿ªÊ¼£¬¶ø·Çindex=0)
+		int* RowBaseAddress = NULL;	//ã€ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³é‡Šæ”¾ã€‘è®°å½•å½“å‰èŠ‚ç‚¹ä¹‹å‰çš„èŠ‚ç‚¹(åŠå…¶é‚»å±…)ï¼Œæ»¡è¶³Laplaceå…ƒç´ å€¼çš„ï¼Œæ€»å…±æœ‰å¤šå°‘ä¸ª(ä¸è®¡ç®—å½“å‰èŠ‚ç‚¹ï¼Œå¹¶ä¸”æ˜¯ä»index=1å¼€å§‹ï¼Œè€Œéindex=0)
 		CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&RowBaseAddress), sizeof(int) * (CurrentLevelNodesNum + 2), stream));
 
-		void* tempRowAddressStorage = NULL;	//¡¾Ëã·¨ÁÙÊ±±äÁ¿£¬ÓÃÍê¼´ÊÍ·Å¡¿ÅÅËûÇ°×ººÍµÄÁÙÊ±±äÁ¿
+		void* tempRowAddressStorage = NULL;	//ã€ç®—æ³•ä¸´æ—¶å˜é‡ï¼Œç”¨å®Œå³é‡Šæ”¾ã€‘æ’ä»–å‰ç¼€å’Œçš„ä¸´æ—¶å˜é‡
 		size_t tempRowAddressStorageBytes = 0;
 		cub::DeviceScan::ExclusiveSum(tempRowAddressStorage, tempRowAddressStorageBytes, rowCount, RowBaseAddress, CurrentLevelNodesNum + 2, stream);
 		CHECKCUDA(cudaMallocAsync(&tempRowAddressStorage, tempRowAddressStorageBytes, stream));
 		cub::DeviceScan::ExclusiveSum(tempRowAddressStorage, tempRowAddressStorageBytes, rowCount, RowBaseAddress, CurrentLevelNodesNum + 2, stream);
-		int valNums;				// ¼ÇÂ¼Ò»¹²ÓĞ¶àÉÙ¸öÓĞĞ§µÄLaplaceÔªËØ£¬ÎªÁË¸øMergedColIndexºÍMergedVal·ÖÅäÄÚ´æ
-		int lastRowNum;				// ¼ÇÂ¼×îºóÒ»¸ö½ÚµãµÄÓĞĞ§µÄLaplaceÔªËØ
+		int valNums;				// è®°å½•ä¸€å…±æœ‰å¤šå°‘ä¸ªæœ‰æ•ˆçš„Laplaceå…ƒç´ ï¼Œä¸ºäº†ç»™MergedColIndexå’ŒMergedValåˆ†é…å†…å­˜
+		int lastRowNum;				// è®°å½•æœ€åä¸€ä¸ªèŠ‚ç‚¹çš„æœ‰æ•ˆçš„Laplaceå…ƒç´ 
 		CHECKCUDA(cudaMemcpyAsync(&valNums, RowBaseAddress + CurrentLevelNodesNum, sizeof(int), cudaMemcpyDeviceToHost, stream));
 		CHECKCUDA(cudaMemcpyAsync(&lastRowNum, rowCount + CurrentLevelNodesNum, sizeof(int), cudaMemcpyDeviceToHost, stream));
-		CHECKCUDA(cudaStreamSynchronize(stream));	// ×èÈûHostÏß³Ì£¬ÕâÀï±ØĞëµÈ´ıvalNums¼ÆËãÍê³É£¬²ÅÄÜ¶¯Ì¬·ÖÅäÄÚ´æ
-		valNums += lastRowNum;		// Ç°ÃæÅÅËûÇ°×ººÍ²¢Î´°üº¬×îºóÒ»¸öÔªËØ£¬µÚindex = n + 1¸öÓ¦¸ÃÊÇ[0, n]¸öµÄºÍ£¬ÕâÀïrowCountµÄµÚ0¸öÒ»Ö±ÊÇ0£¬´Ó1¿ªÊ¼¼ÆËãrowCountµÄ
-		CHECKCUDA(cudaMemcpyAsync(RowBaseAddress + CurrentLevelNodesNum + 1, &valNums, sizeof(int), cudaMemcpyHostToDevice, stream));	// ²¹Æëindex = n + 1¸öÔªËØ
+		CHECKCUDA(cudaStreamSynchronize(stream));	// é˜»å¡Hostçº¿ç¨‹ï¼Œè¿™é‡Œå¿…é¡»ç­‰å¾…valNumsè®¡ç®—å®Œæˆï¼Œæ‰èƒ½åŠ¨æ€åˆ†é…å†…å­˜
+		valNums += lastRowNum;		// å‰é¢æ’ä»–å‰ç¼€å’Œå¹¶æœªåŒ…å«æœ€åä¸€ä¸ªå…ƒç´ ï¼Œç¬¬index = n + 1ä¸ªåº”è¯¥æ˜¯[0, n]ä¸ªçš„å’Œï¼Œè¿™é‡ŒrowCountçš„ç¬¬0ä¸ªä¸€ç›´æ˜¯0ï¼Œä»1å¼€å§‹è®¡ç®—rowCountçš„
+		CHECKCUDA(cudaMemcpyAsync(RowBaseAddress + CurrentLevelNodesNum + 1, &valNums, sizeof(int), cudaMemcpyHostToDevice, stream));	// è¡¥é½index = n + 1ä¸ªå…ƒç´ 
 		
-		//CHECKCUDA(cudaStreamSynchronize(stream));	// ×èÈûHostÏß³Ì£¬ÕâÀï±ØĞëµÈ´ıvalNums¼ÆËãÍê³É£¬²ÅÄÜ¶¯Ì¬·ÖÅäÄÚ´æ
+		//CHECKCUDA(cudaStreamSynchronize(stream));	// é˜»å¡Hostçº¿ç¨‹ï¼Œè¿™é‡Œå¿…é¡»ç­‰å¾…valNumsè®¡ç®—å®Œæˆï¼Œæ‰èƒ½åŠ¨æ€åˆ†é…å†…å­˜
 		//printf("depth = %d   valNums = %d\n", depth, valNums);
 
-		int* MergedColIndex = NULL;	// ¡¾ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´ÊÍ·Å¡¿Ñ¹ËõµÄ½Úµã¼°ÁÚ¾ÓÎ»ÖÃµÄÓĞĞ§Öµ
+		int* MergedColIndex = NULL;	// ã€ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³é‡Šæ”¾ã€‘å‹ç¼©çš„èŠ‚ç‚¹åŠé‚»å±…ä½ç½®çš„æœ‰æ•ˆå€¼
 		CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&MergedColIndex), sizeof(int) * valNums, stream));
 
-		float* MergedVal = NULL;	// ¡¾ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´ÊÍ·Å¡¿Ñ¹ËõµÄ½Úµã¼°ÁÚ¾ÓÓĞĞ§µÄLaplaceÖµ
+		float* MergedVal = NULL;	// ã€ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³é‡Šæ”¾ã€‘å‹ç¼©çš„èŠ‚ç‚¹åŠé‚»å±…æœ‰æ•ˆçš„Laplaceå€¼
 		CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&MergedVal), sizeof(float) * valNums, stream));
 
-		bool* flag = NULL;			// ¡¾ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´ÊÍ·Å¡¿±ê¼Çµ±Ç°½ÚµãµÄÁÚ¾ÓÖĞÂú×ã"¹¹³ÉLaplace¾ØÕóµÄÔªËØ"ÕâÒ»Ìõ¼şµÄ½ÚµãµÄÎ»ÖÃ
+		bool* flag = NULL;			// ã€ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³é‡Šæ”¾ã€‘æ ‡è®°å½“å‰èŠ‚ç‚¹çš„é‚»å±…ä¸­æ»¡è¶³"æ„æˆLaplaceçŸ©é˜µçš„å…ƒç´ "è¿™ä¸€æ¡ä»¶çš„èŠ‚ç‚¹çš„ä½ç½®
 		CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&flag), sizeof(bool) * CurrentLevelNodesNum_27, stream));
 
 		dim3 block_2(128);
 		dim3 grid_2(divUp(CurrentLevelNodesNum_27, block_2.x));
 		device::markValidColIndex << <grid_2, block_2, 0, stream >> > (colIndex, CurrentLevelNodesNum_27, flag);
 
-		int* MergedValSelectedNum = NULL;		// ¡¾ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´ÊÍ·Å¡¿»ñµÃÑ¹ËõvalºóÊıÁ¿£¬ÀíÂÛÉÏÓ¦¸ÃºÍvalNumsÏàµÈ
+		int* MergedValSelectedNum = NULL;		// ã€ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³é‡Šæ”¾ã€‘è·å¾—å‹ç¼©valåæ•°é‡ï¼Œç†è®ºä¸Šåº”è¯¥å’ŒvalNumsç›¸ç­‰
 		CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&MergedValSelectedNum), sizeof(int), stream));
-		int* MergedColIndexSelectedNum = NULL;	// ¡¾ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´ÊÍ·Å¡¿»ñµÃÑ¹ËõcolIndexºóµÄÊıÁ¿£¬ÀíÂÛÉÏÓ¦¸ÃºÍvalNumsÏàµÈ
+		int* MergedColIndexSelectedNum = NULL;	// ã€ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³é‡Šæ”¾ã€‘è·å¾—å‹ç¼©colIndexåçš„æ•°é‡ï¼Œç†è®ºä¸Šåº”è¯¥å’ŒvalNumsç›¸ç­‰
 		CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&MergedColIndexSelectedNum), sizeof(int), stream));
 
 		void* d_temp_storage_1 = NULL;
 		size_t temp_storage_bytes_1 = 0;
-		CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_1, temp_storage_bytes_1, val, flag, MergedVal, MergedValSelectedNum, CurrentLevelNodesNum_27, stream, false));	// È·¶¨ÁÙÊ±Éè±¸´æ´¢ĞèÇó
+		CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_1, temp_storage_bytes_1, val, flag, MergedVal, MergedValSelectedNum, CurrentLevelNodesNum_27, stream, false));	// ç¡®å®šä¸´æ—¶è®¾å¤‡å­˜å‚¨éœ€æ±‚
 		CHECKCUDA(cudaMallocAsync(&d_temp_storage_1, temp_storage_bytes_1, stream));	
-		CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_1, temp_storage_bytes_1, val, flag, MergedVal, MergedValSelectedNum, CurrentLevelNodesNum_27, stream, false));	// É¸Ñ¡																				
+		CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_1, temp_storage_bytes_1, val, flag, MergedVal, MergedValSelectedNum, CurrentLevelNodesNum_27, stream, false));	// ç­›é€‰																				
 
 		void* d_temp_storage_2 = NULL;
 		size_t temp_storage_bytes_2 = 0;
@@ -193,15 +193,15 @@ void SparseSurfelFusion::LaplacianSolver::LaplacianCGSolver(const int* BaseAddre
 		CHECKCUDA(cudaMallocAsync(&d_temp_storage_2, temp_storage_bytes_2, stream)); 			 
 		CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_2, temp_storage_bytes_2, colIndex, flag, MergedColIndex, MergedColIndexSelectedNum, CurrentLevelNodesNum_27, stream, false));
 
-		int MergedValSelectedNum_Host;			// »ñµÃÑ¹ËõvalºóÊıÁ¿£¬ÀíÂÛÉÏÓ¦¸ÃºÍvalNumsÏàµÈ
-		int MergedColIndexSelectedNum_Host;		// »ñµÃÑ¹ËõcolIndexºóµÄÊıÁ¿£¬ÀíÂÛÉÏÓ¦¸ÃºÍvalNumsÏàµÈ
+		int MergedValSelectedNum_Host;			// è·å¾—å‹ç¼©valåæ•°é‡ï¼Œç†è®ºä¸Šåº”è¯¥å’ŒvalNumsç›¸ç­‰
+		int MergedColIndexSelectedNum_Host;		// è·å¾—å‹ç¼©colIndexåçš„æ•°é‡ï¼Œç†è®ºä¸Šåº”è¯¥å’ŒvalNumsç›¸ç­‰
 		CHECKCUDA(cudaMemcpyAsync(&MergedValSelectedNum_Host, MergedValSelectedNum, sizeof(int), cudaMemcpyDeviceToHost, stream));
 		CHECKCUDA(cudaMemcpyAsync(&MergedColIndexSelectedNum_Host, MergedColIndexSelectedNum, sizeof(int), cudaMemcpyDeviceToHost, stream));
 		
-		CHECKCUDA(cudaStreamSynchronize(stream));	// Á÷Í¬²½
+		CHECKCUDA(cudaStreamSynchronize(stream));	// æµåŒæ­¥
 
-		assert(MergedValSelectedNum_Host == valNums);		// Ë³±ãCheckÒ»ÏÂÑ¹ËõµÄÊÇ·ñÕıÈ·
-		assert(MergedColIndexSelectedNum_Host == valNums);	// Ë³±ãCheckÒ»ÏÂÑ¹ËõµÄÊÇ·ñÕıÈ·
+		assert(MergedValSelectedNum_Host == valNums);		// é¡ºä¾¿Checkä¸€ä¸‹å‹ç¼©çš„æ˜¯å¦æ­£ç¡®
+		assert(MergedColIndexSelectedNum_Host == valNums);	// é¡ºä¾¿Checkä¸€ä¸‹å‹ç¼©çš„æ˜¯å¦æ­£ç¡®
 
 		//if (depth == 1) {
 		//	std::vector<int> MergedColIndexHost;
@@ -222,13 +222,13 @@ void SparseSurfelFusion::LaplacianSolver::LaplacianCGSolver(const int* BaseAddre
 		//}
 
 #ifdef CHECK_MESH_BUILD_TIME_COST
-		printf("µÚ %d ²ã½ÚµãµÄ", depth);
+		printf("ç¬¬ %d å±‚èŠ‚ç‚¹çš„", depth);
 #endif // CHECK_MESH_BUILD_TIME_COST
 		solverCG_DeviceToDevice(CurrentLevelNodesNum, valNums, RowBaseAddress + 1, MergedColIndex, MergedVal, Divergence + BaseAddressArray[depth], dx.Ptr() + BaseAddressArray[depth], stream);
 	
-		cudaFreeAsync(tempRowAddressStorage, stream);	 // ÁÙÊ±¿Õ¼ä
-		cudaFreeAsync(d_temp_storage_1, stream);		 // ÁÙÊ±¿Õ¼ä
-		cudaFreeAsync(d_temp_storage_2, stream);		 // ÁÙÊ±¿Õ¼ä
+		cudaFreeAsync(tempRowAddressStorage, stream);	 // ä¸´æ—¶ç©ºé—´
+		cudaFreeAsync(d_temp_storage_1, stream);		 // ä¸´æ—¶ç©ºé—´
+		cudaFreeAsync(d_temp_storage_2, stream);		 // ä¸´æ—¶ç©ºé—´
 
 		cudaFreeAsync(rowCount, stream);
 		cudaFreeAsync(colIndex, stream);
@@ -245,7 +245,7 @@ void SparseSurfelFusion::LaplacianSolver::LaplacianCGSolver(const int* BaseAddre
 
 
 
-	//CHECKCUDA(cudaStreamSynchronize(stream));	// Á÷Í¬²½
+	//CHECKCUDA(cudaStreamSynchronize(stream));	// æµåŒæ­¥
 	//std::vector<float>dxHost;
 	//dx.ArrayView().Download(dxHost);
 	//for (int i = 0; i < dxHost.size(); i++) {
@@ -256,12 +256,12 @@ void SparseSurfelFusion::LaplacianSolver::LaplacianCGSolver(const int* BaseAddre
 
 
 #ifdef CHECK_MESH_BUILD_TIME_COST
-	CHECKCUDA(cudaStreamSynchronize(stream));	// Á÷Í¬²½
-	auto end = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration = end - start;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "À­ÆÕÀ­Ë¹Çó½âµÄÊ±¼ä: " << duration.count() << " ms" << std::endl;		// Êä³ö
+	CHECKCUDA(cudaStreamSynchronize(stream));	// æµåŒæ­¥
+	auto end = std::chrono::high_resolution_clock::now();						// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration = end - start;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "æ‹‰æ™®æ‹‰æ–¯æ±‚è§£çš„æ—¶é—´: " << duration.count() << " ms" << std::endl;		// è¾“å‡º
 	std::cout << std::endl;
-	std::cout << "-----------------------------------------------------" << std::endl;	// Êä³ö
+	std::cout << "-----------------------------------------------------" << std::endl;	// è¾“å‡º
 	std::cout << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 }
@@ -269,14 +269,14 @@ void SparseSurfelFusion::LaplacianSolver::LaplacianCGSolver(const int* BaseAddre
 void SparseSurfelFusion::LaplacianSolver::CalculatePointsImplicitFunctionValue(DeviceArrayView<OrientedPoint3D<float>> DensePoints, DeviceArrayView<int> PointToNodeArrayDLevel, DeviceArrayView<OctNode> NodeArray, DeviceArrayView<int> encodeNodeIndexInFunction, DeviceArrayView<ConfirmedPPolynomial<CONVTIMES + 1, CONVTIMES + 2>> BaseFunctions, const unsigned int DLevelOffset, const unsigned int DenseVertexCount, cudaStream_t stream)
 {
 #ifdef CHECK_MESH_BUILD_TIME_COST
-	auto start = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼¿ªÊ¼Ê±¼äµã
+	auto start = std::chrono::high_resolution_clock::now();						// è®°å½•å¼€å§‹æ—¶é—´ç‚¹
 #endif // CHECK_MESH_BUILD_TIME_COST
 
 	dim3 block(128);
 	dim3 grid(divUp(DenseVertexCount, block.x));
 	device::CalculatePointsImplicitFunctionValueKernel << <grid, block, 0, stream >> > (DensePoints, PointToNodeArrayDLevel, NodeArray, encodeNodeIndexInFunction, BaseFunctions, dx.ArrayView(), DLevelOffset, DenseVertexCount, DensePointsImplicitFunctionValue.Array().ptr());
 
-	// ¹æÔ¼¼Ó·¨
+	// è§„çº¦åŠ æ³•
 	float* isoValueDevice = NULL;
 	CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&isoValueDevice), sizeof(float), stream));
 	void* d_temp_storage = NULL;
@@ -288,18 +288,18 @@ void SparseSurfelFusion::LaplacianSolver::CalculatePointsImplicitFunctionValue(D
 	CHECKCUDA(cudaStreamSynchronize(stream));
 	isoValue /= DenseVertexCount;
 
-	CHECKCUDA(cudaFreeAsync(isoValueDevice, stream)); // ÊÍ·ÅÁÙÊ±ÄÚ´æ
-	CHECKCUDA(cudaFreeAsync(d_temp_storage, stream)); // ÊÍ·ÅÁÙÊ±ÄÚ´æ
+	CHECKCUDA(cudaFreeAsync(isoValueDevice, stream)); // é‡Šæ”¾ä¸´æ—¶å†…å­˜
+	CHECKCUDA(cudaFreeAsync(d_temp_storage, stream)); // é‡Šæ”¾ä¸´æ—¶å†…å­˜
 
 	//printf("isoValue = %.9f\n", isoValue);
 
 #ifdef CHECK_MESH_BUILD_TIME_COST
-	CHECKCUDA(cudaStreamSynchronize(stream));	// Á÷Í¬²½
-	auto end = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration = end - start;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "¼ÆËãµÈÖµ(isoValue)µÄÊ±¼ä: " << duration.count() << " ms" << std::endl;		// Êä³ö
+	CHECKCUDA(cudaStreamSynchronize(stream));	// æµåŒæ­¥
+	auto end = std::chrono::high_resolution_clock::now();						// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration = end - start;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "è®¡ç®—ç­‰å€¼(isoValue)çš„æ—¶é—´: " << duration.count() << " ms" << std::endl;		// è¾“å‡º
 	std::cout << std::endl;
-	std::cout << "-----------------------------------------------------" << std::endl;	// Êä³ö
+	std::cout << "-----------------------------------------------------" << std::endl;	// è¾“å‡º
 	std::cout << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 }

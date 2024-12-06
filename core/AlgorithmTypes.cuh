@@ -1,5 +1,5 @@
 #include "AlgorithmTypes.h"
-#if defined(__CUDACC__)		//Èç¹ûÓÉNVCC±àÒëÆ÷±àÒë
+#if defined(__CUDACC__)		//å¦‚æœç”±NVCCç¼–è¯‘å™¨ç¼–è¯‘
 #include <cub/cub.cuh>
 #endif
 
@@ -8,37 +8,37 @@ void SparseSurfelFusion::KeyValueSort<KeyT, ValueT>::AllocateBuffer(size_t input
 {
     if (input_size <= m_sorted_key_buffer.size()) return;
 
-    //Èç¹û´æÔÚ»º³åÇø£¬ÔòÇå³ıËüÃÇ
+    //å¦‚æœå­˜åœ¨ç¼“å†²åŒºï¼Œåˆ™æ¸…é™¤å®ƒä»¬
     if (m_sorted_key_buffer.size() > 0) {
         m_sorted_key_buffer.release();
         m_sorted_value_buffer.release();
         m_temp_storage.release();
     }
 
-    //·ÖÅä»º´æ
+    //åˆ†é…ç¼“å­˜
     size_t allocate_size = 3 * input_size / 2;
     m_sorted_key_buffer.create(allocate_size);
     m_sorted_value_buffer.create(allocate_size);
 
-    //²éÑ¯ËùĞèµÄÁÙÊ±´æ´¢
+    //æŸ¥è¯¢æ‰€éœ€çš„ä¸´æ—¶å­˜å‚¨
     size_t required_temp_bytes = 0;
     cub::DeviceRadixSort::SortPairs < KeyT, ValueT >(NULL, required_temp_bytes, m_sorted_key_buffer.ptr(), m_sorted_key_buffer.ptr(), m_sorted_value_buffer.ptr(), m_sorted_value_buffer.ptr(), (int)m_sorted_key_buffer.size());
 
-    //·ÖÅäËùĞèµÄ´æ´¢
+    //åˆ†é…æ‰€éœ€çš„å­˜å‚¨
     m_temp_storage.create(required_temp_bytes);
 }
 
 template<typename KeyT, typename ValueT>
 void SparseSurfelFusion::KeyValueSort<KeyT, ValueT>::Sort(const DeviceArray<KeyT>& key_in, const DeviceArray<ValueT>& value_in, cudaStream_t stream, int end_bit, bool debug_sync)
 {
-    //Èç¹û»º³åÇø²»¹»£¬Ôò·ÖÅä»º³åÇø
+    //å¦‚æœç¼“å†²åŒºä¸å¤Ÿï¼Œåˆ™åˆ†é…ç¼“å†²åŒº
     AllocateBuffer(key_in.size());
 
-    //¹¹Ôì´óĞ¡ÕıÈ·µÄ½á¹û
+    //æ„é€ å¤§å°æ­£ç¡®çš„ç»“æœ
     valid_sorted_key = DeviceArray<KeyT>(m_sorted_key_buffer.ptr(), key_in.size());
     valid_sorted_value = DeviceArray<ValueT>(m_sorted_value_buffer.ptr(), value_in.size());
 
-    //×öÅÅĞò
+    //åšæ’åº
     size_t required_temp_bytes = m_temp_storage.sizeBytes();
     cub::DeviceRadixSort::SortPairs<KeyT, ValueT>(
         m_temp_storage.ptr(), required_temp_bytes, 
@@ -52,21 +52,21 @@ void SparseSurfelFusion::KeyValueSort<KeyT, ValueT>::Sort(const DeviceArray<KeyT
 template<typename KeyT, typename ValueT>
 void SparseSurfelFusion::KeyValueSort<KeyT, ValueT>::Sort(const DeviceArrayView<KeyT>& key_in, const DeviceArrayView<ValueT>& value_in, cudaStream_t stream)
 {
-    //Èç¹û»º³åÇø²»¹»£¬Ôò·ÖÅä»º³åÇø
+    //å¦‚æœç¼“å†²åŒºä¸å¤Ÿï¼Œåˆ™åˆ†é…ç¼“å†²åŒº
     AllocateBuffer(key_in.Size());
 
-    //¹¹Ôì´óĞ¡ÕıÈ·µÄ½á¹û
+    //æ„é€ å¤§å°æ­£ç¡®çš„ç»“æœ
     valid_sorted_key = DeviceArray<KeyT>(m_sorted_key_buffer.ptr(), key_in.Size());
     valid_sorted_value = DeviceArray<ValueT>(m_sorted_value_buffer.ptr(), value_in.Size());
 
-    //×öÅÅĞò
+    //åšæ’åº
     size_t required_temp_bytes = m_temp_storage.sizeBytes();
 
-    //¾ÍÊÇ¸ù¾İ¼üÀ´ÅÅÁĞÕâ¸ö¼üÖµ¶Ô£¬¼´±ãÅÅÁĞÍê³É£¬KeyºÍValueÒ²ÊÇÒ»Ò»¶ÔÓ¦µÄ
+    //å°±æ˜¯æ ¹æ®é”®æ¥æ’åˆ—è¿™ä¸ªé”®å€¼å¯¹ï¼Œå³ä¾¿æ’åˆ—å®Œæˆï¼ŒKeyå’ŒValueä¹Ÿæ˜¯ä¸€ä¸€å¯¹åº”çš„
     cub::DeviceRadixSort::SortPairs<KeyT, ValueT>(
         m_temp_storage.ptr(), required_temp_bytes,
-        key_in.RawPtr(), valid_sorted_key.ptr(),		//key_in.RawPtr()ÅÅÁĞºÃ¸øvalid_sorted_key.ptr() £¨µØÖ·´«µİ£©
-        value_in.RawPtr(), valid_sorted_value.ptr(),	//value_in.RawPtr()ÅÅÁĞºÃÁË¸øvalid_sorted_value.ptr  (µØÖ·´«µİ)
+        key_in.RawPtr(), valid_sorted_key.ptr(),		//key_in.RawPtr()æ’åˆ—å¥½ç»™valid_sorted_key.ptr() ï¼ˆåœ°å€ä¼ é€’ï¼‰
+        value_in.RawPtr(), valid_sorted_value.ptr(),	//value_in.RawPtr()æ’åˆ—å¥½äº†ç»™valid_sorted_value.ptr  (åœ°å€ä¼ é€’)
         (int)key_in.Size(),
         0, 8 * sizeof(KeyT),
         stream, false
@@ -76,14 +76,14 @@ void SparseSurfelFusion::KeyValueSort<KeyT, ValueT>::Sort(const DeviceArrayView<
 template<typename KeyT, typename ValueT>
 void SparseSurfelFusion::KeyValueSort<KeyT, ValueT>::Sort(const DeviceArrayView<KeyT>& key_in, const DeviceArrayView<ValueT>& value_in, int end_bit, cudaStream_t stream)
 {
-    //Èç¹û»º³åÇø²»¹»£¬Ôò·ÖÅä»º³åÇø
+    //å¦‚æœç¼“å†²åŒºä¸å¤Ÿï¼Œåˆ™åˆ†é…ç¼“å†²åŒº
     AllocateBuffer(key_in.Size());
 
-    //¹¹Ôì´óĞ¡ÕıÈ·µÄ½á¹û
+    //æ„é€ å¤§å°æ­£ç¡®çš„ç»“æœ
     valid_sorted_key = DeviceArray<KeyT>(m_sorted_key_buffer.ptr(), key_in.Size());
     valid_sorted_value = DeviceArray<ValueT>(m_sorted_value_buffer.ptr(), value_in.Size());
 
-    //×öÅÅĞò
+    //åšæ’åº
     size_t required_temp_bytes = m_temp_storage.sizeBytes();
     cub::DeviceRadixSort::SortPairs<KeyT, ValueT>(
         m_temp_storage.ptr(), required_temp_bytes,
@@ -98,13 +98,13 @@ void SparseSurfelFusion::KeyValueSort<KeyT, ValueT>::Sort(const DeviceArrayView<
 template<typename KeyT, typename ValueT>
 void SparseSurfelFusion::KeyValueSort<KeyT, ValueT>::Sort(const DeviceArray<KeyT>& key_in, cudaStream_t stream, int end_bit, bool debug_sync)
 {
-    //Èç¹û»º³åÇø²»¹»£¬Ôò·ÖÅä»º³åÇø
+    //å¦‚æœç¼“å†²åŒºä¸å¤Ÿï¼Œåˆ™åˆ†é…ç¼“å†²åŒº
     AllocateBuffer(key_in.size());
 
-    //¹¹Ôì´óĞ¡ÕıÈ·µÄ½á¹û
+    //æ„é€ å¤§å°æ­£ç¡®çš„ç»“æœ
     valid_sorted_key = DeviceArray<KeyT>(m_sorted_key_buffer.ptr(), key_in.size());
 
-    //µ÷ÓÃÅÅĞòÆ÷
+    //è°ƒç”¨æ’åºå™¨
     size_t required_temp_bytes = m_temp_storage.sizeBytes();
     cub::DeviceRadixSort::SortKeys(
         m_temp_storage.ptr(), required_temp_bytes,

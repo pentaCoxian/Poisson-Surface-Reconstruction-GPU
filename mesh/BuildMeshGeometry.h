@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   BuildMeshGeometry.h
- * \brief  ¹¹½¨Íø¸ñËã·¨
+ * \brief  æ„å»ºç½‘æ ¼ç®—æ³•
  * 
  * \author LUOJIAXUAN
  * \date   June 1st 2024
@@ -13,80 +13,80 @@
 namespace SparseSurfelFusion {
 	namespace device {
 		/**
-		 * \brief ³õÊ¼»¯¶¥µãµÄOwner.
+		 * \brief åˆå§‹åŒ–é¡¶ç‚¹çš„Owner.
 		 *
-		 * \param NodeArray °Ë²æÊ÷½ÚµãÊı×é
-		 * \param NodeArraySize °Ë²æÊ÷½ÚµãÊı×é´óĞ¡
-		 * \param DepthBuffer ½ÚµãÊı×éNodeArrayÉî¶È²éÑ¯±í
-		 * \param CenterBuffer ½ÚµãÊı×éNodeArray½ÚµãÖĞĞÄ²éÑ¯±í
-		 * \param preVertexArray Ô¤´¦Àí¶¥µãÊı×é¼ÆËã
-		 * \param markPreVertexArray ±ê¼ÇÓĞĞ§µÄvertexµÄË÷Òı
+		 * \param NodeArray å…«å‰æ ‘èŠ‚ç‚¹æ•°ç»„
+		 * \param NodeArraySize å…«å‰æ ‘èŠ‚ç‚¹æ•°ç»„å¤§å°
+		 * \param DepthBuffer èŠ‚ç‚¹æ•°ç»„NodeArrayæ·±åº¦æŸ¥è¯¢è¡¨
+		 * \param CenterBuffer èŠ‚ç‚¹æ•°ç»„NodeArrayèŠ‚ç‚¹ä¸­å¿ƒæŸ¥è¯¢è¡¨
+		 * \param preVertexArray é¢„å¤„ç†é¡¶ç‚¹æ•°ç»„è®¡ç®—
+		 * \param markPreVertexArray æ ‡è®°æœ‰æ•ˆçš„vertexçš„ç´¢å¼•
 		 */
 		__global__ void initVertexOwner(DeviceArrayView<OctNode> NodeArray, const unsigned int NodeArraySize, DeviceArrayView<unsigned int> depthBuffer, DeviceArrayView<Point3D<float>> centerBuffer, VertexNode* preVertexArray, bool* markPreVertexArray);
 
 		/**
-		 * \brief ¼ÆËãÁ½µãÖ®¼ä¾àÀëÆ½·½.
+		 * \brief è®¡ç®—ä¸¤ç‚¹ä¹‹é—´è·ç¦»å¹³æ–¹.
 		 *
-		 * \param p1 µã1
-		 * \param p2 µã2
-		 * \return ·µ»ØÁ½µãÖ®¼ä¾àÀëÆ½·½
+		 * \param p1 ç‚¹1
+		 * \param p2 ç‚¹2
+		 * \return è¿”å›ä¸¤ç‚¹ä¹‹é—´è·ç¦»å¹³æ–¹
 		 */
 		__forceinline__ __device__ double SquareDistance(const Point3D<float>& p1, const Point3D<float>& p2);
 
 		/**
-		 * \brief Éú³ÉVertexArray²¢ÇÒ½«NodeArrayÖĞµÄvertice[8]²ÎÊı¸³Öµ.
+		 * \brief ç”ŸæˆVertexArrayå¹¶ä¸”å°†NodeArrayä¸­çš„vertice[8]å‚æ•°èµ‹å€¼.
 		 * 
-		 * \param DepthBuffer ½ÚµãÊı×éNodeArrayÉî¶È²éÑ¯±í
-		 * \param CenterBuffer ½ÚµãÊı×éNodeArray½ÚµãÖĞĞÄ²éÑ¯±í
-		 * \param VertexArraySize ¶¥µãÊı×éµÄÊıÁ¿
-		 * \param VertexArray ¶¥µãÊı×é¡¾¿ÉĞ´Èë¡¿
-		 * \param NodeArray °Ë²æÊ÷½ÚµãÊı×é
+		 * \param DepthBuffer èŠ‚ç‚¹æ•°ç»„NodeArrayæ·±åº¦æŸ¥è¯¢è¡¨
+		 * \param CenterBuffer èŠ‚ç‚¹æ•°ç»„NodeArrayèŠ‚ç‚¹ä¸­å¿ƒæŸ¥è¯¢è¡¨
+		 * \param VertexArraySize é¡¶ç‚¹æ•°ç»„çš„æ•°é‡
+		 * \param VertexArray é¡¶ç‚¹æ•°ç»„ã€å¯å†™å…¥ã€‘
+		 * \param NodeArray å…«å‰æ ‘èŠ‚ç‚¹æ•°ç»„
 		 */
 		__global__ void maintainVertexNodePointer(DeviceArrayView<unsigned int> DepthBuffer, DeviceArrayView<Point3D<float>> CenterBuffer, const unsigned int VertexArraySize, VertexNode* VertexArray, OctNode* NodeArray);
 
 		/**
-		 * \brief ³õÊ¼»¯±ßÊı×é.
+		 * \brief åˆå§‹åŒ–è¾¹æ•°ç»„.
 		 * 
-		 * \param NodeArray °Ë²æÊ÷½ÚµãÊı×é
-		 * \param DLevelOffset maxDepth²ã½ÚµãµÄÆ«ÒÆ
-		 * \param DLevelNodeCount maxDepth²ã½ÚµãÊıÁ¿
-		 * \param DepthBuffer ½ÚµãÊı×éNodeArrayÉî¶È²éÑ¯±í
-		 * \param CenterBuffer ½ÚµãÊı×éNodeArray½ÚµãÖĞĞÄ²éÑ¯±í
-		 * \param preEdgeArray Ô¤´¦ÀíµÄ±ßÊı×é
-		 * \param markPreEdgeArray ±ê¼ÇÓĞĞ§µÄEdgeË÷Òı
+		 * \param NodeArray å…«å‰æ ‘èŠ‚ç‚¹æ•°ç»„
+		 * \param DLevelOffset maxDepthå±‚èŠ‚ç‚¹çš„åç§»
+		 * \param DLevelNodeCount maxDepthå±‚èŠ‚ç‚¹æ•°é‡
+		 * \param DepthBuffer èŠ‚ç‚¹æ•°ç»„NodeArrayæ·±åº¦æŸ¥è¯¢è¡¨
+		 * \param CenterBuffer èŠ‚ç‚¹æ•°ç»„NodeArrayèŠ‚ç‚¹ä¸­å¿ƒæŸ¥è¯¢è¡¨
+		 * \param preEdgeArray é¢„å¤„ç†çš„è¾¹æ•°ç»„
+		 * \param markPreEdgeArray æ ‡è®°æœ‰æ•ˆçš„Edgeç´¢å¼•
 		 */
 		__global__ void initEdgeArray(DeviceArrayView<OctNode> NodeArray, const unsigned int DLevelOffset, const unsigned int DLevelNodeCount, DeviceArrayView<unsigned int> DepthBuffer, DeviceArrayView<Point3D<float>> CenterBuffer, EdgeNode* preEdgeArray, bool* markPreEdgeArray);
 
 		/**
-		 * \brief Éú³ÉEdgeArray²¢ÇÒ½«NodeArrayÖĞµÄedges[12]²ÎÊı¸³Öµ.
+		 * \brief ç”ŸæˆEdgeArrayå¹¶ä¸”å°†NodeArrayä¸­çš„edges[12]å‚æ•°èµ‹å€¼.
 		 * 
-		 * \param DepthBuffer ½ÚµãÊı×éNodeArrayÉî¶È²éÑ¯±í
-		 * \param CenterBuffer ½ÚµãÊı×éNodeArray½ÚµãÖĞĞÄ²éÑ¯±í
-		 * \param EdgeArraySize ±ßÊı×éÊıÁ¿
-		 * \param EdgeArray ÓĞĞ§±ßÊı×é
-		 * \param NodeArray ½ÚµãÊı×é¡¾¿ÉĞ´Èë¡¿
+		 * \param DepthBuffer èŠ‚ç‚¹æ•°ç»„NodeArrayæ·±åº¦æŸ¥è¯¢è¡¨
+		 * \param CenterBuffer èŠ‚ç‚¹æ•°ç»„NodeArrayèŠ‚ç‚¹ä¸­å¿ƒæŸ¥è¯¢è¡¨
+		 * \param EdgeArraySize è¾¹æ•°ç»„æ•°é‡
+		 * \param EdgeArray æœ‰æ•ˆè¾¹æ•°ç»„
+		 * \param NodeArray èŠ‚ç‚¹æ•°ç»„ã€å¯å†™å…¥ã€‘
 		 */
 		__global__ void maintainEdgeNodePointer(DeviceArrayView<unsigned int> DepthBuffer, DeviceArrayView<Point3D<float>> CenterBuffer, const unsigned int EdgeArraySize, EdgeNode* EdgeArray, OctNode* NodeArray);
 
 		/**
-		 * \brief ³õÊ¼»¯ÃæÊı×é.
+		 * \brief åˆå§‹åŒ–é¢æ•°ç»„.
 		 * 
-		 * \param NodeArray °Ë²æÊ÷½ÚµãÊı×é¡¾Ö»¶Á¡¿
-		 * \param DepthBuffer ½ÚµãÊı×éNodeArrayÉî¶È²éÑ¯±í
-		 * \param CenterBuffer ½ÚµãÊı×éNodeArray½ÚµãÖĞĞÄ²éÑ¯±í
-		 * \param NodeArraySize °Ë²æÊ÷½ÚµãÊı×é´óĞ¡
-		 * \param preFaceArray Ô¤´¦ÀíµÄÃæÊı×é
+		 * \param NodeArray å…«å‰æ ‘èŠ‚ç‚¹æ•°ç»„ã€åªè¯»ã€‘
+		 * \param DepthBuffer èŠ‚ç‚¹æ•°ç»„NodeArrayæ·±åº¦æŸ¥è¯¢è¡¨
+		 * \param CenterBuffer èŠ‚ç‚¹æ•°ç»„NodeArrayèŠ‚ç‚¹ä¸­å¿ƒæŸ¥è¯¢è¡¨
+		 * \param NodeArraySize å…«å‰æ ‘èŠ‚ç‚¹æ•°ç»„å¤§å°
+		 * \param preFaceArray é¢„å¤„ç†çš„é¢æ•°ç»„
 		 */
 		__global__ void initFaceArray(DeviceArrayView<OctNode> NodeArray, DeviceArrayView<unsigned int> DepthBuffer, DeviceArrayView<Point3D<float>> CenterBuffer, const unsigned int NodeArraySize, FaceNode* preFaceArray, bool* markPreFaceArray);
 
 		/**
-		 * \brief Éú³ÉFaceArray²¢ÇÒ½«NodeArrayÖĞµÄfaces[6]²ÎÊı¸³Öµ.
+		 * \brief ç”ŸæˆFaceArrayå¹¶ä¸”å°†NodeArrayä¸­çš„faces[6]å‚æ•°èµ‹å€¼.
 		 * 
-		 * \param DepthBuffer ½ÚµãÊı×éNodeArrayÉî¶È²éÑ¯±í
-		 * \param CenterBuffer ½ÚµãÊı×éNodeArray½ÚµãÖĞĞÄ²éÑ¯±í
-		 * \param FaceArraySize ÃæÊı×éÊıÁ¿
-		 * \param FaceArray ÓĞĞ§ÃæÊı×é
-		 * \param NodeArray ½ÚµãÊı×é¡¾¿ÉĞ´Èë¡¿
+		 * \param DepthBuffer èŠ‚ç‚¹æ•°ç»„NodeArrayæ·±åº¦æŸ¥è¯¢è¡¨
+		 * \param CenterBuffer èŠ‚ç‚¹æ•°ç»„NodeArrayèŠ‚ç‚¹ä¸­å¿ƒæŸ¥è¯¢è¡¨
+		 * \param FaceArraySize é¢æ•°ç»„æ•°é‡
+		 * \param FaceArray æœ‰æ•ˆé¢æ•°ç»„
+		 * \param NodeArray èŠ‚ç‚¹æ•°ç»„ã€å¯å†™å…¥ã€‘
 		 */
 		__global__ void maintainFaceNodePointer(DeviceArrayView<unsigned int> DepthBuffer, DeviceArrayView<Point3D<float>> CenterBuffer, const unsigned int FaceArraySize, OctNode* NodeArray, FaceNode* FaceArray);
 	}
@@ -101,65 +101,65 @@ namespace SparseSurfelFusion {
 		using Ptr = std::shared_ptr<BuildMeshGeometry>;
 
 		/**
-		 * \brief »ñµÃ¶¥µãÊı×é.
+		 * \brief è·å¾—é¡¶ç‚¹æ•°ç»„.
 		 * 
-		 * \return ·µ»Ø¶¥µãÊı×é
+		 * \return è¿”å›é¡¶ç‚¹æ•°ç»„
 		 */
 		DeviceArrayView<VertexNode> GetVertexArray() { return VertexArray.ArrayView(); }
 
 		/**
-		 * \brief »ñµÃ±ßÊı×é.
+		 * \brief è·å¾—è¾¹æ•°ç»„.
 		 * 
-		 * \return ·µ»Ø±ßÊı×é
+		 * \return è¿”å›è¾¹æ•°ç»„
 		 */
 		DeviceArrayView<EdgeNode> GetEdgeArray() { return EdgeArray.ArrayView(); }
 
 		/**
-		 * \brief »ñµÃÃæÊı×é.
+		 * \brief è·å¾—é¢æ•°ç»„.
 		 *
-		 * \return ·µ»ØÃæÊı×é
+		 * \return è¿”å›é¢æ•°ç»„
 		 */
 		DeviceArrayView<FaceNode> GetFaceArray() { return FaceArray.ArrayView(); }
 		/**
-		 * \brief ¼ÆËã¶¥µãvertexÊı×é£¬²¢½«NodeArrayÖĞµÄverticesÊı×éÖĞ¼ÇÂ¼¶ÔÓ¦ÔÚVertexArrayÖĞµÄindex£¬ÒÔ¹©ºóĞøµ÷ÓÃ.
+		 * \brief è®¡ç®—é¡¶ç‚¹vertexæ•°ç»„ï¼Œå¹¶å°†NodeArrayä¸­çš„verticesæ•°ç»„ä¸­è®°å½•å¯¹åº”åœ¨VertexArrayä¸­çš„indexï¼Œä»¥ä¾›åç»­è°ƒç”¨.
 		 * 
-		 * \param NodeArray ½ÚµãÊı×é
-		 * \param NodeArrayDepthIndex ½ÚµãÉî¶È²éÑ¯Êı×é
-		 * \param NodeArrayNodeCenter ½ÚµãÖĞĞÄ²éÑ¯Êı×é
-		 * \param stream cudaÁ÷
+		 * \param NodeArray èŠ‚ç‚¹æ•°ç»„
+		 * \param NodeArrayDepthIndex èŠ‚ç‚¹æ·±åº¦æŸ¥è¯¢æ•°ç»„
+		 * \param NodeArrayNodeCenter èŠ‚ç‚¹ä¸­å¿ƒæŸ¥è¯¢æ•°ç»„
+		 * \param stream cudaæµ
 		 */
 		void GenerateVertexArray(DeviceBufferArray<OctNode>& NodeArray, DeviceArrayView<unsigned int> NodeArrayDepthIndex, DeviceArrayView<Point3D<float>> NodeArrayNodeCenter, cudaStream_t stream);
 
 		/**
-		 * \brief ¼ÆËã±ßedgeÊı×é£¬²¢½«NodeArrayÖĞµÄedgesÊı×éÖĞ¼ÇÂ¼¶ÔÓ¦ÔÚEdgeArrayÖĞµÄindex£¬ÒÔ¹©ºóĞøµ÷ÓÃ.
+		 * \brief è®¡ç®—è¾¹edgeæ•°ç»„ï¼Œå¹¶å°†NodeArrayä¸­çš„edgesæ•°ç»„ä¸­è®°å½•å¯¹åº”åœ¨EdgeArrayä¸­çš„indexï¼Œä»¥ä¾›åç»­è°ƒç”¨.
 		 * 
-		 * \param NodeArray ½ÚµãÊı×é
-		 * \param DLevelOffset maxDepth²ãÆ«ÒÆ
-		 * \param DLevelNodeCount maxDepth²ã½ÚµãÊıÁ¿
-		 * \param NodeArrayDepthIndex ½ÚµãÉî¶È²éÑ¯Êı×é
-		 * \param NodeArrayNodeCenter ½ÚµãÖĞĞÄ²éÑ¯Êı×é
-		 * \param stream cudaÁ÷
+		 * \param NodeArray èŠ‚ç‚¹æ•°ç»„
+		 * \param DLevelOffset maxDepthå±‚åç§»
+		 * \param DLevelNodeCount maxDepthå±‚èŠ‚ç‚¹æ•°é‡
+		 * \param NodeArrayDepthIndex èŠ‚ç‚¹æ·±åº¦æŸ¥è¯¢æ•°ç»„
+		 * \param NodeArrayNodeCenter èŠ‚ç‚¹ä¸­å¿ƒæŸ¥è¯¢æ•°ç»„
+		 * \param stream cudaæµ
 		 */
 		void GenerateEdgeArray(DeviceBufferArray<OctNode>& NodeArray, const unsigned int DLevelOffset, const unsigned int DLevelNodeCount, DeviceArrayView<unsigned int> NodeArrayDepthIndex, DeviceArrayView<Point3D<float>> NodeArrayNodeCenter, cudaStream_t stream);
 
 		/**
-		 * \brief ¼ÆËã¶¥µãfaceÊı×é£¬²¢½«NodeArrayÖĞµÄfacesÊı×éÖĞ¼ÇÂ¼¶ÔÓ¦ÔÚFaceArrayÖĞµÄindex£¬ÒÔ¹©ºóĞøµ÷ÓÃ.
+		 * \brief è®¡ç®—é¡¶ç‚¹faceæ•°ç»„ï¼Œå¹¶å°†NodeArrayä¸­çš„facesæ•°ç»„ä¸­è®°å½•å¯¹åº”åœ¨FaceArrayä¸­çš„indexï¼Œä»¥ä¾›åç»­è°ƒç”¨.
 		 *
-		 * \param NodeArray ½ÚµãÊı×é
-		 * \param NodeArrayDepthIndex ½ÚµãÉî¶È²éÑ¯Êı×é
-		 * \param NodeArrayNodeCenter ½ÚµãÖĞĞÄ²éÑ¯Êı×é
-		 * \param stream cudaÁ÷
+		 * \param NodeArray èŠ‚ç‚¹æ•°ç»„
+		 * \param NodeArrayDepthIndex èŠ‚ç‚¹æ·±åº¦æŸ¥è¯¢æ•°ç»„
+		 * \param NodeArrayNodeCenter èŠ‚ç‚¹ä¸­å¿ƒæŸ¥è¯¢æ•°ç»„
+		 * \param stream cudaæµ
 		 */
 		void GenerateFaceArray(DeviceBufferArray<OctNode>& NodeArray, DeviceArrayView<unsigned int> NodeArrayDepthIndex, DeviceArrayView<Point3D<float>> NodeArrayNodeCenter, cudaStream_t stream);
 
 	private:
-		DeviceBufferArray<VertexNode> VertexArray;			// ¶¥µãÊı×é
-		DeviceBufferArray<EdgeNode> EdgeArray;				// ±ßÊı×é
-		DeviceBufferArray<FaceNode> FaceArray;				// ÃæÊı×é
+		DeviceBufferArray<VertexNode> VertexArray;			// é¡¶ç‚¹æ•°ç»„
+		DeviceBufferArray<EdgeNode> EdgeArray;				// è¾¹æ•°ç»„
+		DeviceBufferArray<FaceNode> FaceArray;				// é¢æ•°ç»„
 
-		DeviceBufferArray<bool> markValidVertexArray;		// ¼ÇÂ¼ÓĞĞ§µÄ¶¥µãÎ»ÖÃ£¬¼´ownerNodeIdx > 0ÕÒµ½ÁËÓµÓĞÕß½ÚµãµÄvertex 
-		DeviceBufferArray<bool> markValidEdgeArray;			// ¼ÇÂ¼ÓĞĞ§±ß
-		DeviceBufferArray<bool> markValidFaceArray;			// ¼ÇÂ¼ÓĞĞ§Ãæ
+		DeviceBufferArray<bool> markValidVertexArray;		// è®°å½•æœ‰æ•ˆçš„é¡¶ç‚¹ä½ç½®ï¼Œå³ownerNodeIdx > 0æ‰¾åˆ°äº†æ‹¥æœ‰è€…èŠ‚ç‚¹çš„vertex 
+		DeviceBufferArray<bool> markValidEdgeArray;			// è®°å½•æœ‰æ•ˆè¾¹
+		DeviceBufferArray<bool> markValidFaceArray;			// è®°å½•æœ‰æ•ˆé¢
 	};
 }
 

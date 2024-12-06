@@ -4,46 +4,46 @@
 #include <base/DeviceAPI/device_array.hpp>
 #include <base/DeviceAPI/kernel_containers.hpp>
 #include <base/DeviceAPI/safe_call.hpp>
-//CUDAÀàĞÍ
+//CUDAç±»å‹
 #include <vector_functions.h>
 #include <vector>
 
 namespace SparseSurfelFusion {
-	/* hostºÍdevice·ÃÎÊµÄ gpu ÈİÆ÷
+	/* hostå’Œdeviceè®¿é—®çš„ gpu å®¹å™¨
 	*/
-	//ÓÃDeviceArray´úÌæDeviceArrayPCL
+	//ç”¨DeviceArrayä»£æ›¿DeviceArrayPCL
 	template<typename T>
 	using DeviceArray = DeviceArrayPCL<T>;
-	//ÓÃDeviceArray2D´úÌæDeviceArray2DPCL
+	//ç”¨DeviceArray2Dä»£æ›¿DeviceArray2DPCL
 	template<typename T>
 	using DeviceArray2D = DeviceArray2DPCL<T>;
 
 	namespace device {
-		//device·ÃÎÊ gpu ÈİÆ÷µÄÀàĞÍ
-		//´æÁËDeviceµØÖ·µÄÖ¸Õë
+		//deviceè®¿é—® gpu å®¹å™¨çš„ç±»å‹
+		//å­˜äº†Deviceåœ°å€çš„æŒ‡é’ˆ
 		template<typename T>
 		using DevicePtr = DevPtr<T>;
 
-		//´æÁËDeviceµØÖ·ÒÔ¼°Êı¾İ´óĞ¡
+		//å­˜äº†Deviceåœ°å€ä»¥åŠæ•°æ®å¤§å°
 		template<typename T>
 		using PtrSize = PtrSzPCL<T>;
 
-		//´æÁËDeviceµØÖ·ÒÔ¼°ÔÚÒÔ×Ö½ÚÎªµ¥Î»µÄÁ½¸öÁ¬ĞøĞĞÖ®¼äµÄ²½³¤£¬¿ÉÒÔ½«DeviceArrayÀàĞÍ×ª³ÉPtrStep£¬²¢ÔÚºËº¯ÊıÖĞÖ±½Ó·ÃÎÊ(DeviceArrayÔÚºËº¯ÊıÖĞ²»ÄÜÖ±½Ó·ÃÎÊ)
+		//å­˜äº†Deviceåœ°å€ä»¥åŠåœ¨ä»¥å­—èŠ‚ä¸ºå•ä½çš„ä¸¤ä¸ªè¿ç»­è¡Œä¹‹é—´çš„æ­¥é•¿ï¼Œå¯ä»¥å°†DeviceArrayç±»å‹è½¬æˆPtrStepï¼Œå¹¶åœ¨æ ¸å‡½æ•°ä¸­ç›´æ¥è®¿é—®(DeviceArrayåœ¨æ ¸å‡½æ•°ä¸­ä¸èƒ½ç›´æ¥è®¿é—®)
 		template<typename T>
 		using PtrStep = PtrStepPCL<T>;
 
-		//´æÁËDeviceµØÖ·¡¢Êı¾İµÄ´óĞ¡ÒÔ¼°ÔÚÒÔ×Ö½ÚÎªµ¥Î»µÄÁ½¸öÁ¬ĞøĞĞÖ®¼äµÄ²½³¤
+		//å­˜äº†Deviceåœ°å€ã€æ•°æ®çš„å¤§å°ä»¥åŠåœ¨ä»¥å­—èŠ‚ä¸ºå•ä½çš„ä¸¤ä¸ªè¿ç»­è¡Œä¹‹é—´çš„æ­¥é•¿
 		template<typename T>
 		using PtrStepSize = PtrStepSzPCL<T>;
 	}
 
 	/**
-	 * Ïà»úÄÚ²Î
+	 * ç›¸æœºå†…å‚
 	 */
 	struct Intrinsic
 	{
 		/**
-		 * \brief ÔÊĞíÔÚhostºÍdeviceÉÏÃæ½øĞĞIntrinsicº¯Êı¹¹Ôì
+		 * \brief å…è®¸åœ¨hostå’Œdeviceä¸Šé¢è¿›è¡ŒIntrinsicå‡½æ•°æ„é€ 
 		 * \return
 		 */
 		__host__ __device__ Intrinsic()
@@ -56,47 +56,47 @@ namespace SparseSurfelFusion {
 		) : principal_x(principal_x_), principal_y(principal_y_),
 			focal_x(focal_x_), focal_y(focal_y_) {}
 
-		//¹¹Ôìfloat4   [Ö±½ÓÖØÔØfloat4(),ÕâÑù¿ÉÒÔÖ±½ÓÓÒ¸³Öµ -> float4 A = (Intrinsic) B]
+		//æ„é€ float4   [ç›´æ¥é‡è½½float4(),è¿™æ ·å¯ä»¥ç›´æ¥å³èµ‹å€¼ -> float4 A = (Intrinsic) B]
 		__host__ operator float4() {
 			return make_float4(principal_x, principal_y, focal_x, focal_y);
 		}
 
-		// Ïà»úÄÚ²Î
+		// ç›¸æœºå†…å‚
 		float principal_x, principal_y;
 		float focal_x, focal_y;
 	};
 
 	/**
-	 * Ïà»úÄÚ²Îµ¹Êı
+	 * ç›¸æœºå†…å‚å€’æ•°
 	 */
 	struct IntrinsicInverse
 	{
-		//Ä¬ÈÏ¸³³õÖµ0
+		//é»˜è®¤èµ‹åˆå€¼0
 		__host__ __device__ IntrinsicInverse() : principal_x(0), principal_y(0), inv_focal_x(0), inv_focal_y(0) {}
 
-		// Ïà»úÄÚ²Î
-		float principal_x, principal_y; //Ïà»úÄÚ²ÎÖĞĞÄµã
-		float inv_focal_x, inv_focal_y; //Ïà»ú½¹¾àµÄµ¹Êı
+		// ç›¸æœºå†…å‚
+		float principal_x, principal_y; //ç›¸æœºå†…å‚ä¸­å¿ƒç‚¹
+		float inv_focal_x, inv_focal_y; //ç›¸æœºç„¦è·çš„å€’æ•°
 	};
 
 	/**
-	 * \brief ¸ø¶¨Êı×éµÄÎÆÀí¼¯ºÏ£¬ÆäÖĞÓĞcudaSurfaceObject_tºÍcudaTextureObject_tÁ½ÖÖÀàĞÍ£¬ÒÔ¼°¶ÔÓ¦Êı¾İcudaArray.
+	 * \brief ç»™å®šæ•°ç»„çš„çº¹ç†é›†åˆï¼Œå…¶ä¸­æœ‰cudaSurfaceObject_tå’ŒcudaTextureObject_tä¸¤ç§ç±»å‹ï¼Œä»¥åŠå¯¹åº”æ•°æ®cudaArray.
 	 */
 	struct CudaTextureSurface {
-		cudaTextureObject_t texture;	//ÎÆÀíÄÚ´æ£¬¿É¶Á²»¿ÉĞ´£¬ÏñËØµãÖ±½Ó¿ÉÒÔ½øĞĞÓ²¼ş²åÖµ
-		cudaSurfaceObject_t surface;	//±íÃæÄÚ´æ£¬¿É¶Á¿ÉĞ´£¬¿ÉÒÔÓëOpenGLÖĞµÄResource¿Õ¼ä½øĞĞÓ³Éä»òÕß¹²Ïí£¬²»Í¨¹ıCPU
-		cudaArray_t cudaArray;			//´´½¨Ò»¸öArray´æ·ÅÊı¾İ£¬ÀàĞÍcudaArray_t£¬ÕâÒ²¾ÍÊÇÊı¾İÔÚGPUÉÏÊµ¼ÊµÄÔØÌå
+		cudaTextureObject_t texture;	//çº¹ç†å†…å­˜ï¼Œå¯è¯»ä¸å¯å†™ï¼Œåƒç´ ç‚¹ç›´æ¥å¯ä»¥è¿›è¡Œç¡¬ä»¶æ’å€¼
+		cudaSurfaceObject_t surface;	//è¡¨é¢å†…å­˜ï¼Œå¯è¯»å¯å†™ï¼Œå¯ä»¥ä¸OpenGLä¸­çš„Resourceç©ºé—´è¿›è¡Œæ˜ å°„æˆ–è€…å…±äº«ï¼Œä¸é€šè¿‡CPU
+		cudaArray_t cudaArray;			//åˆ›å»ºä¸€ä¸ªArrayå­˜æ”¾æ•°æ®ï¼Œç±»å‹cudaArray_tï¼Œè¿™ä¹Ÿå°±æ˜¯æ•°æ®åœ¨GPUä¸Šå®é™…çš„è½½ä½“
 	};
 
-	//ÏòÉÏÈ¡Õûº¯Êı£¬ËãÍø¸ñÊıÁ¿µÄ£¬Í¬convenience.cuhÖĞµÄgetGridDim()º¯Êı
+	//å‘ä¸Šå–æ•´å‡½æ•°ï¼Œç®—ç½‘æ ¼æ•°é‡çš„ï¼ŒåŒconvenience.cuhä¸­çš„getGridDim()å‡½æ•°
 	using pcl::gpu::divUp;
 
 	/**
-	 * \brief ¸¨Öú½á¹¹Ìå¼ÇÂ¼ÏñËØ.
+	 * \brief è¾…åŠ©ç»“æ„ä½“è®°å½•åƒç´ .
 	 */
 	struct PixelCoordinate {
-		unsigned int row;	// Í¼ÏñµÄ¸ß£¬ÏñËØµãy×ø±ê
-		unsigned int col;	// Í¼ÏñµÄ¿í£¬ÏñËØµãx×ø±ê
+		unsigned int row;	// å›¾åƒçš„é«˜ï¼Œåƒç´ ç‚¹yåæ ‡
+		unsigned int col;	// å›¾åƒçš„å®½ï¼Œåƒç´ ç‚¹xåæ ‡
 		__host__ __device__ PixelCoordinate() : row(0), col(0) {}
 		__host__ __device__ PixelCoordinate(const unsigned row_, const unsigned col_)
 			: row(row_), col(col_) {}
@@ -108,18 +108,18 @@ namespace SparseSurfelFusion {
 	};
 
 	/**
-	 * \brief ´ÓÉî¶ÈÍ¼Ïñ¹¹½¨µÄsurfel½á¹¹Ó¦¸ÃÔÚÉè±¸ÉÏ·ÃÎÊ.
+	 * \brief ä»æ·±åº¦å›¾åƒæ„å»ºçš„surfelç»“æ„åº”è¯¥åœ¨è®¾å¤‡ä¸Šè®¿é—®.
 	 */
 	struct DepthSurfel {
-		PixelCoordinate pixelCoordinate;	// pixelCoordinateÃæÔªÀ´×ÔÄÄÀï
-		float4 VertexAndConfidence;			// VertexAndConfidence (x, y, z)ÎªÏà»úÖ¡ÖĞµÄÎ»ÖÃ£¬(w)ÎªÖÃĞÅ¶ÈÖµ¡£
-		float4 NormalAndRadius;				// NormalAndRadius (x, y, z)ÊÇ¹éÒ»»¯·¨Ïß·½Ïò£¬wÊÇ°ë¾¶
-		float4 ColorAndTime;				// ColorAndTime (x, y, z)ÊÇ¸¡µã±àÂëµÄRGBÖµ;
+		PixelCoordinate pixelCoordinate;	// pixelCoordinateé¢å…ƒæ¥è‡ªå“ªé‡Œ
+		float4 VertexAndConfidence;			// VertexAndConfidence (x, y, z)ä¸ºç›¸æœºå¸§ä¸­çš„ä½ç½®ï¼Œ(w)ä¸ºç½®ä¿¡åº¦å€¼ã€‚
+		float4 NormalAndRadius;				// NormalAndRadius (x, y, z)æ˜¯å½’ä¸€åŒ–æ³•çº¿æ–¹å‘ï¼Œwæ˜¯åŠå¾„
+		float4 ColorAndTime;				// ColorAndTime (x, y, z)æ˜¯æµ®ç‚¹ç¼–ç çš„RGBå€¼;
 	};
 
 	struct KNNAndWeight {
-		ushort4 knn;		// ÁÙ½ü4¸öµãµÄID
-		float4 weight;		// ÁÙ½ü4¸öµãµÄÈ¨ÖØ
+		ushort4 knn;		// ä¸´è¿‘4ä¸ªç‚¹çš„ID
+		float4 weight;		// ä¸´è¿‘4ä¸ªç‚¹çš„æƒé‡
 
 		__host__ __device__ void setInvalid() {
 			knn.x = knn.y = knn.z = knn.w = 0xFFFF;
@@ -129,10 +129,10 @@ namespace SparseSurfelFusion {
 
 	struct markCompact {
 		/**
-		 * \brief ¼ì²é x µÄµÚ 32 Î»ÊÇ·ñÎª 1¡£Èç¹û x µÄµÚ 32 Î»Îª 1£¬Ôò·µ»Ø true£¬·ñÔò·µ»Ø false.
+		 * \brief æ£€æŸ¥ x çš„ç¬¬ 32 ä½æ˜¯å¦ä¸º 1ã€‚å¦‚æœ x çš„ç¬¬ 32 ä½ä¸º 1ï¼Œåˆ™è¿”å› trueï¼Œå¦åˆ™è¿”å› false.
 		 *
-		 * \param x ÊäÈë32Îª³¤ÕûĞÍ
-		 * \return ·µ»Ø¼ì²é½á¹û
+		 * \param x è¾“å…¥32ä¸ºé•¿æ•´å‹
+		 * \return è¿”å›æ£€æŸ¥ç»“æœ
 		 */
 		__device__ bool operator()(const long long& x) {
 			return (x & (1ll << 31)) > 0;

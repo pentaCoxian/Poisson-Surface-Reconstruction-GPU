@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   ComputeNodesDivergence.cpp
- * \brief  ¼ÆËã½ÚµãÉ¢¶È·½·¨
+ * \brief  è®¡ç®—èŠ‚ç‚¹æ•£åº¦æ–¹æ³•
  * 
  * \author LUOJIAXUAN
  * \date   May 24th 2024
@@ -8,7 +8,7 @@
 #include "ComputeNodesDivergence.h"
 SparseSurfelFusion::ComputeNodesDivergence::ComputeNodesDivergence()
 {
-	Divergence.AllocateBuffer(TOTAL_NODEARRAY_MAX_COUNT);			// ½ÚµãÉ¢¶È
+	Divergence.AllocateBuffer(TOTAL_NODEARRAY_MAX_COUNT);			// èŠ‚ç‚¹æ•£åº¦
 }
 
 SparseSurfelFusion::ComputeNodesDivergence::~ComputeNodesDivergence()
@@ -19,23 +19,23 @@ SparseSurfelFusion::ComputeNodesDivergence::~ComputeNodesDivergence()
 void SparseSurfelFusion::ComputeNodesDivergence::CalculateNodesDivergence(const int* BaseAddressArray, const int* NodeArrayCount, DeviceArrayView<int> BaseAddressArrayDevice, DeviceArrayView<int> encodeNodeIndexInFunction, DeviceArrayView<OctNode> NodeArray, DeviceArrayView<Point3D<float>> VectorField, DeviceArrayView<double> dot_F_DF, cudaStream_t stream_1, cudaStream_t stream_2)
 {
 #ifdef CHECK_MESH_BUILD_TIME_COST
-	auto start = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼¿ªÊ¼Ê±¼äµã
+	auto start = std::chrono::high_resolution_clock::now();						// è®°å½•å¼€å§‹æ—¶é—´ç‚¹
 #endif // CHECK_MESH_BUILD_TIME_COST
 
-	// Á½¸öÁ÷·Ö±ğ²¢ĞĞÖ´ĞĞ£ºÊ±¼ä¼õÉÙ44%
+	// ä¸¤ä¸ªæµåˆ†åˆ«å¹¶è¡Œæ‰§è¡Œï¼šæ—¶é—´å‡å°‘44%
 	computeFinerNodesDivergence(BaseAddressArrayDevice, encodeNodeIndexInFunction, NodeArray, VectorField, dot_F_DF, BaseAddressArray[COARSER_DIVERGENCE_LEVEL_NUM + 1], BaseAddressArray[MAX_DEPTH_OCTREE] + NodeArrayCount[MAX_DEPTH_OCTREE], stream_1);
 	computeCoarserNodesDivergence(BaseAddressArray, BaseAddressArrayDevice, encodeNodeIndexInFunction, NodeArray, VectorField, dot_F_DF, BaseAddressArray[0], BaseAddressArray[COARSER_DIVERGENCE_LEVEL_NUM] + NodeArrayCount[COARSER_DIVERGENCE_LEVEL_NUM], stream_2);
 
 #ifdef CHECK_MESH_BUILD_TIME_COST
-	// ËùÓĞ²ÎÓëµÄÁ÷¾ùÍ¬²½
+	// æ‰€æœ‰å‚ä¸çš„æµå‡åŒæ­¥
 	CHECKCUDA(cudaStreamSynchronize(stream_1));
 	CHECKCUDA(cudaStreamSynchronize(stream_2));
 
-	auto end = std::chrono::high_resolution_clock::now();							// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration = end - start;				// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "¼ÆËã½ÚµãÉ¢¶ÈµÄÊ±¼ä: " << duration.count() << " ms" << std::endl;		// Êä³ö
+	auto end = std::chrono::high_resolution_clock::now();							// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration = end - start;				// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "è®¡ç®—èŠ‚ç‚¹æ•£åº¦çš„æ—¶é—´: " << duration.count() << " ms" << std::endl;		// è¾“å‡º
 	std::cout << std::endl;
-	std::cout << "-----------------------------------------------------" << std::endl;	// Êä³ö
+	std::cout << "-----------------------------------------------------" << std::endl;	// è¾“å‡º
 	std::cout << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 }

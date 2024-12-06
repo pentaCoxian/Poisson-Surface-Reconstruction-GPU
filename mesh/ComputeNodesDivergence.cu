@@ -1,20 +1,20 @@
 /*****************************************************************//**
  * \file   ComputeNodesDivergence.cu
- * \brief  ¼ÆËã½ÚµãÉ¢¶Ècuda·½·¨ÊµÏÖ
+ * \brief  è®¡ç®—èŠ‚ç‚¹æ•£åº¦cudaæ–¹æ³•å®ç°
  * 
  * \author LUOJIAXUAN
  * \date   May 24th 2024
  *********************************************************************/
 #include "ComputeNodesDivergence.h"
-#if defined(__CUDACC__)		//Èç¹ûÓÉNVCC±àÒëÆ÷±àÒë
+#if defined(__CUDACC__)		//å¦‚æœç”±NVCCç¼–è¯‘å™¨ç¼–è¯‘
 #include <cub/cub.cuh>
 #endif
 
 namespace SparseSurfelFusion {
 	namespace device {
-		__device__ __constant__ int maxDepth = MAX_DEPTH_OCTREE;	// Octree×î´óÉî¶È
+		__device__ __constant__ int maxDepth = MAX_DEPTH_OCTREE;	// Octreeæœ€å¤§æ·±åº¦
 
-		__device__ __constant__ int res = RESOLUTION;				// ·Ö±æÂÊ
+		__device__ __constant__ int res = RESOLUTION;				// åˆ†è¾¨ç‡
 
 		__device__ __constant__ int decodeOffset_1 = (1 << (MAX_DEPTH_OCTREE + 1));
 
@@ -33,20 +33,20 @@ __global__ void SparseSurfelFusion::device::computeFinerNodesDivergenceKernel(De
 	for (int i = 0; i < 27; i++) {
 		int neighborIdx = NodeArray[offset].neighs[i];
 		if (neighborIdx == -1)	continue;
-		for (int j = 0; j < NodeArray[neighborIdx].dnum; j++) {						// ±éÀúµ±Ç°½ÚµãµÄÁÚ¾Ó½ÚµãÔÚmaxDepth²ãËù°üº¬µÄµÄËùÓĞÒ¶×Ó½Úµã
-			int NodeIndexDLevel = NodeArray[neighborIdx].didx + j;					// ÔÚmaxDepth²ãÒ¶×Ó½ÚµãµÄindex
+		for (int j = 0; j < NodeArray[neighborIdx].dnum; j++) {						// éå†å½“å‰èŠ‚ç‚¹çš„é‚»å±…èŠ‚ç‚¹åœ¨maxDepthå±‚æ‰€åŒ…å«çš„çš„æ‰€æœ‰å¶å­èŠ‚ç‚¹
+			int NodeIndexDLevel = NodeArray[neighborIdx].didx + j;					// åœ¨maxDepthå±‚å¶å­èŠ‚ç‚¹çš„index
 			const Point3D<float>& vo = VectorField[NodeIndexDLevel];
 			int idxO_1[3], idxO_2[3];
 
-			int encodeIndex = encodeNodeIndexInFunction[offset];						// »ñµÃµ±Ç°½Úµã»ùº¯Êı±àÂë
-			idxO_1[0] = encodeIndex % decodeOffset_1;								// È¡±àÂë×îºó11Î»	[0 , 10]
-			idxO_1[1] = (encodeIndex / decodeOffset_1) % decodeOffset_1;			// È¡±àÂëÖĞ¼ä11Î»	[11, 21]
-			idxO_1[2] = encodeIndex / decodeOffset_2;								// È¡±àÂë×îÇ°10Î»	[22, 31]
+			int encodeIndex = encodeNodeIndexInFunction[offset];						// è·å¾—å½“å‰èŠ‚ç‚¹åŸºå‡½æ•°ç¼–ç 
+			idxO_1[0] = encodeIndex % decodeOffset_1;								// å–ç¼–ç æœ€å11ä½	[0 , 10]
+			idxO_1[1] = (encodeIndex / decodeOffset_1) % decodeOffset_1;			// å–ç¼–ç ä¸­é—´11ä½	[11, 21]
+			idxO_1[2] = encodeIndex / decodeOffset_2;								// å–ç¼–ç æœ€å‰10ä½	[22, 31]
 
-			encodeIndex = encodeNodeIndexInFunction[startDLevel + NodeIndexDLevel];	// »ñµÃµ±Ç°½ÚµãÔÚmaxdepth²ãµÄÒ¶×Ó½Úµã»ùº¯Êı±àÂë
-			idxO_2[0] = encodeIndex % decodeOffset_1;								// È¡±àÂë×îºó11Î»	[0 , 10]
-			idxO_2[1] = (encodeIndex / decodeOffset_1) % decodeOffset_1;			// È¡±àÂëÖĞ¼ä11Î»	[11, 21]
-			idxO_2[2] = encodeIndex / decodeOffset_2;								// È¡±àÂë×îÇ°10Î»	[22, 31]
+			encodeIndex = encodeNodeIndexInFunction[startDLevel + NodeIndexDLevel];	// è·å¾—å½“å‰èŠ‚ç‚¹åœ¨maxdepthå±‚çš„å¶å­èŠ‚ç‚¹åŸºå‡½æ•°ç¼–ç 
+			idxO_2[0] = encodeIndex % decodeOffset_1;								// å–ç¼–ç æœ€å11ä½	[0 , 10]
+			idxO_2[1] = (encodeIndex / decodeOffset_1) % decodeOffset_1;			// å–ç¼–ç ä¸­é—´11ä½	[11, 21]
+			idxO_2[2] = encodeIndex / decodeOffset_2;								// å–ç¼–ç æœ€å‰10ä½	[22, 31]
 
 			int scratch[3];
 			scratch[0] = idxO_1[0] + idxO_2[0] * res;
@@ -61,7 +61,7 @@ __global__ void SparseSurfelFusion::device::computeFinerNodesDivergenceKernel(De
 			val += DotProduct(vo, uo);
 		}
 	}
-	Divergence[offset] = val;	// µ±Ç°½ÚµãÉ¢¶È
+	Divergence[offset] = val;	// å½“å‰èŠ‚ç‚¹æ•£åº¦
 }
 
 __device__ float SparseSurfelFusion::device::DotProduct(const Point3D<float>& p1, const Point3D<float>& p2)
@@ -77,7 +77,7 @@ __global__ void SparseSurfelFusion::device::computeCoverNums(DeviceArrayView<Oct
 {
 	coverNums[0] = 0;
 	for (int i = 0; i < 27; i++) {
-		int neighbor = NodeArray[index].neighs[i];	// ÁÚ¾Ó½Úµãidx
+		int neighbor = NodeArray[index].neighs[i];	// é‚»å±…èŠ‚ç‚¹idx
 		if (neighbor != -1) {
 			coverNums[i + 1] = NodeArray[neighbor].dnum + coverNums[i];
 		}
@@ -92,14 +92,14 @@ __global__ void SparseSurfelFusion::device::generateDLevelIndexArrayKernel(Devic
 	const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
 	if (idx >= totalCoverNum)	return;
 
-	int neighborIdx;	// ÅĞ¶Ïµ±Ç°Õâ¸öD²ã½ÚµãÊÇÊôÓÚÄÄÒ»¸öÉÏ²ã½Úµã(1-4¼¶²ã½Úµã¼°ÆäÁÚ¾ÓµÄ27¸öµã)
+	int neighborIdx;	// åˆ¤æ–­å½“å‰è¿™ä¸ªDå±‚èŠ‚ç‚¹æ˜¯å±äºå“ªä¸€ä¸ªä¸Šå±‚èŠ‚ç‚¹(1-4çº§å±‚èŠ‚ç‚¹åŠå…¶é‚»å±…çš„27ä¸ªç‚¹)
 	for (neighborIdx = 0; neighborIdx < 27; neighborIdx++) {
 		if (coverNums[neighborIdx] <= idx && idx < coverNums[neighborIdx + 1]) {
 			break;
 		}
 	}
-	int Current27NodesDLevelStartIndex = NodeArray[NodeArray[index].neighs[neighborIdx]].didx;	// µ±Ç°Õâ¸öneighborIdx½ÚµãÔÚD²ãÖĞµÄÆğÊ¼Î»ÖÃ
-	DLevelIndexArray[idx] = Current27NodesDLevelStartIndex + idx - coverNums[neighborIdx];		// idx - coverNums[neighborIdx]¾ÍÊÇÏà¶ÔÓÚµ±Ç°neighborIdx½ÚµãÆäÊµÎ»ÖÃµÄ¾àÀë
+	int Current27NodesDLevelStartIndex = NodeArray[NodeArray[index].neighs[neighborIdx]].didx;	// å½“å‰è¿™ä¸ªneighborIdxèŠ‚ç‚¹åœ¨Då±‚ä¸­çš„èµ·å§‹ä½ç½®
+	DLevelIndexArray[idx] = Current27NodesDLevelStartIndex + idx - coverNums[neighborIdx];		// idx - coverNums[neighborIdx]å°±æ˜¯ç›¸å¯¹äºå½“å‰neighborIdxèŠ‚ç‚¹å…¶å®ä½ç½®çš„è·ç¦»
 }
 
 __global__ void SparseSurfelFusion::device::computeCoarserNodesDivergenceKernel(DeviceArrayView<int> BaseAddressArrayDevice, DeviceArrayView<int> encodeNodeIndexInFunction, DeviceArrayView<Point3D<float>> VectorField, DeviceArrayView<double> dot_F_DF, const unsigned int index, const unsigned int* DLevelIndexArray, const unsigned int totalCoverNum, float* divg)
@@ -138,20 +138,20 @@ __global__ void SparseSurfelFusion::device::computeCoarserNodesDivergenceKernel(
 void SparseSurfelFusion::ComputeNodesDivergence::computeFinerNodesDivergence(DeviceArrayView<int> BaseAddressArrayDevice, DeviceArrayView<int> encodeNodeIndexInFunction, DeviceArrayView<OctNode> NodeArray, DeviceArrayView<Point3D<float>> VectorField, DeviceArrayView<double> dot_F_DF, const unsigned int left, const unsigned int right, cudaStream_t stream)
 {
 //#ifdef CHECK_MESH_BUILD_TIME_COST
-//	auto start = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼¿ªÊ¼Ê±¼äµã
+//	auto start = std::chrono::high_resolution_clock::now();						// è®°å½•å¼€å§‹æ—¶é—´ç‚¹
 //#endif // CHECK_MESH_BUILD_TIME_COST
 
-	Divergence.ResizeArrayOrException(NodeArray.Size());	// ÓëNodeArray´óĞ¡Ò»ÖÂ
-	const unsigned int CalculatedNodeNum = right - left;	// ²ÎÓë¼ÆËãµÄ½ÚµãÊıÁ¿
+	Divergence.ResizeArrayOrException(NodeArray.Size());	// ä¸NodeArrayå¤§å°ä¸€è‡´
+	const unsigned int CalculatedNodeNum = right - left;	// å‚ä¸è®¡ç®—çš„èŠ‚ç‚¹æ•°é‡
 	dim3 block(128);
 	dim3 grid(divUp(CalculatedNodeNum, block.x));
 	device::computeFinerNodesDivergenceKernel << <grid, block, 0, stream >> > (BaseAddressArrayDevice, encodeNodeIndexInFunction, NodeArray, VectorField, dot_F_DF, left, CalculatedNodeNum, Divergence.Array().ptr());
 
 //#ifdef CHECK_MESH_BUILD_TIME_COST
 //	CHECKCUDA(cudaStreamSynchronize(stream));
-//	auto end = std::chrono::high_resolution_clock::now();							// ¼ÇÂ¼½áÊøÊ±¼äµã
-//	std::chrono::duration<double, std::milli> duration = end - start;				// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-//	std::cout << "¼ÆËã[CoarserLevelNum + 1, maxDepth]²ã½ÚµãÉ¢¶ÈµÄÊ±¼ä: " << duration.count() << " ms" << std::endl;	// Êä³ö
+//	auto end = std::chrono::high_resolution_clock::now();							// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+//	std::chrono::duration<double, std::milli> duration = end - start;				// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+//	std::cout << "è®¡ç®—[CoarserLevelNum + 1, maxDepth]å±‚èŠ‚ç‚¹æ•£åº¦çš„æ—¶é—´: " << duration.count() << " ms" << std::endl;	// è¾“å‡º
 //#endif // CHECK_MESH_BUILD_TIME_COST
 
 }
@@ -159,13 +159,13 @@ void SparseSurfelFusion::ComputeNodesDivergence::computeFinerNodesDivergence(Dev
 void SparseSurfelFusion::ComputeNodesDivergence::computeCoarserNodesDivergence(const int* BaseAddressArray, DeviceArrayView<int> BaseAddressArrayDevice, DeviceArrayView<int> encodeNodeIndexInFunction, DeviceArrayView<OctNode> NodeArray, DeviceArrayView<Point3D<float>> VectorField, DeviceArrayView<double> dot_F_DF, const unsigned int left, const unsigned int right, cudaStream_t stream)
 {
 //#ifdef CHECK_MESH_BUILD_TIME_COST
-//	auto start = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼¿ªÊ¼Ê±¼äµã
+//	auto start = std::chrono::high_resolution_clock::now();						// è®°å½•å¼€å§‹æ—¶é—´ç‚¹
 //#endif // CHECK_MESH_BUILD_TIME_COST
 
-	Divergence.ResizeArrayOrException(NodeArray.Size());	// ÓëNodeArray´óĞ¡Ò»ÖÂ
-	const unsigned int CalculatedNodeNum = right - left;	// ²ÎÓë¼ÆËãµÄ½ÚµãÊıÁ¿
-	for (int i = left; i < CalculatedNodeNum; i++) {			// [0, CoarserLevelNum]²ã½Úµã×ÜÊı
-		int depth = 0;	// µ±Ç°½ÚµãÉî¶È
+	Divergence.ResizeArrayOrException(NodeArray.Size());	// ä¸NodeArrayå¤§å°ä¸€è‡´
+	const unsigned int CalculatedNodeNum = right - left;	// å‚ä¸è®¡ç®—çš„èŠ‚ç‚¹æ•°é‡
+	for (int i = left; i < CalculatedNodeNum; i++) {			// [0, CoarserLevelNum]å±‚èŠ‚ç‚¹æ€»æ•°
+		int depth = 0;	// å½“å‰èŠ‚ç‚¹æ·±åº¦
 		for (int j = 0; j <= COARSER_DIVERGENCE_LEVEL_NUM; j++) {
 			if (BaseAddressArray[j] <= i && i < BaseAddressArray[j + 1]) {
 				depth = j;
@@ -176,20 +176,20 @@ void SparseSurfelFusion::ComputeNodesDivergence::computeCoarserNodesDivergence(c
 		CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&coverNums), sizeof(unsigned int) * 28, stream));
 
 		device::computeCoverNums << <1, 1, 0, stream >> > (NodeArray, i, coverNums);
-		unsigned int totalCoverNum;		// µ±Ç°½Úµã¼°ÆäÁÚ¾Ó¸²¸ÇµÄmaxDepth²ãµÄ½ÚµãÊıÁ¿
+		unsigned int totalCoverNum;		// å½“å‰èŠ‚ç‚¹åŠå…¶é‚»å±…è¦†ç›–çš„maxDepthå±‚çš„èŠ‚ç‚¹æ•°é‡
 		CHECKCUDA(cudaMemcpyAsync(&totalCoverNum, coverNums + 27, sizeof(unsigned int), cudaMemcpyDeviceToHost, stream));
 		
 		float* divg = NULL;
 		CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&divg), sizeof(float) * totalCoverNum, stream));
 
-		unsigned int* DLevelIndexArray = NULL;	// °üº¬idx = [0, totalCoverNum)¸öD²ã½Úµã£¬½«ÕâĞ©½ÚµãÓ³Éäµ½D²ã¶ÔÓ¦µÄD_idxÉÏ¡¾ÀıÈç£ºidx = 3µÄD²ã½ÚµãÔÚNodeArrayÖĞµÄÎ»ÖÃ¿ÉÄÜÎª100¡¿
+		unsigned int* DLevelIndexArray = NULL;	// åŒ…å«idx = [0, totalCoverNum)ä¸ªDå±‚èŠ‚ç‚¹ï¼Œå°†è¿™äº›èŠ‚ç‚¹æ˜ å°„åˆ°Då±‚å¯¹åº”çš„D_idxä¸Šã€ä¾‹å¦‚ï¼šidx = 3çš„Då±‚èŠ‚ç‚¹åœ¨NodeArrayä¸­çš„ä½ç½®å¯èƒ½ä¸º100ã€‘
 		CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&DLevelIndexArray), sizeof(unsigned int) * totalCoverNum, stream));
 
 		dim3 block(128);
 		dim3 grid(divUp(totalCoverNum, block.x));
 		device::generateDLevelIndexArrayKernel << <grid, block, 0, stream >> > (NodeArray, i, coverNums, totalCoverNum, DLevelIndexArray);
 		device::computeCoarserNodesDivergenceKernel << <grid, block, 0, stream >> > (BaseAddressArrayDevice, encodeNodeIndexInFunction, VectorField, dot_F_DF, i, DLevelIndexArray, totalCoverNum, divg);
-		// ¹æÔ¼¼Ó·¨
+		// è§„çº¦åŠ æ³•
 		float* divgSum = NULL;
 		CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&divgSum), sizeof(float), stream));
 
@@ -199,20 +199,20 @@ void SparseSurfelFusion::ComputeNodesDivergence::computeCoarserNodesDivergence(c
 		CHECKCUDA(cudaMallocAsync(&d_temp_storage, temp_storage_bytes, stream));
 		cub::DeviceReduce::Sum(d_temp_storage, temp_storage_bytes, divg, divgSum, totalCoverNum, stream);
 		CHECKCUDA(cudaMemcpyAsync(Divergence.Array().ptr() + i, divgSum, sizeof(float), cudaMemcpyDeviceToDevice, stream));
-		CHECKCUDA(cudaFreeAsync(coverNums, stream));			// ÁÙÊ±±äÁ¿, ÓÃÍê¼´É¾
-		CHECKCUDA(cudaFreeAsync(divg, stream));					// ÁÙÊ±±äÁ¿, ÓÃÍê¼´É¾
-		CHECKCUDA(cudaFreeAsync(DLevelIndexArray, stream));		// ÁÙÊ±±äÁ¿, ÓÃÍê¼´É¾
-		CHECKCUDA(cudaFreeAsync(divgSum, stream));				// ÁÙÊ±±äÁ¿, ÓÃÍê¼´É¾
-		CHECKCUDA(cudaFreeAsync(d_temp_storage, stream));		// ÁÙÊ±±äÁ¿, ÓÃÍê¼´É¾
+		CHECKCUDA(cudaFreeAsync(coverNums, stream));			// ä¸´æ—¶å˜é‡, ç”¨å®Œå³åˆ 
+		CHECKCUDA(cudaFreeAsync(divg, stream));					// ä¸´æ—¶å˜é‡, ç”¨å®Œå³åˆ 
+		CHECKCUDA(cudaFreeAsync(DLevelIndexArray, stream));		// ä¸´æ—¶å˜é‡, ç”¨å®Œå³åˆ 
+		CHECKCUDA(cudaFreeAsync(divgSum, stream));				// ä¸´æ—¶å˜é‡, ç”¨å®Œå³åˆ 
+		CHECKCUDA(cudaFreeAsync(d_temp_storage, stream));		// ä¸´æ—¶å˜é‡, ç”¨å®Œå³åˆ 
 	}
 
 //#ifdef CHECK_MESH_BUILD_TIME_COST
-//	// ËùÓĞ²ÎÓëµÄÁ÷¾ùÍ¬²½
+//	// æ‰€æœ‰å‚ä¸çš„æµå‡åŒæ­¥
 //	for (int i = 0; i < MAX_MESH_STREAM - 1; i++) {
 //		CHECKCUDA(cudaStreamSynchronize(streams[i]));
 //	}
-//	auto end = std::chrono::high_resolution_clock::now();							// ¼ÇÂ¼½áÊøÊ±¼äµã
-//	std::chrono::duration<double, std::milli> duration = end - start;				// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-//	std::cout << "¼ÆËã[1, CoarserLevelNum]²ã½ÚµãÉ¢¶ÈµÄÊ±¼ä: " << duration.count() << " ms" << std::endl;	// Êä³ö
+//	auto end = std::chrono::high_resolution_clock::now();							// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+//	std::chrono::duration<double, std::milli> duration = end - start;				// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+//	std::cout << "è®¡ç®—[1, CoarserLevelNum]å±‚èŠ‚ç‚¹æ•£åº¦çš„æ—¶é—´: " << duration.count() << " ms" << std::endl;	// è¾“å‡º
 //#endif // CHECK_MESH_BUILD_TIME_COST
 }

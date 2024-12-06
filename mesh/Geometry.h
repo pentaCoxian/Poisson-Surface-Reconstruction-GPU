@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   Geometry.h
- * \brief  Ëã·¨Êı¾İ½á¹¹
+ * \brief  ç®—æ³•æ•°æ®ç»“æ„
  * 
  * \author LUOJIAXUAN
  * \date   May 2nd 2024
@@ -13,27 +13,27 @@
 
 namespace SparseSurfelFusion {
     /**
-     * \brief ¹¹½¨ÈıÎ¬µã¶ÔÏó£¬Ä£°åº¯ÊıÎª¾«¶ÈÉèÖÃ(int, float, double).
+     * \brief æ„å»ºä¸‰ç»´ç‚¹å¯¹è±¡ï¼Œæ¨¡æ¿å‡½æ•°ä¸ºç²¾åº¦è®¾ç½®(int, float, double).
      */
     template<class T>
     struct Point3D {
-        T coords[3]; // x,y,z×ø±ê
+        T coords[3]; // x,y,zåæ ‡
         /**
-         * \brief ÖØÔØ[]»ñµÃ×ø±êÖµ(·Çconst).
+         * \brief é‡è½½[]è·å¾—åæ ‡å€¼(éconst).
          *
-         * \param i i¡Ê{0, 1, 2}
-         * \return ·µ»Ø×ø±ê·ÖÁ¿
+         * \param i iâˆˆ{0, 1, 2}
+         * \return è¿”å›åæ ‡åˆ†é‡
          */
         inline T& operator[] (int i) { return coords[i]; }
         /**
-         * \brief ÖØÔØ[]»ñµÃ×ø±êÖµ(constÖµ).
+         * \brief é‡è½½[]è·å¾—åæ ‡å€¼(constå€¼).
          *
-         * \param i i¡Ê{0, 1, 2}
-         * \return ·µ»Ø×ø±ê·ÖÁ¿
+         * \param i iâˆˆ{0, 1, 2}
+         * \return è¿”å›åæ ‡åˆ†é‡
          */
         __host__ __device__ __forceinline__ const T& operator[] (int i) const { return coords[i]; }
         /**
-         * \brief ³õÊ¼»¯¹¹Ôìº¯Êı£¬µã×ø±ê¾ùÎª0.
+         * \brief åˆå§‹åŒ–æ„é€ å‡½æ•°ï¼Œç‚¹åæ ‡å‡ä¸º0.
          *
          */
         __host__ __device__ Point3D() {
@@ -42,9 +42,9 @@ namespace SparseSurfelFusion {
             coords[2] = 0;
         }
         /**
-         * \brief ½«´«ÈëµÄPoint3D½øĞĞÒıÓÃ¿½±´(Êµ²Î´«µİ)£¬³£Á¿Öµconst.
+         * \brief å°†ä¼ å…¥çš„Point3Dè¿›è¡Œå¼•ç”¨æ‹·è´(å®å‚ä¼ é€’)ï¼Œå¸¸é‡å€¼const.
          *
-         * \param cpy ĞèÒª¹¹ÔìµÄ×ø±êÖµ
+         * \param cpy éœ€è¦æ„é€ çš„åæ ‡å€¼
          */
         __host__ __device__ Point3D(const Point3D<T>& cpy) {
             coords[0] = cpy.coords[0];
@@ -53,11 +53,11 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ¸ø3Dµã¸³Öµ.
+         * \brief ç»™3Dç‚¹èµ‹å€¼.
          * 
-         * \param x ´«ÈëµÄx×ø±ê
-         * \param y ´«ÈëµÄy×ø±ê
-         * \param z ´«ÈëµÄz×ø±ê
+         * \param x ä¼ å…¥çš„xåæ ‡
+         * \param y ä¼ å…¥çš„yåæ ‡
+         * \param z ä¼ å…¥çš„zåæ ‡
          */
         __host__ __device__ Point3D(const T& x, const T& y, const T& z) {
             coords[0] = x;
@@ -66,10 +66,10 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ÖØÔØµÈºÅ£¬½«Point3DµÄÖµ¸³Öµ¸øµÈºÅ×ó±ßµÄÖµ£¬constÒıÓÃ´«Èë.
+         * \brief é‡è½½ç­‰å·ï¼Œå°†Point3Dçš„å€¼èµ‹å€¼ç»™ç­‰å·å·¦è¾¹çš„å€¼ï¼Œconstå¼•ç”¨ä¼ å…¥.
          *
-         * \param cpy ÓÒ±ß¸³ÖµµÄ×ø±êÖµ
-         * \return ÓÒ±ßµÄPoint3DÊı¾İ
+         * \param cpy å³è¾¹èµ‹å€¼çš„åæ ‡å€¼
+         * \return å³è¾¹çš„Point3Dæ•°æ®
          */
         __host__ __device__ Point3D<T>& operator = (const Point3D<T>& cpy) {
             coords[0] = cpy.coords[0];
@@ -79,75 +79,75 @@ namespace SparseSurfelFusion {
         }
     };
     /**
-     * \brief ÓĞÏòRGB²ÉÑùµã.
+     * \brief æœ‰å‘RGBé‡‡æ ·ç‚¹.
      */
     template<class T>
     struct OrientedPoint3D {
-        Point3D<T> point;   // ÓĞÏòµã×ø±ê
-        Point3D<T> normal;  // ÓĞÏòµã·¨Ïß
-        Point3D<T> color;   // ²ÉÑùµãÑÕÉ«
+        Point3D<T> point;   // æœ‰å‘ç‚¹åæ ‡
+        Point3D<T> normal;  // æœ‰å‘ç‚¹æ³•çº¿
+        Point3D<T> color;   // é‡‡æ ·ç‚¹é¢œè‰²
     };
     /**
-     * \brief OPÏòÁ¿³¤¶ÈÆ½·½ = x^2 + y^2 + z^2.
+     * \brief OPå‘é‡é•¿åº¦å¹³æ–¹ = x^2 + y^2 + z^2.
      *
-     * \param PµãÈıÎ¬×ø±ê
-     * \return ·µ»ØdoubleÀàĞÍOPÏòÁ¿³¤¶ÈÆ½·½
+     * \param Pç‚¹ä¸‰ç»´åæ ‡
+     * \return è¿”å›doubleç±»å‹OPå‘é‡é•¿åº¦å¹³æ–¹
      */
     template<class T>
     __host__ __device__ double SquareLength(const Point3D<T>& p);
 
     /**
-     * \brief OPÏòÁ¿³¤¶È = sqrt(x^2 + y^2 + z^2).
+     * \brief OPå‘é‡é•¿åº¦ = sqrt(x^2 + y^2 + z^2).
      *
-     * \param PµãÈıÎ¬×ø±ê
-     * \return ·µ»ØdoubleÀàĞÍOPÏòÁ¿³¤¶ÈÆ½·½
+     * \param Pç‚¹ä¸‰ç»´åæ ‡
+     * \return è¿”å›doubleç±»å‹OPå‘é‡é•¿åº¦å¹³æ–¹
      */
     template<class T>
     double Length(const Point3D<T>& p);
 
     /**
-     * \brief ¼ÆËãÁ½µãÖ®¼ä¾àÀë.
+     * \brief è®¡ç®—ä¸¤ç‚¹ä¹‹é—´è·ç¦».
      *
-     * \param p1 µãp1×ø±ê
-     * \param p2 µãp2×ø±ê
-     * \return ·µ»ØdoubleÀàĞÍÁ½µãÖ®¼äµÄ¾àÀë
+     * \param p1 ç‚¹p1åæ ‡
+     * \param p2 ç‚¹p2åæ ‡
+     * \return è¿”å›doubleç±»å‹ä¸¤ç‚¹ä¹‹é—´çš„è·ç¦»
      */
     template<class T>
     double Distance(const Point3D<T>& p1, const Point3D<T>& p2);
 
     /**
-     * \brief Á½µãÖ®¼äµÄ¾àÀëÆ½·½.
+     * \brief ä¸¤ç‚¹ä¹‹é—´çš„è·ç¦»å¹³æ–¹.
      *
-     * \param p1 µãp1×ø±ê
-     * \param p2 µãp2×ø±ê
-     * \return ·µ»ØdoubleÀàĞÍÁ½µãÖ®¼äµÄ¾àÀëÆ½·½
+     * \param p1 ç‚¹p1åæ ‡
+     * \param p2 ç‚¹p2åæ ‡
+     * \return è¿”å›doubleç±»å‹ä¸¤ç‚¹ä¹‹é—´çš„è·ç¦»å¹³æ–¹
      */
     template<class T>
     __host__ __device__ double SquareDistance(const Point3D<T>& p1, const Point3D<T>& p2);
 
     /**
-     * \brief OP1ºÍOP2Á½¸öÏòÁ¿µÄ²æ³Ë½á¹û.
+     * \brief OP1å’ŒOP2ä¸¤ä¸ªå‘é‡çš„å‰ä¹˜ç»“æœ.
      *
-     * \param p1 µãp1×ø±ê(const³£Á¿)
-     * \param p2 µãp2×ø±ê(const³£Á¿)
-     * \param p ²æ³ËºóµÄÏòÁ¿×ø±ê
+     * \param p1 ç‚¹p1åæ ‡(constå¸¸é‡)
+     * \param p2 ç‚¹p2åæ ‡(constå¸¸é‡)
+     * \param p å‰ä¹˜åçš„å‘é‡åæ ‡
      */
     template <class T>
     void CrossProduct(const Point3D<T>& p1, const Point3D<T>& p2, Point3D<T>& p);
 
 
     /**
-     * \brief 2D±ß±íÊ¾Êı¾İ½á¹¹£¬ÂÛÎÄÖĞµÄFig.2.(a)
+     * \brief 2Dè¾¹è¡¨ç¤ºæ•°æ®ç»“æ„ï¼Œè®ºæ–‡ä¸­çš„Fig.2.(a)
      *     p1 = (p[0][0], p[0][1])
      *     p2 = (p[1][0], p[1][1])
      */
     class Edge {
     public:
-        double p[2][2]; // ¼ÇÂ¼±ßÉÏÁ½µã×ø±ê
+        double p[2][2]; // è®°å½•è¾¹ä¸Šä¸¤ç‚¹åæ ‡
         /**
-         * \brief »ñµÃ±ßµÄ³¤¶È.
+         * \brief è·å¾—è¾¹çš„é•¿åº¦.
          *
-         * \return ±ßµÄ³¤¶È(double)
+         * \return è¾¹çš„é•¿åº¦(double)
          */
         double Length(void) const {
             double d[2];
@@ -158,7 +158,7 @@ namespace SparseSurfelFusion {
     };
 
     /**
-     * \brief 3DÈı½ÇĞÎ±íÊ¾Êı¾İ½á¹¹
+     * \brief 3Dä¸‰è§’å½¢è¡¨ç¤ºæ•°æ®ç»“æ„
      *     x = (p[0][0], p[0][1], p[0][2])
      *     y = (p[1][0], p[1][1], p[1][2])
      *     z = (p[2][0], p[2][1], p[2][2])
@@ -168,9 +168,9 @@ namespace SparseSurfelFusion {
         double p[3][3];
 
         /**
-         * \brief ¼ÆËãÈı½ÇĞÎÃæ»ı.
+         * \brief è®¡ç®—ä¸‰è§’å½¢é¢ç§¯.
          *
-         * \return ·µ»ØÈı½ÇĞÎÃæ»ı
+         * \return è¿”å›ä¸‰è§’å½¢é¢ç§¯
          */
         double Area(void) const {
             double v1[3], v2[3], v[3];
@@ -185,24 +185,24 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief Èı½ÇĞÎ×İºá±È AspectRatio = abc/[8(s - a)(s - b)(s - c)], ÆäÖĞ s = (a + b + c) / 2.
+         * \brief ä¸‰è§’å½¢çºµæ¨ªæ¯” AspectRatio = abc/[8(s - a)(s - b)(s - c)], å…¶ä¸­ s = (a + b + c) / 2.
          *
-         * \return Èı½ÇĞÎ×İºá±È
+         * \return ä¸‰è§’å½¢çºµæ¨ªæ¯”
          */
         double AspectRatio(void) const {
-            double v0[3] = { 0 };   double v1[3] = { 0 };   double v2[3] = { 0 };   // ¼ÇÂ¼±ßÏòÁ¿
+            double v0[3] = { 0 };   double v1[3] = { 0 };   double v2[3] = { 0 };   // è®°å½•è¾¹å‘é‡
             for (int i = 0; i < 3; i++) {
                 v0[i] = p[0][i] - p[2][i];
                 v1[i] = p[1][i] - p[0][i];
                 v2[i] = p[2][i] - p[1][i];
             }
-            double Va = 0;  double Vb = 0;  double Vc = 0;  // ¼ÆËã±ß³¤
+            double Va = 0;  double Vb = 0;  double Vc = 0;  // è®¡ç®—è¾¹é•¿
             for (int i = 0; i < 3; i++) {
                 Va += v0[i] * v0[i];
                 Vb += v1[i] * v1[i];
                 Vc += v2[i] * v2[i];
             }
-            Va = sqrt(Va);  Vb = sqrt(Vb);  Vc = sqrt(Vc);  // ±ß³¤³¤¶È
+            Va = sqrt(Va);  Vb = sqrt(Vb);  Vc = sqrt(Vc);  // è¾¹é•¿é•¿åº¦
             return (Va * Vb * Vc) / ((Va + Vc) * (Vb + Vc) * (Va + Vb));
         }
     };
@@ -212,7 +212,7 @@ namespace SparseSurfelFusion {
         int index;
         char inCore;
         /**
-         * \brief ÖØÔØµÈºÅ"==".
+         * \brief é‡è½½ç­‰å·"==".
          *
          * \param cpi
          * \return
@@ -245,7 +245,7 @@ namespace SparseSurfelFusion {
 
     class CoredMeshData {
     public:
-        std::vector<Point3D<float> > inCorePoints;  // ºËĞÄµã£¬Ó¦¸ÃÊÇ¹¹ÔìÍø¸ñµÄµã
+        std::vector<Point3D<float> > inCorePoints;  // æ ¸å¿ƒç‚¹ï¼Œåº”è¯¥æ˜¯æ„é€ ç½‘æ ¼çš„ç‚¹
         const static int IN_CORE_FLAG[3];
         virtual void resetIterator(void) = 0;
 
@@ -260,8 +260,8 @@ namespace SparseSurfelFusion {
     };
 
     class CoredVectorMeshData : public CoredMeshData {
-        std::vector<Point3D<float> > oocPoints;     // ·ÇºËĞÄµã£¬Ó¦¸ÃÊÇÆ«ÀëÍø¸ñµÄµã£¬²»Ó¦¸Ã»­ÔÚÍø¸ñÖĞ
-        std::vector<TriangleIndex> triangles;       // Èı½ÇĞÎMeshµÄË÷Òı
+        std::vector<Point3D<float> > oocPoints;     // éæ ¸å¿ƒç‚¹ï¼Œåº”è¯¥æ˜¯åç¦»ç½‘æ ¼çš„ç‚¹ï¼Œä¸åº”è¯¥ç”»åœ¨ç½‘æ ¼ä¸­
+        std::vector<TriangleIndex> triangles;       // ä¸‰è§’å½¢Meshçš„ç´¢å¼•
         /**     use as iterator     **/
         int oocPointIndex, triangleIndex;
     public:
@@ -280,12 +280,12 @@ namespace SparseSurfelFusion {
         int InCorePointsCount(void);
         int triangleCount(void);
 
-        bool GetTriangleIndices(std::vector<unsigned int>& triangleIndices);        // »ñµÃĞèÒª»æÖÆµÄÈı½ÇĞÎindex
-        bool GetTriangleIndices(std::vector<TriangleIndex>& triangleIndices);       // »ñµÃĞèÒª»æÖÆµÄÈı½ÇĞÎindex
+        bool GetTriangleIndices(std::vector<unsigned int>& triangleIndices);        // è·å¾—éœ€è¦ç»˜åˆ¶çš„ä¸‰è§’å½¢index
+        bool GetTriangleIndices(std::vector<TriangleIndex>& triangleIndices);       // è·å¾—éœ€è¦ç»˜åˆ¶çš„ä¸‰è§’å½¢index
 
-        bool GetVertexArray(std::vector<float>& vertexArray);                       // »ñµÃ¶¥µãÊı×é
-        bool GetVertexArray(std::vector<Point3D<float>>& vertexArray);              // »ñµÃ¶¥µãÊı×é
+        bool GetVertexArray(std::vector<float>& vertexArray);                       // è·å¾—é¡¶ç‚¹æ•°ç»„
+        bool GetVertexArray(std::vector<Point3D<float>>& vertexArray);              // è·å¾—é¡¶ç‚¹æ•°ç»„
 
-        void clearAllContainer();   // Çå¿ÕËùÓĞÈİÆ÷
+        void clearAllContainer();   // æ¸…ç©ºæ‰€æœ‰å®¹å™¨
     };
 }

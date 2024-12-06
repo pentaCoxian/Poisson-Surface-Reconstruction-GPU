@@ -1,18 +1,18 @@
 /*****************************************************************//**
  * \file   BuildMeshGeometry.cu
- * \brief  ¹¹½¨Íø¸ñcuda·½·¨ÊµÏÖ
+ * \brief  æ„å»ºç½‘æ ¼cudaæ–¹æ³•å®ç°
  * 
  * \author LUOJIAXUAN
  * \date   June 1st 2024
  *********************************************************************/
 #include "BuildMeshGeometry.h"
-#if defined(__CUDACC__)		//Èç¹ûÓÉNVCC±àÒëÆ÷±àÒë
+#if defined(__CUDACC__)		//å¦‚æœç”±NVCCç¼–è¯‘å™¨ç¼–è¯‘
 #include <cub/cub.cuh>
 #endif
 
 namespace SparseSurfelFusion {
 	namespace device {
-		__device__ __constant__ int maxIntValue = 0x7fffffff;		// ×î´óintÖµ
+		__device__ __constant__ int maxIntValue = 0x7fffffff;		// æœ€å¤§intå€¼
 
 		__device__ __constant__ int maxDepth = MAX_DEPTH_OCTREE;
 
@@ -45,57 +45,57 @@ __global__ void SparseSurfelFusion::device::initVertexOwner(DeviceArrayView<OctN
 	if (idx >= NodeArraySize)	return;
 
 	int NodeOwnerKey[8] = { device::maxIntValue, device::maxIntValue, device::maxIntValue, device::maxIntValue ,
-							device::maxIntValue, device::maxIntValue, device::maxIntValue, device::maxIntValue };	// ³õÊ¼ÎŞĞ§Öµ
-	int NodeOwnerIdx[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };				// ³õÊ¼ÎŞĞ§Öµ
+							device::maxIntValue, device::maxIntValue, device::maxIntValue, device::maxIntValue };	// åˆå§‹æ— æ•ˆå€¼
+	int NodeOwnerIdx[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };				// åˆå§‹æ— æ•ˆå€¼
 	int depth = depthBuffer[idx];
-	float halfWidth = 1.0f / (1 << (depth + 1));							// ½ÚµãÌåËØÒ»°ëµÄ¿í
-	float Width = 1.0f / (1 << depth);										// ½ÚµãÌåËØµÄ¿í
-	float WidthSquare = Width * Width;										// ½ÚµãÌåËØ¿íµÄÆ½·½
-	Point3D<float> neighborCenter[27];										// ½ÚµãµÄ27¸öÁÚ¾Ó½ÚµãµÄÖĞĞÄÎ»ÖÃ
-	int neighbor[27];														// ½ÚµãµÄ27¸öÁÚ¾ÓµÄindex
+	float halfWidth = 1.0f / (1 << (depth + 1));							// èŠ‚ç‚¹ä½“ç´ ä¸€åŠçš„å®½
+	float Width = 1.0f / (1 << depth);										// èŠ‚ç‚¹ä½“ç´ çš„å®½
+	float WidthSquare = Width * Width;										// èŠ‚ç‚¹ä½“ç´ å®½çš„å¹³æ–¹
+	Point3D<float> neighborCenter[27];										// èŠ‚ç‚¹çš„27ä¸ªé‚»å±…èŠ‚ç‚¹çš„ä¸­å¿ƒä½ç½®
+	int neighbor[27];														// èŠ‚ç‚¹çš„27ä¸ªé‚»å±…çš„index
 #pragma unroll
 	for (int i = 0; i < 27; i++) {
 		neighbor[i] = NodeArray[idx].neighs[i];
-		if (neighbor[i] != -1) {	// ÁÚ¾Ó²»Îª¿Õ
+		if (neighbor[i] != -1) {	// é‚»å±…ä¸ä¸ºç©º
 			neighborCenter[i] = centerBuffer[neighbor[i]];
 		}
 	}
-	const Point3D<float>& nodeCenter = neighborCenter[13];	// ÖĞĞÄ½Úµã¾ÍÊÇµ±Ç°½Úµã×Ô¼º
+	const Point3D<float>& nodeCenter = neighborCenter[13];	// ä¸­å¿ƒèŠ‚ç‚¹å°±æ˜¯å½“å‰èŠ‚ç‚¹è‡ªå·±
 
-	Point3D<float> vertexPos[8];	// ¶¥µãÎ»ÖÃ£¬±ê¼Ç½ÚµãÌåËØµÄ¶¥µãÎ»ÖÃ£¬Ò»¸ö½Úµã = Ò»¸öÌåËØ¿é£¬Ò»¸öÌåËØ¿é(Õı·½Ìå)ÓĞ8¸ö¶¥µã
+	Point3D<float> vertexPos[8];	// é¡¶ç‚¹ä½ç½®ï¼Œæ ‡è®°èŠ‚ç‚¹ä½“ç´ çš„é¡¶ç‚¹ä½ç½®ï¼Œä¸€ä¸ªèŠ‚ç‚¹ = ä¸€ä¸ªä½“ç´ å—ï¼Œä¸€ä¸ªä½“ç´ å—(æ­£æ–¹ä½“)æœ‰8ä¸ªé¡¶ç‚¹
 #pragma unroll
-	for (int i = 0; i < 8; i++) {	// ¼ÆËã¶¥µãÎ»ÖÃ(¶¥µãµÄË³ĞòÊÇ£¬¶¥µãµÄË³ĞòÊÇ£¬ÒÔÁ¢·½ÌåÎª²Î¿¼£ºx´ÓÇ°µ½ºó£¬y´Ó×óµ½ÓÒ£¬z´ÓÏÂµ½ÉÏ)
+	for (int i = 0; i < 8; i++) {	// è®¡ç®—é¡¶ç‚¹ä½ç½®(é¡¶ç‚¹çš„é¡ºåºæ˜¯ï¼Œé¡¶ç‚¹çš„é¡ºåºæ˜¯ï¼Œä»¥ç«‹æ–¹ä½“ä¸ºå‚è€ƒï¼šxä»å‰åˆ°åï¼Œyä»å·¦åˆ°å³ï¼Œzä»ä¸‹åˆ°ä¸Š)
 		vertexPos[i].coords[0] = nodeCenter.coords[0] + (2 * (i & 1) - 1) * halfWidth;
 		vertexPos[i].coords[1] = nodeCenter.coords[1] + (2 * ((i & 2) >> 1) - 1) * halfWidth;
 		vertexPos[i].coords[2] = nodeCenter.coords[2] + (2 * ((i & 4) >> 2) - 1) * halfWidth;
 	}
 
 #pragma unroll
-	for (int i = 0; i < 8; i++) {			// ÎªÃ¿¸ö¶¥µãÕÒÒ»¸ö¶ÔÓ¦µÄ½Úµã
-		for (int j = 0; j < 27; j++) {		// ±éÀú½Úµã¼°ÁÚ¾Ó(¹©27¸ö½Úµã)£¬¶¥µã¶ÔÓ¦key×îĞ¡µÄ½Úµã£¬¼´key×îĞ¡µÄ½ÚµãÓµÓĞÕâ¸övertex
-			if ((neighbor[j] != -1) && (device::SquareDistance(vertexPos[i], neighborCenter[j]) < WidthSquare)) { // ÁÚ¾Ó½Úµã±ØĞëÓĞĞ§£¬ÓµÓĞÕâ¸övertexµÄ½Úµã²»¿ÉÒÔ³¬¹ıÒ»¸öÌåËØµÄ¿í
+	for (int i = 0; i < 8; i++) {			// ä¸ºæ¯ä¸ªé¡¶ç‚¹æ‰¾ä¸€ä¸ªå¯¹åº”çš„èŠ‚ç‚¹
+		for (int j = 0; j < 27; j++) {		// éå†èŠ‚ç‚¹åŠé‚»å±…(ä¾›27ä¸ªèŠ‚ç‚¹)ï¼Œé¡¶ç‚¹å¯¹åº”keyæœ€å°çš„èŠ‚ç‚¹ï¼Œå³keyæœ€å°çš„èŠ‚ç‚¹æ‹¥æœ‰è¿™ä¸ªvertex
+			if ((neighbor[j] != -1) && (device::SquareDistance(vertexPos[i], neighborCenter[j]) < WidthSquare)) { // é‚»å±…èŠ‚ç‚¹å¿…é¡»æœ‰æ•ˆï¼Œæ‹¥æœ‰è¿™ä¸ªvertexçš„èŠ‚ç‚¹ä¸å¯ä»¥è¶…è¿‡ä¸€ä¸ªä½“ç´ çš„å®½
 				int neighborKey = NodeArray[neighbor[j]].key;
-				if (NodeOwnerKey[i] > neighborKey) {	// Èç¹ûneighborKey¸üĞ¡
+				if (NodeOwnerKey[i] > neighborKey) {	// å¦‚æœneighborKeyæ›´å°
 					NodeOwnerKey[i] = neighborKey;
-					NodeOwnerIdx[i] = neighbor[j];		// ½«Õâ¸ö½ÚµãµÄindex¸øNodeOwnerIdx
+					NodeOwnerIdx[i] = neighbor[j];		// å°†è¿™ä¸ªèŠ‚ç‚¹çš„indexç»™NodeOwnerIdx
 				}
 			}
 		}
 	}
 #pragma unroll
-	for (int i = 0; i < 8; i++) {		// ±éÀúÕâ8¸ö¶¥µã
-		int vertexIdx = 8 * idx + i;	// ½«preVertexArrayÃ¿¸ô8¸ö´æÒ»´Î£¬²¢ÇÒ¶ÔÓ¦µÄÎ»ÖÃÊÇ8¸ö½ÚµãÖĞµÄµÚ¼¸¸ö
-		if (NodeOwnerIdx[i] == idx) {	// Èç¹ûÕâ¸ö¶¥µãÊÇNodeArrayÖĞÕâ¸ö½ÚµãËùÓµÓĞ
-			preVertexArray[vertexIdx].ownerNodeIdx = idx;						// vertex±»µ±Ç°Õâ¸öNodeArrayÖĞµÄ½ÚµãÓµÓĞ
-			preVertexArray[vertexIdx].pos.coords[0] = vertexPos[i].coords[0];	// ½«vertexµÄÎ»ÖÃ¸³Öµ¸øpos
-			preVertexArray[vertexIdx].pos.coords[1] = vertexPos[i].coords[1];	// ½«vertexµÄÎ»ÖÃ¸³Öµ¸øpos
-			preVertexArray[vertexIdx].pos.coords[2] = vertexPos[i].coords[2];	// ½«vertexµÄÎ»ÖÃ¸³Öµ¸øpos
-			preVertexArray[vertexIdx].vertexKind = i;							// Á¢·½ÌåµÄ¼¸ºÅ¶¥µã
-			preVertexArray[vertexIdx].depth = depth;							// µ±Ç°vertexµÄÉî¶È = µ±Ç°½ÚµãµÄÉî¶È
+	for (int i = 0; i < 8; i++) {		// éå†è¿™8ä¸ªé¡¶ç‚¹
+		int vertexIdx = 8 * idx + i;	// å°†preVertexArrayæ¯éš”8ä¸ªå­˜ä¸€æ¬¡ï¼Œå¹¶ä¸”å¯¹åº”çš„ä½ç½®æ˜¯8ä¸ªèŠ‚ç‚¹ä¸­çš„ç¬¬å‡ ä¸ª
+		if (NodeOwnerIdx[i] == idx) {	// å¦‚æœè¿™ä¸ªé¡¶ç‚¹æ˜¯NodeArrayä¸­è¿™ä¸ªèŠ‚ç‚¹æ‰€æ‹¥æœ‰
+			preVertexArray[vertexIdx].ownerNodeIdx = idx;						// vertexè¢«å½“å‰è¿™ä¸ªNodeArrayä¸­çš„èŠ‚ç‚¹æ‹¥æœ‰
+			preVertexArray[vertexIdx].pos.coords[0] = vertexPos[i].coords[0];	// å°†vertexçš„ä½ç½®èµ‹å€¼ç»™pos
+			preVertexArray[vertexIdx].pos.coords[1] = vertexPos[i].coords[1];	// å°†vertexçš„ä½ç½®èµ‹å€¼ç»™pos
+			preVertexArray[vertexIdx].pos.coords[2] = vertexPos[i].coords[2];	// å°†vertexçš„ä½ç½®èµ‹å€¼ç»™pos
+			preVertexArray[vertexIdx].vertexKind = i;							// ç«‹æ–¹ä½“çš„å‡ å·é¡¶ç‚¹
+			preVertexArray[vertexIdx].depth = depth;							// å½“å‰vertexçš„æ·±åº¦ = å½“å‰èŠ‚ç‚¹çš„æ·±åº¦
 			markPreVertexArray[vertexIdx] = true;
 		}
 		else {
-			markPreVertexArray[vertexIdx] = false;	// ²»ÊÇÓĞĞ§µÄÈ«²¿±ê¼ÇÎªfalse
+			markPreVertexArray[vertexIdx] = false;	// ä¸æ˜¯æœ‰æ•ˆçš„å…¨éƒ¨æ ‡è®°ä¸ºfalse
 		}
 	}
 }
@@ -109,31 +109,31 @@ __global__ void SparseSurfelFusion::device::maintainVertexNodePointer(DeviceArra
 {
 	const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
 	if (idx >= VertexArraySize)	return;
-	int owner = VertexArray[idx].ownerNodeIdx;			// ÓµÓĞ´Ë¶¥µãµÄNode
-	int depth = DepthBuffer[owner];						// µ±Ç°¶¥µã¶ÔÓ¦µÄ½ÚµãµÄÉî¶È
+	int owner = VertexArray[idx].ownerNodeIdx;			// æ‹¥æœ‰æ­¤é¡¶ç‚¹çš„Node
+	int depth = DepthBuffer[owner];						// å½“å‰é¡¶ç‚¹å¯¹åº”çš„èŠ‚ç‚¹çš„æ·±åº¦
 	float halfWidth = 1.0f / (1 << (depth + 1));
 	float Width = 1.0f / (1 << depth);
 	float WidthSquare = Width * Width;
-	Point3D<float> neighCenter[27];						// ÁÚ¾ÓµÄÖĞĞÄµã
-	Point3D<float> vertexPos = VertexArray[idx].pos;	// µ±Ç°Õâ¸ö¶¥µãµÄÎ»ÖÃ
+	Point3D<float> neighCenter[27];						// é‚»å±…çš„ä¸­å¿ƒç‚¹
+	Point3D<float> vertexPos = VertexArray[idx].pos;	// å½“å‰è¿™ä¸ªé¡¶ç‚¹çš„ä½ç½®
 
-	int neighbor[27];									// Owner½ÚµãµÄÁÚ¾Ó½Úµã
+	int neighbor[27];									// OwnerèŠ‚ç‚¹çš„é‚»å±…èŠ‚ç‚¹
 	for (int i = 0; i < 27; i++) {
 		neighbor[i] = NodeArray[owner].neighs[i];
-		if (neighbor[i] != -1) {						// ÁÚ¾ÓÊÇÓĞĞ§µã
+		if (neighbor[i] != -1) {						// é‚»å±…æ˜¯æœ‰æ•ˆç‚¹
 			neighCenter[i] = CenterBuffer[neighbor[i]];
 		}
 	}
 	int count = 0;
 	for (int i = 0; i < 27; i++) {
-		// ÁÚ¾ÓÓĞĞ§£¬²¢ÇÒÊÇÎÒÕâ¸öÁÚ¾Ó·Ç¿çÒ»¸öÁÚ¾ÓµÄÁÚ¾Ó
+		// é‚»å±…æœ‰æ•ˆï¼Œå¹¶ä¸”æ˜¯æˆ‘è¿™ä¸ªé‚»å±…éè·¨ä¸€ä¸ªé‚»å±…çš„é‚»å±…
 		if (neighbor[i] != -1 && SquareDistance(vertexPos, neighCenter[i]) < WidthSquare) {
 			VertexArray[idx].nodes[count] = neighbor[i];
 			count++;
-			int index = 0;	// ¼ÇÂ¼¶¥µãÏà¶ÔÓÚ½ÚµãµÄÎ»ÖÃ±àºÅ£¬xÏÈºóÔÙÇ°£¬yÏÈ×óÔÙÓÒ£¬zÏÈÏÂÔÙÉÏ
-			if (neighCenter[i].coords[0] - vertexPos.coords[0] < 0) index |= 1;		// ´Óx·½Ïò¿´£¬ÁÚ¾Ó½ÚµãÔÚvertexÎ»ÖÃµÄºóÃæ
-			if (neighCenter[i].coords[2] - vertexPos.coords[2] < 0) index |= 4;		// ´Óz·½Ïò¿´£¬ÁÚ¾Ó½ÚµãÔÚvertexÎ»ÖÃµÄÏÂÃæ
-			if (neighCenter[i].coords[1] - vertexPos.coords[1] < 0) {				// ´Óy·½Ïò¿´£¬ÁÚ¾Ó½ÚµãÔÚvertexÎ»ÖÃµÄ×ó±ß
+			int index = 0;	// è®°å½•é¡¶ç‚¹ç›¸å¯¹äºèŠ‚ç‚¹çš„ä½ç½®ç¼–å·ï¼Œxå…ˆåå†å‰ï¼Œyå…ˆå·¦å†å³ï¼Œzå…ˆä¸‹å†ä¸Š
+			if (neighCenter[i].coords[0] - vertexPos.coords[0] < 0) index |= 1;		// ä»xæ–¹å‘çœ‹ï¼Œé‚»å±…èŠ‚ç‚¹åœ¨vertexä½ç½®çš„åé¢
+			if (neighCenter[i].coords[2] - vertexPos.coords[2] < 0) index |= 4;		// ä»zæ–¹å‘çœ‹ï¼Œé‚»å±…èŠ‚ç‚¹åœ¨vertexä½ç½®çš„ä¸‹é¢
+			if (neighCenter[i].coords[1] - vertexPos.coords[1] < 0) {				// ä»yæ–¹å‘çœ‹ï¼Œé‚»å±…èŠ‚ç‚¹åœ¨vertexä½ç½®çš„å·¦è¾¹
 				if (index & 1) {
 					index += 1;
 				}
@@ -141,7 +141,7 @@ __global__ void SparseSurfelFusion::device::maintainVertexNodePointer(DeviceArra
 					index += 3;
 				}
 			}
-			NodeArray[neighbor[i]].vertices[index] = idx + 1;	// ÕâÀï¸øVerticeÊı¾İĞ´Èë£¬²¢²»Ó°Ïì¶ÔNodeArrayµÄOctNodeÖĞÆäËûÊı¾İÖµ½øĞĞ¶ÁÈ¡£¬Òò´Ë¿ÉÒÔ²¢ĞĞ
+			NodeArray[neighbor[i]].vertices[index] = idx + 1;	// è¿™é‡Œç»™Verticeæ•°æ®å†™å…¥ï¼Œå¹¶ä¸å½±å“å¯¹NodeArrayçš„OctNodeä¸­å…¶ä»–æ•°æ®å€¼è¿›è¡Œè¯»å–ï¼Œå› æ­¤å¯ä»¥å¹¶è¡Œ
 		}
 	}
 }
@@ -403,15 +403,15 @@ __global__ void SparseSurfelFusion::device::maintainFaceNodePointer(DeviceArrayV
 void SparseSurfelFusion::BuildMeshGeometry::GenerateVertexArray(DeviceBufferArray<OctNode>& NodeArray, DeviceArrayView<unsigned int> NodeArrayDepthIndex, DeviceArrayView<Point3D<float>> NodeArrayNodeCenter, cudaStream_t stream)
 {
 #ifdef CHECK_MESH_BUILD_TIME_COST
-	auto start = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼¿ªÊ¼Ê±¼äµã
+	auto start = std::chrono::high_resolution_clock::now();						// è®°å½•å¼€å§‹æ—¶é—´ç‚¹
 #endif // CHECK_MESH_BUILD_TIME_COST
 
 	const unsigned int NodeArraySize = NodeArray.ArraySize();
 	markValidVertexArray.ResizeArrayOrException(NodeArraySize * 8);
-	VertexNode* preVertexArray = NULL;	//¡¾ÖĞ¼ä±äÁ¿¡¿Ô¤ÏÈ¼ÆËãÃ¿¸ö½ÚµãµÄVertexÊı×é£¬¹©ÒÔºóÉ¸Ñ¡£¬Õ¼ÓÃÄÚ´æ¾Ş´ó£¬ÄÚ´æ²»³ä×ãµÄÇé¿öÏÂ½¨Òé¶¯Ì¬·ÖÅä
+	VertexNode* preVertexArray = NULL;	//ã€ä¸­é—´å˜é‡ã€‘é¢„å…ˆè®¡ç®—æ¯ä¸ªèŠ‚ç‚¹çš„Vertexæ•°ç»„ï¼Œä¾›ä»¥åç­›é€‰ï¼Œå ç”¨å†…å­˜å·¨å¤§ï¼Œå†…å­˜ä¸å……è¶³çš„æƒ…å†µä¸‹å»ºè®®åŠ¨æ€åˆ†é…
 	CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&preVertexArray), sizeof(VertexNode) * NodeArraySize * 8, stream));
 
-	int* VertexArraySize = NULL;		// ¡¾ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´ÊÍ·Å¡¿»ñµÃÑ¹ËõvalºóÊıÁ¿£¬ÀíÂÛÉÏÓ¦¸ÃºÍvalNumsÏàµÈ
+	int* VertexArraySize = NULL;		// ã€ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³é‡Šæ”¾ã€‘è·å¾—å‹ç¼©valåæ•°é‡ï¼Œç†è®ºä¸Šåº”è¯¥å’ŒvalNumsç›¸ç­‰
 	CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&VertexArraySize), sizeof(int), stream));
 
 	dim3 block_1(128);
@@ -420,18 +420,18 @@ void SparseSurfelFusion::BuildMeshGeometry::GenerateVertexArray(DeviceBufferArra
 
 	void* d_temp_storage = NULL;
 	size_t temp_storage_bytes = 0;
-	CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage, temp_storage_bytes, preVertexArray, markValidVertexArray.Array().ptr(), VertexArray.Array().ptr(), VertexArraySize, NodeArraySize * 8, stream, false));	// È·¶¨ÁÙÊ±Éè±¸´æ´¢ĞèÇó
+	CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage, temp_storage_bytes, preVertexArray, markValidVertexArray.Array().ptr(), VertexArray.Array().ptr(), VertexArraySize, NodeArraySize * 8, stream, false));	// ç¡®å®šä¸´æ—¶è®¾å¤‡å­˜å‚¨éœ€æ±‚
 	CHECKCUDA(cudaMallocAsync(&d_temp_storage, temp_storage_bytes, stream));
-	CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage, temp_storage_bytes, preVertexArray, markValidVertexArray.Array().ptr(), VertexArray.Array().ptr(), VertexArraySize, NodeArraySize * 8, stream, false));	// É¸Ñ¡	
+	CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage, temp_storage_bytes, preVertexArray, markValidVertexArray.Array().ptr(), VertexArray.Array().ptr(), VertexArraySize, NodeArraySize * 8, stream, false));	// ç­›é€‰	
 	int VertexArraySizeHost = -1;
 	CHECKCUDA(cudaMemcpyAsync(&VertexArraySizeHost, VertexArraySize, sizeof(int), cudaMemcpyDeviceToHost, stream));
-	CHECKCUDA(cudaStreamSynchronize(stream));	// Á÷Í¬²½
+	CHECKCUDA(cudaStreamSynchronize(stream));	// æµåŒæ­¥
 	VertexArray.ResizeArrayOrException(VertexArraySizeHost);
 	//printf("NodeArrayCount = %d\nVertexArrayCount = %d\n", NodeArraySize, VertexArraySizeHost);
 
-	CHECKCUDA(cudaFreeAsync(d_temp_storage, stream));	// ÊÍ·ÅÖĞ¼ä±éÀú
-	CHECKCUDA(cudaFreeAsync(VertexArraySize, stream));	// ÊÍ·ÅÖĞ¼ä±éÀú
-	CHECKCUDA(cudaFreeAsync(preVertexArray, stream));	// ÊÍ·ÅÖĞ¼ä±éÀú
+	CHECKCUDA(cudaFreeAsync(d_temp_storage, stream));	// é‡Šæ”¾ä¸­é—´éå†
+	CHECKCUDA(cudaFreeAsync(VertexArraySize, stream));	// é‡Šæ”¾ä¸­é—´éå†
+	CHECKCUDA(cudaFreeAsync(preVertexArray, stream));	// é‡Šæ”¾ä¸­é—´éå†
 
 	dim3 block_2(128);
 	dim3 grid_2(divUp(VertexArraySizeHost, block_2.x));
@@ -439,12 +439,12 @@ void SparseSurfelFusion::BuildMeshGeometry::GenerateVertexArray(DeviceBufferArra
 
 
 #ifdef CHECK_MESH_BUILD_TIME_COST
-	CHECKCUDA(cudaStreamSynchronize(stream));	// Á÷Í¬²½
-	auto end = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration = end - start;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "Éú³É¶¥µãVertexË÷ÒıÊı×éµÄÊ±¼ä: " << duration.count() << " ms" << std::endl;		// Êä³ö
+	CHECKCUDA(cudaStreamSynchronize(stream));	// æµåŒæ­¥
+	auto end = std::chrono::high_resolution_clock::now();						// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration = end - start;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "ç”Ÿæˆé¡¶ç‚¹Vertexç´¢å¼•æ•°ç»„çš„æ—¶é—´: " << duration.count() << " ms" << std::endl;		// è¾“å‡º
 	std::cout << std::endl;
-	std::cout << "-----------------------------------------------------" << std::endl;	// Êä³ö
+	std::cout << "-----------------------------------------------------" << std::endl;	// è¾“å‡º
 	std::cout << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 }
@@ -452,7 +452,7 @@ void SparseSurfelFusion::BuildMeshGeometry::GenerateVertexArray(DeviceBufferArra
 void SparseSurfelFusion::BuildMeshGeometry::GenerateEdgeArray(DeviceBufferArray<OctNode>& NodeArray, const unsigned int DLevelOffset, const unsigned int DLevelNodeCount, DeviceArrayView<unsigned int> NodeArrayDepthIndex, DeviceArrayView<Point3D<float>> NodeArrayNodeCenter, cudaStream_t stream)
 {
 #ifdef CHECK_MESH_BUILD_TIME_COST
-	auto start = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼¿ªÊ¼Ê±¼äµã
+	auto start = std::chrono::high_resolution_clock::now();						// è®°å½•å¼€å§‹æ—¶é—´ç‚¹
 #endif // CHECK_MESH_BUILD_TIME_COST
 
 	//printf("BaseAddressArray = %d  NodeArrayCount = %d\n", DLevelOffset, DLevelNodeCount);
@@ -460,7 +460,7 @@ void SparseSurfelFusion::BuildMeshGeometry::GenerateEdgeArray(DeviceBufferArray<
 	EdgeNode* preEdgeArray = NULL;
 	CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&preEdgeArray), sizeof(EdgeNode) * 12 * DLevelNodeCount, stream));
 
-	int* EdgeArraySize = NULL;		// ¡¾ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´ÊÍ·Å¡¿»ñµÃÑ¹ËõvalºóÊıÁ¿£¬ÀíÂÛÉÏÓ¦¸ÃºÍvalNumsÏàµÈ
+	int* EdgeArraySize = NULL;		// ã€ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³é‡Šæ”¾ã€‘è·å¾—å‹ç¼©valåæ•°é‡ï¼Œç†è®ºä¸Šåº”è¯¥å’ŒvalNumsç›¸ç­‰
 	CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&EdgeArraySize), sizeof(int), stream));
 
 	dim3 block_1(128);
@@ -469,18 +469,18 @@ void SparseSurfelFusion::BuildMeshGeometry::GenerateEdgeArray(DeviceBufferArray<
 
 	void* d_temp_storage = NULL;
 	size_t temp_storage_bytes = 0;
-	CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage, temp_storage_bytes, preEdgeArray, markValidEdgeArray.Array().ptr(), EdgeArray.Array().ptr(), EdgeArraySize, DLevelNodeCount * 12, stream, false));	// È·¶¨ÁÙÊ±Éè±¸´æ´¢ĞèÇó
+	CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage, temp_storage_bytes, preEdgeArray, markValidEdgeArray.Array().ptr(), EdgeArray.Array().ptr(), EdgeArraySize, DLevelNodeCount * 12, stream, false));	// ç¡®å®šä¸´æ—¶è®¾å¤‡å­˜å‚¨éœ€æ±‚
 	CHECKCUDA(cudaMallocAsync(&d_temp_storage, temp_storage_bytes, stream));			  
-	CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage, temp_storage_bytes, preEdgeArray, markValidEdgeArray.Array().ptr(), EdgeArray.Array().ptr(), EdgeArraySize, DLevelNodeCount * 12, stream, false));	// É¸Ñ¡	
+	CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage, temp_storage_bytes, preEdgeArray, markValidEdgeArray.Array().ptr(), EdgeArray.Array().ptr(), EdgeArraySize, DLevelNodeCount * 12, stream, false));	// ç­›é€‰	
 	int EdgeArraySizeHost = -1;
 	CHECKCUDA(cudaMemcpyAsync(&EdgeArraySizeHost, EdgeArraySize, sizeof(int), cudaMemcpyDeviceToHost, stream));
-	CHECKCUDA(cudaStreamSynchronize(stream));	// Á÷Í¬²½
+	CHECKCUDA(cudaStreamSynchronize(stream));	// æµåŒæ­¥
 	EdgeArray.ResizeArrayOrException(EdgeArraySizeHost);
 	//printf("EdgeArrayCount = %d\n", EdgeArraySizeHost);
 
-	CHECKCUDA(cudaFreeAsync(preEdgeArray, stream));		// ÊÍ·ÅÖĞ¼ä±éÀú
-	CHECKCUDA(cudaFreeAsync(d_temp_storage, stream));	// ÊÍ·ÅÖĞ¼ä±éÀú
-	CHECKCUDA(cudaFreeAsync(EdgeArraySize, stream));	// ÊÍ·ÅÖĞ¼ä±éÀú
+	CHECKCUDA(cudaFreeAsync(preEdgeArray, stream));		// é‡Šæ”¾ä¸­é—´éå†
+	CHECKCUDA(cudaFreeAsync(d_temp_storage, stream));	// é‡Šæ”¾ä¸­é—´éå†
+	CHECKCUDA(cudaFreeAsync(EdgeArraySize, stream));	// é‡Šæ”¾ä¸­é—´éå†
 
 	dim3 block_2(128);
 	dim3 grid_2(divUp(EdgeArraySizeHost, block_2.x));
@@ -488,12 +488,12 @@ void SparseSurfelFusion::BuildMeshGeometry::GenerateEdgeArray(DeviceBufferArray<
 
 
 #ifdef CHECK_MESH_BUILD_TIME_COST
-	CHECKCUDA(cudaStreamSynchronize(stream));	// Á÷Í¬²½
-	auto end = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration = end - start;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "Éú³É±ßEdgeË÷ÒıÊı×éµÄÊ±¼ä: " << duration.count() << " ms" << std::endl;		// Êä³ö
+	CHECKCUDA(cudaStreamSynchronize(stream));	// æµåŒæ­¥
+	auto end = std::chrono::high_resolution_clock::now();						// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration = end - start;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "ç”Ÿæˆè¾¹Edgeç´¢å¼•æ•°ç»„çš„æ—¶é—´: " << duration.count() << " ms" << std::endl;		// è¾“å‡º
 	std::cout << std::endl;
-	std::cout << "-----------------------------------------------------" << std::endl;	// Êä³ö
+	std::cout << "-----------------------------------------------------" << std::endl;	// è¾“å‡º
 	std::cout << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 }
@@ -501,14 +501,14 @@ void SparseSurfelFusion::BuildMeshGeometry::GenerateEdgeArray(DeviceBufferArray<
 void SparseSurfelFusion::BuildMeshGeometry::GenerateFaceArray(DeviceBufferArray<OctNode>& NodeArray, DeviceArrayView<unsigned int> NodeArrayDepthIndex, DeviceArrayView<Point3D<float>> NodeArrayNodeCenter, cudaStream_t stream)
 {
 #ifdef CHECK_MESH_BUILD_TIME_COST
-	auto start = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼¿ªÊ¼Ê±¼äµã
+	auto start = std::chrono::high_resolution_clock::now();						// è®°å½•å¼€å§‹æ—¶é—´ç‚¹
 #endif // CHECK_MESH_BUILD_TIME_COST
 	const unsigned int NodeArraySize = NodeArray.ArraySize();
 
 	FaceNode* preFaceArray = NULL;
 	CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&preFaceArray), sizeof(FaceNode) * 6 * NodeArraySize, stream));
 
-	int* FaceArraySize = NULL;		// ¡¾ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´ÊÍ·Å¡¿»ñµÃÑ¹ËõvalºóÊıÁ¿£¬ÀíÂÛÉÏÓ¦¸ÃºÍvalNumsÏàµÈ
+	int* FaceArraySize = NULL;		// ã€ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³é‡Šæ”¾ã€‘è·å¾—å‹ç¼©valåæ•°é‡ï¼Œç†è®ºä¸Šåº”è¯¥å’ŒvalNumsç›¸ç­‰
 	CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&FaceArraySize), sizeof(int), stream));
 
 	dim3 block_1(128);
@@ -517,30 +517,30 @@ void SparseSurfelFusion::BuildMeshGeometry::GenerateFaceArray(DeviceBufferArray<
 
 	void* d_temp_storage = NULL;
 	size_t temp_storage_bytes = 0;
-	CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage, temp_storage_bytes, preFaceArray, markValidFaceArray.Array().ptr(), FaceArray.Array().ptr(), FaceArraySize, NodeArraySize * 6, stream, false));	// È·¶¨ÁÙÊ±Éè±¸´æ´¢ĞèÇó
+	CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage, temp_storage_bytes, preFaceArray, markValidFaceArray.Array().ptr(), FaceArray.Array().ptr(), FaceArraySize, NodeArraySize * 6, stream, false));	// ç¡®å®šä¸´æ—¶è®¾å¤‡å­˜å‚¨éœ€æ±‚
 	CHECKCUDA(cudaMallocAsync(&d_temp_storage, temp_storage_bytes, stream));
-	CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage, temp_storage_bytes, preFaceArray, markValidFaceArray.Array().ptr(), FaceArray.Array().ptr(), FaceArraySize, NodeArraySize * 6, stream, false));	// É¸Ñ¡	
+	CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage, temp_storage_bytes, preFaceArray, markValidFaceArray.Array().ptr(), FaceArray.Array().ptr(), FaceArraySize, NodeArraySize * 6, stream, false));	// ç­›é€‰	
 	int FaceArraySizeHost = -1;
 	CHECKCUDA(cudaMemcpyAsync(&FaceArraySizeHost, FaceArraySize, sizeof(int), cudaMemcpyDeviceToHost, stream));
-	CHECKCUDA(cudaStreamSynchronize(stream));	// Á÷Í¬²½
+	CHECKCUDA(cudaStreamSynchronize(stream));	// æµåŒæ­¥
 	FaceArray.ResizeArrayOrException(FaceArraySizeHost);
 	//printf("FaceArraySizeHost = %d\n",FaceArraySizeHost);
 
-	CHECKCUDA(cudaFreeAsync(preFaceArray, stream));		// ÊÍ·ÅÖĞ¼ä±éÀú
-	CHECKCUDA(cudaFreeAsync(FaceArraySize, stream));	// ÊÍ·ÅÖĞ¼ä±éÀú
-	CHECKCUDA(cudaFreeAsync(d_temp_storage, stream));	// ÊÍ·ÅÖĞ¼ä±éÀú
+	CHECKCUDA(cudaFreeAsync(preFaceArray, stream));		// é‡Šæ”¾ä¸­é—´éå†
+	CHECKCUDA(cudaFreeAsync(FaceArraySize, stream));	// é‡Šæ”¾ä¸­é—´éå†
+	CHECKCUDA(cudaFreeAsync(d_temp_storage, stream));	// é‡Šæ”¾ä¸­é—´éå†
 
 	dim3 block_2(128);
 	dim3 grid_2(divUp(FaceArraySizeHost, block_2.x));
 	device::maintainFaceNodePointer << <grid_2, block_2, 0, stream >> > (NodeArrayDepthIndex, NodeArrayNodeCenter, FaceArraySizeHost, NodeArray.Array().ptr(), FaceArray.Array().ptr());
 
 #ifdef CHECK_MESH_BUILD_TIME_COST
-	CHECKCUDA(cudaStreamSynchronize(stream));	// Á÷Í¬²½
-	auto end = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration = end - start;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "Éú³ÉÃæFaceË÷ÒıÊı×éµÄÊ±¼ä: " << duration.count() << " ms" << std::endl;		// Êä³ö
+	CHECKCUDA(cudaStreamSynchronize(stream));	// æµåŒæ­¥
+	auto end = std::chrono::high_resolution_clock::now();						// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration = end - start;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "ç”Ÿæˆé¢Faceç´¢å¼•æ•°ç»„çš„æ—¶é—´: " << duration.count() << " ms" << std::endl;		// è¾“å‡º
 	std::cout << std::endl;
-	std::cout << "-----------------------------------------------------" << std::endl;	// Êä³ö
+	std::cout << "-----------------------------------------------------" << std::endl;	// è¾“å‡º
 	std::cout << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 }

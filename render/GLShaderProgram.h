@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   GLShaderProgram.h
- * \brief  OpenGLäÖÈ¾Æ÷Àà£¬»ñÈ¡äÖÈ¾Æ÷ÎÄ¼ş
+ * \brief  OpenGLæ¸²æŸ“å™¨ç±»ï¼Œè·å–æ¸²æŸ“å™¨æ–‡ä»¶
  * 
  * \author LUO
  * \date   February 23rd 2024
@@ -10,7 +10,7 @@
 #include <base/CommonTypes.h>
 #include <base/Logging.h>
 #include <glad/glad.h>
-#include <glm/glm.hpp>//OpenGL¾ØÕóÔËËã¿â
+#include <glm/glm.hpp>//OpenGLçŸ©é˜µè¿ç®—åº“
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <fstream>
@@ -25,38 +25,38 @@ namespace SparseSurfelFusion {
 		GLuint geometryShader;
 		GLuint programID;
 	public:
-		//¹¹Ôìº¯ÊıºÍÎö¹¹º¯Êı
+		//æ„é€ å‡½æ•°å’Œææ„å‡½æ•°
 		/**
-		 * \brief ¹¹Ôìº¯Êı£¬¸³Öµ³õÖµ.
+		 * \brief æ„é€ å‡½æ•°ï¼Œèµ‹å€¼åˆå€¼.
 		 * 
 		 */
 		explicit GLShaderProgram();
 		~GLShaderProgram();
-		/* ´ÓÔ´´úÂë±àÒë×ÅÉ«³ÌĞòµÄ·½·¨
+		/* ä»æºä»£ç ç¼–è¯‘ç€è‰²ç¨‹åºçš„æ–¹æ³•
 		 */
 		/**
-		 * \brief ¸ù¾İ¶¥µã×ÅÉ«Æ÷ºÍÆ¬¶Î×ÅÉ«Æ÷Â·¾¶£¬±àÒëshader.
+		 * \brief æ ¹æ®é¡¶ç‚¹ç€è‰²å™¨å’Œç‰‡æ®µç€è‰²å™¨è·¯å¾„ï¼Œç¼–è¯‘shader.
 		 * 
-		 * \param vertexPath ¶¥µã×ÅÉ«Æ÷ÎÄ¼şÂ·¾¶
-		 * \param fragmentPath Æ¬¶Î×ÅÉ«Æ÷ÎÄ¼şÂ·¾¶
+		 * \param vertexPath é¡¶ç‚¹ç€è‰²å™¨æ–‡ä»¶è·¯å¾„
+		 * \param fragmentPath ç‰‡æ®µç€è‰²å™¨æ–‡ä»¶è·¯å¾„
 		 */
 		void Compile(const std::string& vertexPath, const std::string& fragmentPath);
 
 		/**
-		 * \brief ¸ù¾İ×ÅÉ«Æ÷ÎÄ¼şÂ·¾¶£¬¶ÁÈ¡²¢±àÒë×ÅÉ«Æ÷ÎÄ¼ş.
+		 * \brief æ ¹æ®ç€è‰²å™¨æ–‡ä»¶è·¯å¾„ï¼Œè¯»å–å¹¶ç¼–è¯‘ç€è‰²å™¨æ–‡ä»¶.
 		 * 
-		 * \param vertexShaderCode ¶¥µã×ÅÉ«Æ÷Ô´Âë
-		 * \param fragmentShaderCode Æ¬¶Î×ÅÉ«Æ÷Ô´Âë
-		 * \param geometryShaderCode ¼¸ºÎ×ÅÉ«Æ÷Ô´Âë
+		 * \param vertexShaderCode é¡¶ç‚¹ç€è‰²å™¨æºç 
+		 * \param fragmentShaderCode ç‰‡æ®µç€è‰²å™¨æºç 
+		 * \param geometryShaderCode å‡ ä½•ç€è‰²å™¨æºç 
 		 */
 		void Compile(const char* vertexShaderCode, const char* fragmentShaderCode, const char* geometryShaderCode = nullptr);
 
 	private:
 		/**
-		 * \brief ¼ì²é×ÅÉ«Æ÷ÎÄ¼ş¶ÁÈ¡£¬ÒÔ¼°×ÅÉ«Æ÷±àÒë£¬ÊÇ·ñ´æÔÚ´íÎó.
+		 * \brief æ£€æŸ¥ç€è‰²å™¨æ–‡ä»¶è¯»å–ï¼Œä»¥åŠç€è‰²å™¨ç¼–è¯‘ï¼Œæ˜¯å¦å­˜åœ¨é”™è¯¯.
 		 * 
-		 * \param shader ×ÅÉ«Æ÷±êÊ¶·û
-		 * \param type ¼ì²éÀàĞÍ£º"ShaderProgram" ÊÇ×ÅÉ«Æ÷³ÌĞò±àÒë´íÎó£¬ÆäÓà¾ùÊÇ×ÅÉ«Æ÷ÎÄ¼ş¶ÁÈ¡´íÎó
+		 * \param shader ç€è‰²å™¨æ ‡è¯†ç¬¦
+		 * \param type æ£€æŸ¥ç±»å‹ï¼š"ShaderProgram" æ˜¯ç€è‰²å™¨ç¨‹åºç¼–è¯‘é”™è¯¯ï¼Œå…¶ä½™å‡æ˜¯ç€è‰²å™¨æ–‡ä»¶è¯»å–é”™è¯¯
 		 */
 		static void checkShaderCompilerError(GLuint shader, const std::string& type);
 
@@ -64,128 +64,128 @@ namespace SparseSurfelFusion {
 		 */
 	public:
 		/**
-		 * \brief ¼¤»î×ÅÉ«Æ÷³ÌĞò£¬ÒÔ±ãÊ¹ÓÃuniformÖµ.
+		 * \brief æ¿€æ´»ç€è‰²å™¨ç¨‹åºï¼Œä»¥ä¾¿ä½¿ç”¨uniformå€¼.
 		 * 
 		 */
 		void BindProgram() const { glUseProgram(programID); }
 		/**
-		 * \brief ½â³ı×ÅÉ«Æ÷³ÌĞò.
+		 * \brief è§£é™¤ç€è‰²å™¨ç¨‹åº.
 		 * 
 		 */
 		void UnbindProgram() const { glUseProgram(0); }
 		/**
-		 * \brief »ñµÃµ±Ç°×ÅÉ«Æ÷±êÊ¶·û.
+		 * \brief è·å¾—å½“å‰ç€è‰²å™¨æ ‡è¯†ç¬¦.
 		 * 
-		 * \return µ±Ç°×ÅÉ«Æ÷±êÊ¶·û
+		 * \return å½“å‰ç€è‰²å™¨æ ‡è¯†ç¬¦
 		 */
 		GLuint getProgramID() const { return programID; }
 
 		/**
-		 * \brief ½«MatrixÖµ´«Èëshader½øĞĞ¼ÆËãäÖÈ¾.
+		 * \brief å°†Matrixå€¼ä¼ å…¥shaderè¿›è¡Œè®¡ç®—æ¸²æŸ“.
 		 * 
-		 * \param UniformName ²ÎÊıÔÚshaderÔ´ÂëÖĞµÄÃû×Ö
-		 * \param value ´«ÈëµÄMatrixÀàĞÍµÄÖµ
+		 * \param UniformName å‚æ•°åœ¨shaderæºç ä¸­çš„åå­—
+		 * \param value ä¼ å…¥çš„Matrixç±»å‹çš„å€¼
 		 */
 		void SetUniformMatrix(const std::string& UniformName, const Eigen::Matrix4f& value) const;
 
 		/**
-		 * \brief ½«Vector4fÖµ´«Èëshader½øĞĞ¼ÆËãäÖÈ¾.
+		 * \brief å°†Vector4få€¼ä¼ å…¥shaderè¿›è¡Œè®¡ç®—æ¸²æŸ“.
 		 *
-		 * \param UniformName ²ÎÊıÔÚshaderÔ´ÂëÖĞµÄÃû×Ö
-		 * \param value ´«ÈëµÄVector4fÀàĞÍµÄÖµ
+		 * \param UniformName å‚æ•°åœ¨shaderæºç ä¸­çš„åå­—
+		 * \param value ä¼ å…¥çš„Vector4fç±»å‹çš„å€¼
 		 */
 		void SetUniformVector(const std::string& UniformName, const  Eigen::Vector4f& vec) const;
 
 		/**
-		 * \brief ½«float4Öµ´«Èëshader½øĞĞ¼ÆËãäÖÈ¾.
+		 * \brief å°†float4å€¼ä¼ å…¥shaderè¿›è¡Œè®¡ç®—æ¸²æŸ“.
 		 *
-		 * \param UniformName ²ÎÊıÔÚshaderÔ´ÂëÖĞµÄÃû×Ö
-		 * \param value ´«ÈëµÄfloat4ÀàĞÍµÄÖµ
+		 * \param UniformName å‚æ•°åœ¨shaderæºç ä¸­çš„åå­—
+		 * \param value ä¼ å…¥çš„float4ç±»å‹çš„å€¼
 		 */
 		void SetUniformVector(const std::string& UniformName, const float4& vec) const;
 
 		/**
-		 * \brief ½«glm::vec4Öµ´«Èëshader½øĞĞ¼ÆËãäÖÈ¾.
+		 * \brief å°†glm::vec4å€¼ä¼ å…¥shaderè¿›è¡Œè®¡ç®—æ¸²æŸ“.
 		 *
-		 * \param UniformName ²ÎÊıÔÚshaderÔ´ÂëÖĞµÄÃû×Ö
-		 * \param value ´«ÈëµÄglm::vec4ÀàĞÍµÄÖµ
+		 * \param UniformName å‚æ•°åœ¨shaderæºç ä¸­çš„åå­—
+		 * \param value ä¼ å…¥çš„glm::vec4ç±»å‹çš„å€¼
 		 */
 		void SetUniformVector(const std::string& UniformName, const glm::vec4& value) const;
 
 		/**
-		 * \brief ´«ÈëËÄÎ¬ÏòÁ¿µ½shaderÖĞ½øĞĞ¼ÆËã.
+		 * \brief ä¼ å…¥å››ç»´å‘é‡åˆ°shaderä¸­è¿›è¡Œè®¡ç®—.
 		 * 
-		 * \param UniformName ²ÎÊıÔÚshaderÔ´ÂëÖĞµÄÃû×Ö
-		 * \param x	´«ÈëËÄÎ¬ÏòÁ¿µÄx·ÖÁ¿
-		 * \param y	´«ÈëËÄÎ¬ÏòÁ¿µÄy·ÖÁ¿
-		 * \param z	´«ÈëËÄÎ¬ÏòÁ¿µÄz·ÖÁ¿
-		 * \param w	´«ÈëËÄÎ¬ÏòÁ¿µÄw·ÖÁ¿
+		 * \param UniformName å‚æ•°åœ¨shaderæºç ä¸­çš„åå­—
+		 * \param x	ä¼ å…¥å››ç»´å‘é‡çš„xåˆ†é‡
+		 * \param y	ä¼ å…¥å››ç»´å‘é‡çš„yåˆ†é‡
+		 * \param z	ä¼ å…¥å››ç»´å‘é‡çš„zåˆ†é‡
+		 * \param w	ä¼ å…¥å››ç»´å‘é‡çš„wåˆ†é‡
 		 */
 		void SetUniformVector(const std::string& UniformName, float x, float y, float z, float w) const;
 
 		/**
-		 * \brief ½«float3Öµ´«Èëshader½øĞĞ¼ÆËãäÖÈ¾.
+		 * \brief å°†float3å€¼ä¼ å…¥shaderè¿›è¡Œè®¡ç®—æ¸²æŸ“.
 		 *
-		 * \param UniformName ²ÎÊıÔÚshaderÔ´ÂëÖĞµÄÃû×Ö
-		 * \param value ´«ÈëµÄfloat3ÀàĞÍµÄÖµ
+		 * \param UniformName å‚æ•°åœ¨shaderæºç ä¸­çš„åå­—
+		 * \param value ä¼ å…¥çš„float3ç±»å‹çš„å€¼
 		 */
 		void SetUniformVector(const std::string& UniformName, const float3& vec) const;
 
 		/**
-		 * \brief ½«glm::vec3Öµ´«Èëshader½øĞĞ¼ÆËãäÖÈ¾.
+		 * \brief å°†glm::vec3å€¼ä¼ å…¥shaderè¿›è¡Œè®¡ç®—æ¸²æŸ“.
 		 *
-		 * \param UniformName ²ÎÊıÔÚshaderÔ´ÂëÖĞµÄÃû×Ö
-		 * \param value ´«ÈëµÄglm::vec3ÀàĞÍµÄÖµ
+		 * \param UniformName å‚æ•°åœ¨shaderæºç ä¸­çš„åå­—
+		 * \param value ä¼ å…¥çš„glm::vec3ç±»å‹çš„å€¼
 		 */
 		void SetUniformVector(const std::string& UniformName, const glm::vec3& value) const;
 
 		/**
-		 * \brief ´«ÈëÈıÎ¬ÏòÁ¿µ½shaderÖĞ½øĞĞ¼ÆËã.
+		 * \brief ä¼ å…¥ä¸‰ç»´å‘é‡åˆ°shaderä¸­è¿›è¡Œè®¡ç®—.
 		 * 
-		 * \param UniformName ²ÎÊıÔÚshaderÔ´ÂëÖĞµÄÃû×Ö
-		 * \param x	´«ÈëÈıÎ¬ÏòÁ¿µÄx·ÖÁ¿
-		 * \param y	´«ÈëÈıÎ¬ÏòÁ¿µÄy·ÖÁ¿
-		 * \param z	´«ÈëÈıÎ¬ÏòÁ¿µÄz·ÖÁ¿
+		 * \param UniformName å‚æ•°åœ¨shaderæºç ä¸­çš„åå­—
+		 * \param x	ä¼ å…¥ä¸‰ç»´å‘é‡çš„xåˆ†é‡
+		 * \param y	ä¼ å…¥ä¸‰ç»´å‘é‡çš„yåˆ†é‡
+		 * \param z	ä¼ å…¥ä¸‰ç»´å‘é‡çš„zåˆ†é‡
 		 */
 		void SetUniformVector(const std::string& UniformName, float x, float y, float z) const;
 
 		/**
-		 * \brief ½«float2Öµ´«Èëshader½øĞĞ¼ÆËãäÖÈ¾.
+		 * \brief å°†float2å€¼ä¼ å…¥shaderè¿›è¡Œè®¡ç®—æ¸²æŸ“.
 		 *
-		 * \param UniformName ²ÎÊıÔÚshaderÔ´ÂëÖĞµÄÃû×Ö
-		 * \param value ´«ÈëµÄfloat2ÀàĞÍµÄÖµ
+		 * \param UniformName å‚æ•°åœ¨shaderæºç ä¸­çš„åå­—
+		 * \param value ä¼ å…¥çš„float2ç±»å‹çš„å€¼
 		 */
 		void SetUniformVector(const std::string& UniformName, const float2& vec) const;
 
 		/**
-		 * \brief ½«glm::vec2Öµ´«Èëshader½øĞĞ¼ÆËãäÖÈ¾.
+		 * \brief å°†glm::vec2å€¼ä¼ å…¥shaderè¿›è¡Œè®¡ç®—æ¸²æŸ“.
 		 *
-		 * \param UniformName ²ÎÊıÔÚshaderÔ´ÂëÖĞµÄÃû×Ö
-		 * \param value ´«ÈëµÄglm::vec2ÀàĞÍµÄÖµ
+		 * \param UniformName å‚æ•°åœ¨shaderæºç ä¸­çš„åå­—
+		 * \param value ä¼ å…¥çš„glm::vec2ç±»å‹çš„å€¼
 		 */
 		void SetUniformVector(const std::string& UniformName, const glm::vec2& value) const;
 
 		/**
-		 * \brief ´«Èë¶şÎ¬ÏòÁ¿µ½shaderÖĞ½øĞĞ¼ÆËã.
+		 * \brief ä¼ å…¥äºŒç»´å‘é‡åˆ°shaderä¸­è¿›è¡Œè®¡ç®—.
 		 * 
-		 * \param UniformName ²ÎÊıÔÚshaderÔ´ÂëÖĞµÄÃû×Ö
-		 * \param x	´«Èë¶şÎ¬ÏòÁ¿µÄx·ÖÁ¿
-		 * \param y	´«Èë¶şÎ¬ÏòÁ¿µÄy·ÖÁ¿
+		 * \param UniformName å‚æ•°åœ¨shaderæºç ä¸­çš„åå­—
+		 * \param x	ä¼ å…¥äºŒç»´å‘é‡çš„xåˆ†é‡
+		 * \param y	ä¼ å…¥äºŒç»´å‘é‡çš„yåˆ†é‡
 		 */
 		void SetUniformVector(const std::string& UniformName, float x, float y) const;
 
 		/**
-		 * \brief ½«floatÖµ´«Èëshader½øĞĞ¼ÆËãäÖÈ¾.
+		 * \brief å°†floatå€¼ä¼ å…¥shaderè¿›è¡Œè®¡ç®—æ¸²æŸ“.
 		 *
-		 * \param UniformName ²ÎÊıÔÚshaderÔ´ÂëÖĞµÄÃû×Ö
-		 * \param value ´«ÈëµÄfloatÀàĞÍµÄÖµ
+		 * \param UniformName å‚æ•°åœ¨shaderæºç ä¸­çš„åå­—
+		 * \param value ä¼ å…¥çš„floatç±»å‹çš„å€¼
 		 */
 		void SetUniformFloat(const std::string& UniformName, const float value) const;
 		/**
-		 * \brief ½«glm::mat4Öµ´«Èëshader½øĞĞ¼ÆËãäÖÈ¾.
+		 * \brief å°†glm::mat4å€¼ä¼ å…¥shaderè¿›è¡Œè®¡ç®—æ¸²æŸ“.
 		 * 
-		 * \param UniformName ²ÎÊıÔÚshaderÔ´ÂëÖĞµÄÃû×Ö
-		 * \param value ´«ÈëµÄglm::mat4ÀàĞÍµÄÖµ
+		 * \param UniformName å‚æ•°åœ¨shaderæºç ä¸­çš„åå­—
+		 * \param value ä¼ å…¥çš„glm::mat4ç±»å‹çš„å€¼
 		 */
 		void setUniformMat4(const std::string& UniformName, glm::mat4 value) const;
 

@@ -1,12 +1,12 @@
 /*****************************************************************//**
  * \file   ComputeTriangleIndices.cu
- * \brief  ²åÈëĞŞ¸´Èı½ÇÍø¸ñ£¬¹¹½¨Íø¸ñ
+ * \brief  æ’å…¥ä¿®å¤ä¸‰è§’ç½‘æ ¼ï¼Œæ„å»ºç½‘æ ¼
  * 
  * \author LUOJIAXUAN
  * \date   June 3rd 2024
  *********************************************************************/
 #include "ComputeTriangleIndices.h"
-#if defined(__CUDACC__)		// Èç¹ûÓÉNVCC±àÒëÆ÷±àÒë
+#if defined(__CUDACC__)		// å¦‚æœç”±NVCCç¼–è¯‘å™¨ç¼–è¯‘
 #include <cub/cub.cuh>
 #endif
 #include <thrust/device_ptr.h>
@@ -22,7 +22,7 @@ namespace SparseSurfelFusion {
     };
 
 	namespace device {
-        __device__ __constant__ int maxDepth = MAX_DEPTH_OCTREE;	// Octree×î´óÉî¶È
+        __device__ __constant__ int maxDepth = MAX_DEPTH_OCTREE;	// Octreeæœ€å¤§æ·±åº¦
 
 		__device__ __constant__ int decodeOffset_1 = (1 << (MAX_DEPTH_OCTREE + 1));
 
@@ -30,14 +30,14 @@ namespace SparseSurfelFusion {
 
         __device__ __constant__ int childrenVertexKind[8] = { 0, 1, 3, 2, 4, 5, 7, 6 };
 
-        __device__ __constant__ int maxIntValue = 0x7fffffff;		// ×î´óintÖµ
+        __device__ __constant__ int maxIntValue = 0x7fffffff;		// æœ€å¤§intå€¼
 
         __device__ __constant__ float eps = EPSILON;
 
         __device__ __constant__ int edgeVertex[12][2] = { {0,1}, {2,3}, {4,5}, {6,7}, {0,3}, {1,2},
                                                           {4,7}, {5,6}, {0,4}, {1,5}, {3,7}, {2,6} };
         
-        // Á¢·½Ìå8¸ö¶¥µã£¬2^8 = 256
+        // ç«‹æ–¹ä½“8ä¸ªé¡¶ç‚¹ï¼Œ2^8 = 256
         __constant__ int trianglesCount[256] = { 0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 2,
                                                  1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 3,
                                                  1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 3, 
@@ -55,7 +55,7 @@ namespace SparseSurfelFusion {
                                                  3, 4, 4, 5, 4, 5, 3, 4, 4, 5, 5, 2, 3, 4, 2, 1,
                                                  2, 3, 3, 2, 3, 4, 2, 1, 3, 2, 4, 1, 2, 1, 1, 0 };
 
-        // Marching CubeÈı½ÇĞÎ²éÕÒ±í
+        // Marching Cubeä¸‰è§’å½¢æŸ¥æ‰¾è¡¨
         __device__ __constant__ int triangles[256][16] = {
         {  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1},
         {   0,   4,   8,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1},
@@ -426,8 +426,8 @@ __global__ void SparseSurfelFusion::device::generateTriangleNumsKernel(DeviceArr
     const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
     if (idx >= DLevelNodeCount)	return;
     const unsigned int offset = DLevelOffset + idx;
-    OctNode currentNode = NodeArray[offset];    // µ±Ç°×î´ó²ã½Úµã
-    int currentCubeCatagory = 0;                // Á¢·½ÌåÀàĞÍ
+    OctNode currentNode = NodeArray[offset];    // å½“å‰æœ€å¤§å±‚èŠ‚ç‚¹
+    int currentCubeCatagory = 0;                // ç«‹æ–¹ä½“ç±»å‹
     for (int i = 0; i < 8; i++) {
         if (vvalue[currentNode.vertices[i] - 1] < 0) {
             currentCubeCatagory |= 1 << i;
@@ -508,7 +508,7 @@ __global__ void SparseSurfelFusion::device::generateTrianglePos(DeviceArrayView<
     int currentFace;
     int parentNodeIndex;
     for (int i = 0; i < 6; i++) {
-        int mark = 0;              // ¼ÇÂ¼ÊÇ·ñ´æÔÚSurface-Edge Intersections(Ãæ±ßÏà½»)
+        int mark = 0;              // è®°å½•æ˜¯å¦å­˜åœ¨Surface-Edge Intersections(é¢è¾¹ç›¸äº¤)
         for (int j = 0; j < 4; j++) {
             mark |= edgeHasVertex[device::faceEdges[i][j]];
         }
@@ -1041,8 +1041,8 @@ __global__ void SparseSurfelFusion::device::generateSubdivideVexNums(const EdgeN
 {
     const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
     if (idx >= SubdivideEdgeArraySize)	return;
-    int owner = SubdivideEdgeArray[idx].ownerNodeIdx - NodeArraySize;   // µ±Ç°±ßµÄOwner
-    int kind = SubdivideEdgeArray[idx].edgeKind;                        // µ±Ç°±ßµÄÀàĞÍ
+    int owner = SubdivideEdgeArray[idx].ownerNodeIdx - NodeArraySize;   // å½“å‰è¾¹çš„Owner
+    int kind = SubdivideEdgeArray[idx].edgeKind;                        // å½“å‰è¾¹çš„ç±»å‹
     int index[2];
     index[0] = edgeVertex[kind][0];
     index[1] = edgeVertex[kind][1];
@@ -1103,7 +1103,7 @@ __global__ void SparseSurfelFusion::device::initFixedDepthNums(DeviceArrayView<O
     int nodeNum = 1;
     for (int depth = SubdivideDepthBuffer[offset]; depth <= device::maxDepth; ++depth) {
         fixedDepthNums[(depth - 1) * DepthNodeCount + idx] = nodeNum;
-        nodeNum <<= 3;  // ³Ë8
+        nodeNum <<= 3;  // ä¹˜8
     }
 }
 
@@ -1112,8 +1112,8 @@ __global__ void SparseSurfelFusion::device::wholeRebuildArray(DeviceArrayView<Oc
     const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
     if (idx >= finerSubdivideNum)	return;
     int depthNodeAddress[MAX_DEPTH_OCTREE + 1];
-    for (int i = 0; i <= maxDepth; i++) {                   // »ñµÃÊı¾İ¸ü¿ì£ºL1»º´æ
-        depthNodeAddress[i] = depthNodeAddress_Device[i];   // depthNodeAddress_DeviceÊÇGlobalÄÚ´æ£¬ºóĞøĞèÒªÑ­»·£¬Ê±¼ä¿ªÏú´ó
+    for (int i = 0; i <= maxDepth; i++) {                   // è·å¾—æ•°æ®æ›´å¿«ï¼šL1ç¼“å­˜
+        depthNodeAddress[i] = depthNodeAddress_Device[i];   // depthNodeAddress_Deviceæ˜¯Globalå†…å­˜ï¼Œåç»­éœ€è¦å¾ªç¯ï¼Œæ—¶é—´å¼€é”€å¤§
     }
     const unsigned int offset = finerDepthStart + idx;
     int nowDepth = SubdivideDepthBuffer[offset];
@@ -1172,7 +1172,7 @@ __global__ void SparseSurfelFusion::device::markValidMeshVertexIndex(const Point
     const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
     if (idx >= verticesNum) return;
     if (fabsf(VertexBuffer[idx].coords[0]) < device::eps) {
-        printf("¹¹½¨¶¥µã·¢Éú´íÎó£¡VertexBuffer[%d] = (%.5f, %.5f, %.5f)", idx, VertexBuffer[idx].coords[0], VertexBuffer[idx].coords[1], VertexBuffer[idx].coords[2]);
+        printf("æ„å»ºé¡¶ç‚¹å‘ç”Ÿé”™è¯¯ï¼VertexBuffer[%d] = (%.5f, %.5f, %.5f)", idx, VertexBuffer[idx].coords[0], VertexBuffer[idx].coords[1], VertexBuffer[idx].coords[2]);
         markValidVertices[idx] = false;
     }
     else {
@@ -1198,7 +1198,7 @@ __global__ void SparseSurfelFusion::device::markValidMeshTriangleIndex(TriangleI
         markValidTriangleIndex[idx] = true;
     }
     else {
-        printf("Èı½ÇË÷Òı¹¹½¨´íÎó£¡ index = %d   PreOffset = %d   verticesNum = %d   TriangleBuffer = (%d, %d, %d)\n", idx, previousVertexOffset, verticesNum, tri.idx[0], tri.idx[1], tri.idx[2]);
+        printf("ä¸‰è§’ç´¢å¼•æ„å»ºé”™è¯¯ï¼ index = %d   PreOffset = %d   verticesNum = %d   TriangleBuffer = (%d, %d, %d)\n", idx, previousVertexOffset, verticesNum, tri.idx[0], tri.idx[1], tri.idx[2]);
         markValidTriangleIndex[idx] = false;
     }
 }
@@ -1225,7 +1225,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::insertTriangle(const Point3D<fl
         mesh.inCorePoints.push_back(VertexBufferHost[i]);
     }
 
-    int inCoreFlag = 0; // ÅĞ¶ÏÊÇµÚ¼¸¸ö½Úµã£¬Èı½ÇĞÎ»æÖÆÓĞË³Ğò
+    int inCoreFlag = 0; // åˆ¤æ–­æ˜¯ç¬¬å‡ ä¸ªèŠ‚ç‚¹ï¼Œä¸‰è§’å½¢ç»˜åˆ¶æœ‰é¡ºåº
     for (int i = 0; i < 3; i++) {
         inCoreFlag |= CoredMeshData::IN_CORE_FLAG[i];
     }
@@ -1250,30 +1250,30 @@ void SparseSurfelFusion::ComputeTriangleIndices::insertTriangle(Point3D<float>* 
     dim3 grid_vex(divUp(allVexNums, block_vex.x));
     device::markValidMeshVertexIndex << <grid_vex, block_vex, 0, stream >> > (VertexBuffer, allVexNums, markValidTriangleVertex.Ptr());
 
-    unsigned int* validVerticesCount = NULL;    // ÓĞĞ§µÄ¶¥µã
+    unsigned int* validVerticesCount = NULL;    // æœ‰æ•ˆçš„é¡¶ç‚¹
     unsigned int validVerticesCountHost = 0;
     CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&validVerticesCount), sizeof(unsigned int), stream));
 
-    void* d_temp_storage_1 = NULL;    // ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´¿ÉÊÍ·Å
-    size_t temp_storage_bytes_1 = 0;  // ÖĞ¼ä±äÁ¿
-    CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_1, temp_storage_bytes_1, VertexBuffer, markValidTriangleVertex.Ptr(), MeshTriangleVertex.Ptr() + MeshTriangleVertex.ArraySize(), validVerticesCount, allVexNums, stream, false));	// È·¶¨ÁÙÊ±Éè±¸´æ´¢ĞèÇó
+    void* d_temp_storage_1 = NULL;    // ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³å¯é‡Šæ”¾
+    size_t temp_storage_bytes_1 = 0;  // ä¸­é—´å˜é‡
+    CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_1, temp_storage_bytes_1, VertexBuffer, markValidTriangleVertex.Ptr(), MeshTriangleVertex.Ptr() + MeshTriangleVertex.ArraySize(), validVerticesCount, allVexNums, stream, false));	// ç¡®å®šä¸´æ—¶è®¾å¤‡å­˜å‚¨éœ€æ±‚
     CHECKCUDA(cudaMallocAsync(&d_temp_storage_1, temp_storage_bytes_1, stream));
-    CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_1, temp_storage_bytes_1, VertexBuffer, markValidTriangleVertex.Ptr(), MeshTriangleVertex.Ptr() + MeshTriangleVertex.ArraySize(), validVerticesCount, allVexNums, stream, false));	// É¸Ñ¡	
+    CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_1, temp_storage_bytes_1, VertexBuffer, markValidTriangleVertex.Ptr(), MeshTriangleVertex.Ptr() + MeshTriangleVertex.ArraySize(), validVerticesCount, allVexNums, stream, false));	// ç­›é€‰	
     CHECKCUDA(cudaMemcpyAsync(&validVerticesCountHost, validVerticesCount, sizeof(unsigned int), cudaMemcpyDeviceToHost, stream));
 
     dim3 block_tri(128);
     dim3 grid_tri(divUp(allTriNums, block_tri.x));
     device::markValidMeshTriangleIndex << <grid_tri, block_tri, 0, stream >> > (TriangleBuffer, MeshTriangleVertex.ArraySize(), allTriNums, allVexNums, markValidTriangleIndex.Ptr());
 
-    unsigned int* validTriangleIndicesCount = NULL;    // ÓĞĞ§µÄÈı½ÇË÷ÒıÊı×éÊıÁ¿
+    unsigned int* validTriangleIndicesCount = NULL;    // æœ‰æ•ˆçš„ä¸‰è§’ç´¢å¼•æ•°ç»„æ•°é‡
     unsigned int validTriangleIndicesCountHost = 0;
     CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&validTriangleIndicesCount), sizeof(unsigned int), stream));
 
-    void* d_temp_storage_2 = NULL;    // ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´¿ÉÊÍ·Å
-    size_t temp_storage_bytes_2 = 0;  // ÖĞ¼ä±äÁ¿
-    CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_2, temp_storage_bytes_2, TriangleBuffer, markValidTriangleIndex.Ptr(), MeshTriangleIndex.Ptr() + MeshTriangleIndex.ArraySize(), validTriangleIndicesCount, allTriNums, stream, false));	// È·¶¨ÁÙÊ±Éè±¸´æ´¢ĞèÇó
+    void* d_temp_storage_2 = NULL;    // ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³å¯é‡Šæ”¾
+    size_t temp_storage_bytes_2 = 0;  // ä¸­é—´å˜é‡
+    CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_2, temp_storage_bytes_2, TriangleBuffer, markValidTriangleIndex.Ptr(), MeshTriangleIndex.Ptr() + MeshTriangleIndex.ArraySize(), validTriangleIndicesCount, allTriNums, stream, false));	// ç¡®å®šä¸´æ—¶è®¾å¤‡å­˜å‚¨éœ€æ±‚
     CHECKCUDA(cudaMallocAsync(&d_temp_storage_2, temp_storage_bytes_2, stream));
-    CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_2, temp_storage_bytes_2, TriangleBuffer, markValidTriangleIndex.Ptr(), MeshTriangleIndex.Ptr() + MeshTriangleIndex.ArraySize(), validTriangleIndicesCount, allTriNums, stream, false));	// É¸Ñ¡	
+    CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_2, temp_storage_bytes_2, TriangleBuffer, markValidTriangleIndex.Ptr(), MeshTriangleIndex.Ptr() + MeshTriangleIndex.ArraySize(), validTriangleIndicesCount, allTriNums, stream, false));	// ç­›é€‰	
     CHECKCUDA(cudaMemcpyAsync(&validTriangleIndicesCountHost, validTriangleIndicesCount, sizeof(unsigned int), cudaMemcpyDeviceToHost, stream));
 
     CHECKCUDA(cudaStreamSynchronize(stream));
@@ -1289,18 +1289,18 @@ void SparseSurfelFusion::ComputeTriangleIndices::generateSubdivideNodeArrayCount
     int* SubdivideNodeNum = NULL;
     CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&SubdivideNodeNum), sizeof(int), stream));
 
-    //// ÕâÀïÎŞ·¨Ê¹ÓÃcub::DeviceSelect::Flagged£¬µ÷ÓÃAPI»áµ¼ÖÂ¹²ÏíÄÚ´æÒç³ö£¬Ö÷ÒªÊÇÉèÖÃL1 Cache ºÍ Share MemoryµÄ±ÈÀı
+    //// è¿™é‡Œæ— æ³•ä½¿ç”¨cub::DeviceSelect::Flaggedï¼Œè°ƒç”¨APIä¼šå¯¼è‡´å…±äº«å†…å­˜æº¢å‡ºï¼Œä¸»è¦æ˜¯è®¾ç½®L1 Cache å’Œ Share Memoryçš„æ¯”ä¾‹
     //int* SubdivideNodeNumPtr = NULL;
     //CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&SubdivideNodeNumPtr), sizeof(int), stream));
     //void* d_temp_storage = NULL;
     //size_t temp_storage_bytes = 0; 
-    //CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage, temp_storage_bytes, NodeArray.Array().ptr(), markValidSubdividedNode.Array().ptr(), SubdivideNode.Array().ptr(), SubdivideNodeNumPtr, OtherDepthNodeCount, stream, false));	// È·¶¨ÁÙÊ±Éè±¸´æ´¢ĞèÇó
+    //CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage, temp_storage_bytes, NodeArray.Array().ptr(), markValidSubdividedNode.Array().ptr(), SubdivideNode.Array().ptr(), SubdivideNodeNumPtr, OtherDepthNodeCount, stream, false));	// ç¡®å®šä¸´æ—¶è®¾å¤‡å­˜å‚¨éœ€æ±‚
     //CHECKCUDA(cudaMallocAsync(&d_temp_storage, temp_storage_bytes, stream));
-    //CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage, temp_storage_bytes, NodeArray.Array().ptr(), markValidSubdividedNode.Array().ptr(), SubdivideNode.Array().ptr(), SubdivideNodeNumPtr, OtherDepthNodeCount, stream, false));	// É¸Ñ¡
+    //CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage, temp_storage_bytes, NodeArray.Array().ptr(), markValidSubdividedNode.Array().ptr(), SubdivideNode.Array().ptr(), SubdivideNodeNumPtr, OtherDepthNodeCount, stream, false));	// ç­›é€‰
     //CHECKCUDA(cudaMemcpyAsync(&SubdivideNodeNumHost, SubdivideNodeNumPtr, sizeof(int), cudaMemcpyDeviceToHost, stream));
     //CHECKCUDA(cudaStreamSynchronize(stream));
 
-    // thrust::cuda::par.on(stream) -> Ú¹ÊÍThrust¿âÖ´ĞĞ²ßÂÔÊÇÒÔÁ÷µÄĞÎÊ½
+    // thrust::cuda::par.on(stream) -> è¯ é‡ŠThruståº“æ‰§è¡Œç­–ç•¥æ˜¯ä»¥æµçš„å½¢å¼
     auto NodeArrayPtr = NodeArray.Array().ptr();
     auto SubdivedeNodePtr = SubdivideNode.Array().ptr();
     thrust::device_ptr<OctNode> NodeArray_ptr = thrust::device_pointer_cast<OctNode>(NodeArrayPtr);
@@ -1333,14 +1333,14 @@ void SparseSurfelFusion::ComputeTriangleIndices::generateSubdivideNodeArrayCount
         CHECKCUDA(cudaFreeAsync(d_temp_storage, stream));
     }
 
-    CHECKCUDA(cudaFreeAsync(SubdivideDepthNum, stream));    // ÓÃÍê¼´¿ÌÊÍ·Å£¬¿ªÏúÌ«´ó
+    CHECKCUDA(cudaFreeAsync(SubdivideDepthNum, stream));    // ç”¨å®Œå³åˆ»é‡Šæ”¾ï¼Œå¼€é”€å¤ªå¤§
     CHECKCUDA(cudaStreamSynchronize(stream));
 
     for (int i = 0; i <= Constants::maxDepth_Host; i++) {
-        //printf("µÚ %d ²ãÏ¸·Ö½ÚµãÊıÁ¿£º%d   ", i, SubdivideDepthCount[i]);
+        //printf("ç¬¬ %d å±‚ç»†åˆ†èŠ‚ç‚¹æ•°é‡ï¼š%d   ", i, SubdivideDepthCount[i]);
         if (i == 0) SubdivideDepthAddress[i] = 0;
         else SubdivideDepthAddress[i] = SubdivideDepthAddress[i - 1] + SubdivideDepthCount[i - 1];
-        //printf("½ÚµãÆ«ÒÆ£º%d\n", SubdivideDepthAddress[i]);
+        //printf("èŠ‚ç‚¹åç§»ï¼š%d\n", SubdivideDepthAddress[i]);
     }
 
 }
@@ -1357,7 +1357,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::generateVertexNumsAndVertexAddr
     dim3 grid(divUp(EdgeArraySize, block.x));
     device::generateVertexNumsKernel << <grid, block, 0, stream >> > (EdgeArray, NodeArray, vvalue, EdgeArraySize, vexNums.Array().ptr(), markValidVertex.Array().ptr());
 
-    void* tempStorage = NULL;	//¡¾Ëã·¨ÁÙÊ±±äÁ¿£¬ÓÃÍê¼´ÊÍ·Å¡¿ÅÅËûÇ°×ººÍµÄÁÙÊ±±äÁ¿
+    void* tempStorage = NULL;	//ã€ç®—æ³•ä¸´æ—¶å˜é‡ï¼Œç”¨å®Œå³é‡Šæ”¾ã€‘æ’ä»–å‰ç¼€å’Œçš„ä¸´æ—¶å˜é‡
     size_t tempStorageBytes = 0;
     cub::DeviceScan::ExclusiveSum(tempStorage, tempStorageBytes, vexNums.Array().ptr(), vexAddress.Array().ptr(), EdgeArraySize, stream);
     CHECKCUDA(cudaMallocAsync(&tempStorage, tempStorageBytes, stream));
@@ -1375,7 +1375,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::generateTriangleNumsAndTriangle
     dim3 grid(divUp(DLevelNodeCount, block.x));
     device::generateTriangleNumsKernel << <grid, block, 0, stream >> > (NodeArray, vvalue, DLevelOffset, DLevelNodeCount, triNums.Array().ptr(), cubeCatagory.Array().ptr());
 
-    void* tempStorage = NULL;	//¡¾Ëã·¨ÁÙÊ±±äÁ¿£¬ÓÃÍê¼´ÊÍ·Å¡¿ÅÅËûÇ°×ººÍµÄÁÙÊ±±äÁ¿
+    void* tempStorage = NULL;	//ã€ç®—æ³•ä¸´æ—¶å˜é‡ï¼Œç”¨å®Œå³é‡Šæ”¾ã€‘æ’ä»–å‰ç¼€å’Œçš„ä¸´æ—¶å˜é‡
     size_t tempStorageBytes = 0;
     cub::DeviceScan::ExclusiveSum(tempStorage, tempStorageBytes, triNums.Array().ptr(), triAddress.Array().ptr(), DLevelNodeCount, stream);
     CHECKCUDA(cudaMallocAsync(&tempStorage, tempStorageBytes, stream));
@@ -1393,9 +1393,9 @@ void SparseSurfelFusion::ComputeTriangleIndices::generateVerticesAndTriangle(Dev
     int lastVexNums;
     CHECKCUDA(cudaMemcpyAsync(&lastVexAddr, vexAddress.Array().ptr() + EdgeArraySize - 1, sizeof(int), cudaMemcpyDeviceToHost, stream));
     CHECKCUDA(cudaMemcpyAsync(&lastVexNums, vexNums.Array().ptr() + EdgeArraySize - 1, sizeof(int), cudaMemcpyDeviceToHost, stream));
-    CHECKCUDA(cudaStreamSynchronize(stream));   // ÕâÀïĞèÒªÍ³¼ÆÒ»ÏÂËùÓĞ¶¥µãµÄÊıÁ¿
+    CHECKCUDA(cudaStreamSynchronize(stream));   // è¿™é‡Œéœ€è¦ç»Ÿè®¡ä¸€ä¸‹æ‰€æœ‰é¡¶ç‚¹çš„æ•°é‡
 
-    int allVexNums = lastVexAddr + lastVexNums; // vertexµÄ×ÜÊı
+    int allVexNums = lastVexAddr + lastVexNums; // vertexçš„æ€»æ•°
 
     Point3D<float>* VertexBuffer = NULL;
     CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&VertexBuffer), sizeof(Point3D<float>) * allVexNums, stream));
@@ -1414,9 +1414,9 @@ void SparseSurfelFusion::ComputeTriangleIndices::generateVerticesAndTriangle(Dev
 
     void* d_temp_storage_1 = NULL;
     size_t temp_storage_bytes_1 = 0;
-    CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_1, temp_storage_bytes_1, EdgeArray.RawPtr(), markValidVertex.Array().ptr(), validEdgeArray, validEdgeArrayNum, EdgeArraySize, stream, false));	// È·¶¨ÁÙÊ±Éè±¸´æ´¢ĞèÇó
+    CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_1, temp_storage_bytes_1, EdgeArray.RawPtr(), markValidVertex.Array().ptr(), validEdgeArray, validEdgeArrayNum, EdgeArraySize, stream, false));	// ç¡®å®šä¸´æ—¶è®¾å¤‡å­˜å‚¨éœ€æ±‚
     CHECKCUDA(cudaMallocAsync(&d_temp_storage_1, temp_storage_bytes_1, stream));
-    CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_1, temp_storage_bytes_1, EdgeArray.RawPtr(), markValidVertex.Array().ptr(), validEdgeArray, validEdgeArrayNum, EdgeArraySize, stream, false));	// É¸Ñ¡	
+    CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_1, temp_storage_bytes_1, EdgeArray.RawPtr(), markValidVertex.Array().ptr(), validEdgeArray, validEdgeArrayNum, EdgeArraySize, stream, false));	// ç­›é€‰	
 
     void* d_temp_storage_2 = NULL;
     size_t temp_storage_bytes_2 = 0;
@@ -1424,8 +1424,8 @@ void SparseSurfelFusion::ComputeTriangleIndices::generateVerticesAndTriangle(Dev
     CHECKCUDA(cudaMallocAsync(&d_temp_storage_2, temp_storage_bytes_2, stream));
     CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_2, temp_storage_bytes_2, vexAddress.Array().ptr(), markValidVertex.Array().ptr(), validVertexAddress, validVertexAddressNum, EdgeArraySize, stream, false));
 
-    assert(allVexNums == validEdgeArrayNum);        // ºÏÀíĞÔ¼ì²é
-    assert(allVexNums == validVertexAddressNum);    // ºÏÀíĞÔ¼ì²é
+    assert(allVexNums == validEdgeArrayNum);        // åˆç†æ€§æ£€æŸ¥
+    assert(allVexNums == validVertexAddressNum);    // åˆç†æ€§æ£€æŸ¥
 
     dim3 block_1(128);
     dim3 grid_1(divUp(allVexNums, block_1.x));
@@ -1435,7 +1435,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::generateVerticesAndTriangle(Dev
     int lastTriNums;
     CHECKCUDA(cudaMemcpyAsync(&lastTriAddr, triAddress.Array().ptr() + DLevelNodeCount - 1, sizeof(int), cudaMemcpyDeviceToHost, stream));
     CHECKCUDA(cudaMemcpyAsync(&lastTriNums, triNums.Array().ptr() + DLevelNodeCount - 1, sizeof(int), cudaMemcpyDeviceToHost, stream));
-    CHECKCUDA(cudaStreamSynchronize(stream));   // ÕâÀïĞèÒªÍ³¼ÆÒ»ÏÂËùÓĞ¶¥µãµÄÊıÁ¿
+    CHECKCUDA(cudaStreamSynchronize(stream));   // è¿™é‡Œéœ€è¦ç»Ÿè®¡ä¸€ä¸‹æ‰€æœ‰é¡¶ç‚¹çš„æ•°é‡
     int allTriNums = lastTriAddr + lastTriNums;
 
     TriangleIndex* TriangleBuffer = NULL;
@@ -1448,7 +1448,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::generateVerticesAndTriangle(Dev
     dim3 block_2(128);
     dim3 grid_2(divUp(DLevelNodeCount, block_2.x));
     device::generateTrianglePos << <grid_2, block_2, 0, stream >> > (NodeArray.ArrayView(), FaceArray, triNums.ArrayView(), cubeCatagory.ArrayView(), vexAddress.ArrayView(), triAddress.ArrayView(), DLevelOffset, DLevelNodeCount, TriangleBuffer, hasSurfaceIntersection);
-    CHECKCUDA(cudaStreamSynchronize(stream));   // ÕâÀïĞèÒªÍ³¼ÆÒ»ÏÂËùÓĞ¶¥µãµÄÊıÁ¿
+    CHECKCUDA(cudaStreamSynchronize(stream));   // è¿™é‡Œéœ€è¦ç»Ÿè®¡ä¸€ä¸‹æ‰€æœ‰é¡¶ç‚¹çš„æ•°é‡
 
     insertTriangle(VertexBuffer, allVexNums, TriangleBuffer, allTriNums, stream);
 
@@ -1458,7 +1458,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::generateVerticesAndTriangle(Dev
     dim3 grid_3(divUp(DLevelOffset, block_3.x));
     device::ProcessLeafNodesAtOtherDepth << <grid_3, block_3, 0, stream >> > (VertexArray, vvalue.ArrayView(), DLevelOffset, hasSurfaceIntersection, NodeArray.Array().ptr(), markValidSubdividedNode.Array().ptr());
 
-    // ±äÁ¿ÓÃÍê¼´ÊÍ·Å
+    // å˜é‡ç”¨å®Œå³é‡Šæ”¾
     CHECKCUDA(cudaFreeAsync(VertexBuffer, stream));
     CHECKCUDA(cudaFreeAsync(validEdgeArray, stream));
     CHECKCUDA(cudaFreeAsync(validVertexAddress, stream));
@@ -1500,7 +1500,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::CoarserSubdivideNodeAndRebuildM
         int currentNodeNum = 1;
         for (int j = rootDepth; j <= Constants::maxDepth_Host; j++) {
             fixedDepthNodeNum[j] = currentNodeNum;
-            currentNodeNum <<= 3;       // ³Ë8
+            currentNodeNum <<= 3;       // ä¹˜8
         }
 
         //for (int j = 0; j <= Constants::maxDepth_Host; j++) {
@@ -1537,7 +1537,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::CoarserSubdivideNodeAndRebuildM
 
         /**************************************** SubdivideVertexArray ****************************************/
 
-        VertexNode* SubdividePreVertexArray = NULL;     // ¼´Ê±±äÁ¿£¬ÓÃÍê¼´É¾
+        VertexNode* SubdividePreVertexArray = NULL;     // å³æ—¶å˜é‡ï¼Œç”¨å®Œå³åˆ 
         CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&SubdividePreVertexArray), sizeof(VertexNode) * 8 * fixedDepthNodeNum[Constants::maxDepth_Host], stream));
         CHECKCUDA(cudaMemsetAsync(SubdividePreVertexArray, 0, sizeof(VertexNode) * 8 * fixedDepthNodeNum[Constants::maxDepth_Host], stream));
 
@@ -1555,20 +1555,20 @@ void SparseSurfelFusion::ComputeTriangleIndices::CoarserSubdivideNodeAndRebuildM
         int SubdivideVertexArraySizeHost = -1;
         CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&SubdivideVertexArraySize), sizeof(int), stream));
 
-        void* d_temp_storage_1 = NULL;    // ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´¿ÉÊÍ·Å
-        size_t temp_storage_bytes_1 = 0;  // ÖĞ¼ä±äÁ¿
-        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_1, temp_storage_bytes_1, SubdividePreVertexArray, markValidSubdivideVertex.Array().ptr(), SubdivideVertexArray, SubdivideVertexArraySize, 8 * fixedDepthNodeNum[Constants::maxDepth_Host], stream, false));	// È·¶¨ÁÙÊ±Éè±¸´æ´¢ĞèÇó
+        void* d_temp_storage_1 = NULL;    // ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³å¯é‡Šæ”¾
+        size_t temp_storage_bytes_1 = 0;  // ä¸­é—´å˜é‡
+        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_1, temp_storage_bytes_1, SubdividePreVertexArray, markValidSubdivideVertex.Array().ptr(), SubdivideVertexArray, SubdivideVertexArraySize, 8 * fixedDepthNodeNum[Constants::maxDepth_Host], stream, false));	// ç¡®å®šä¸´æ—¶è®¾å¤‡å­˜å‚¨éœ€æ±‚
         CHECKCUDA(cudaMallocAsync(&d_temp_storage_1, temp_storage_bytes_1, stream));
-        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_1, temp_storage_bytes_1, SubdividePreVertexArray, markValidSubdivideVertex.Array().ptr(), SubdivideVertexArray, SubdivideVertexArraySize, 8 * fixedDepthNodeNum[Constants::maxDepth_Host], stream, false));	// É¸Ñ¡	
+        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_1, temp_storage_bytes_1, SubdividePreVertexArray, markValidSubdivideVertex.Array().ptr(), SubdivideVertexArray, SubdivideVertexArraySize, 8 * fixedDepthNodeNum[Constants::maxDepth_Host], stream, false));	// ç­›é€‰	
         CHECKCUDA(cudaMemcpyAsync(&SubdivideVertexArraySizeHost, SubdivideVertexArraySize, sizeof(int), cudaMemcpyDeviceToHost, stream));
 
-        CHECKCUDA(cudaFreeAsync(SubdividePreVertexArray, stream));  // ¼´Ê±±äÁ¿£¬ÓÃÍê¼´É¾
+        CHECKCUDA(cudaFreeAsync(SubdividePreVertexArray, stream));  // å³æ—¶å˜é‡ï¼Œç”¨å®Œå³åˆ 
         CHECKCUDA(cudaFreeAsync(SubdivideVertexArraySize, stream));
         CHECKCUDA(cudaFreeAsync(d_temp_storage_1, stream));
 
-        CHECKCUDA(cudaStreamSynchronize(stream));       // Í¬²½Á÷£¬»ñµÃSubdivideVertexArraySizeHost
+        CHECKCUDA(cudaStreamSynchronize(stream));       // åŒæ­¥æµï¼Œè·å¾—SubdivideVertexArraySizeHost
 
-        if (SubdivideVertexArraySizeHost == 0) {        // ¸Ã½ÚµãÃ»ÓĞ¿ÉÏ¸·ÖµÄ¶¥µã¡¾ÇóÒşÊ½±íÃæ£¬¶¥µãºÍ±ßÈ±Ò»²»¿É¡¿
+        if (SubdivideVertexArraySizeHost == 0) {        // è¯¥èŠ‚ç‚¹æ²¡æœ‰å¯ç»†åˆ†çš„é¡¶ç‚¹ã€æ±‚éšå¼è¡¨é¢ï¼Œé¡¶ç‚¹å’Œè¾¹ç¼ºä¸€ä¸å¯ã€‘
             CHECKCUDA(cudaFreeAsync(SubdivideVertexArray, stream));
             continue;
         }
@@ -1599,20 +1599,20 @@ void SparseSurfelFusion::ComputeTriangleIndices::CoarserSubdivideNodeAndRebuildM
         int SubdivideEdgeArraySizeHost = -1;
         CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&SubdivideEdgeArraySize), sizeof(int), stream));
 
-        void* d_temp_storage_2 = NULL;    // ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´¿ÉÊÍ·Å
-        size_t temp_storage_bytes_2 = 0;  // ÖĞ¼ä±äÁ¿
-        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_2, temp_storage_bytes_2, SubdividePreEdgeArray, markValidSubdivideEdge.Array().ptr(), SubdivideEdgeArray, SubdivideEdgeArraySize, 12 * fixedDepthNodeNum[Constants::maxDepth_Host], stream, false));	// È·¶¨ÁÙÊ±Éè±¸´æ´¢ĞèÇó
+        void* d_temp_storage_2 = NULL;    // ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³å¯é‡Šæ”¾
+        size_t temp_storage_bytes_2 = 0;  // ä¸­é—´å˜é‡
+        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_2, temp_storage_bytes_2, SubdividePreEdgeArray, markValidSubdivideEdge.Array().ptr(), SubdivideEdgeArray, SubdivideEdgeArraySize, 12 * fixedDepthNodeNum[Constants::maxDepth_Host], stream, false));	// ç¡®å®šä¸´æ—¶è®¾å¤‡å­˜å‚¨éœ€æ±‚
         CHECKCUDA(cudaMallocAsync(&d_temp_storage_2, temp_storage_bytes_2, stream));
-        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_2, temp_storage_bytes_2, SubdividePreEdgeArray, markValidSubdivideEdge.Array().ptr(), SubdivideEdgeArray, SubdivideEdgeArraySize, 12 * fixedDepthNodeNum[Constants::maxDepth_Host], stream, false));	// É¸Ñ¡	
+        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_2, temp_storage_bytes_2, SubdividePreEdgeArray, markValidSubdivideEdge.Array().ptr(), SubdivideEdgeArray, SubdivideEdgeArraySize, 12 * fixedDepthNodeNum[Constants::maxDepth_Host], stream, false));	// ç­›é€‰	
         CHECKCUDA(cudaMemcpyAsync(&SubdivideEdgeArraySizeHost, SubdivideEdgeArraySize, sizeof(int), cudaMemcpyDeviceToHost, stream));
 
-        CHECKCUDA(cudaFreeAsync(SubdividePreEdgeArray, stream));  // ¼´Ê±±äÁ¿£¬ÓÃÍê¼´É¾
+        CHECKCUDA(cudaFreeAsync(SubdividePreEdgeArray, stream));  // å³æ—¶å˜é‡ï¼Œç”¨å®Œå³åˆ 
         CHECKCUDA(cudaFreeAsync(SubdivideEdgeArraySize, stream));
         CHECKCUDA(cudaFreeAsync(d_temp_storage_2, stream));
 
-        CHECKCUDA(cudaStreamSynchronize(stream));       // Í¬²½Á÷£¬»ñµÃSubdivideEdgeArraySizeHost
+        CHECKCUDA(cudaStreamSynchronize(stream));       // åŒæ­¥æµï¼Œè·å¾—SubdivideEdgeArraySizeHost
 
-        if (SubdivideEdgeArraySizeHost == 0) {          // ¸Ã½ÚµãÃ»ÓĞ¿ÉÏ¸·ÖµÄ±ß¡¾ÇóÒşÊ½±íÃæ£¬¶¥µãºÍ±ßÈ±Ò»²»¿É¡¿
+        if (SubdivideEdgeArraySizeHost == 0) {          // è¯¥èŠ‚ç‚¹æ²¡æœ‰å¯ç»†åˆ†çš„è¾¹ã€æ±‚éšå¼è¡¨é¢ï¼Œé¡¶ç‚¹å’Œè¾¹ç¼ºä¸€ä¸å¯ã€‘
             CHECKCUDA(cudaFreeAsync(SubdivideVertexArray, stream));
             CHECKCUDA(cudaFreeAsync(SubdivideEdgeArray, stream));
             continue;
@@ -1624,7 +1624,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::CoarserSubdivideNodeAndRebuildM
         dim3 grid_6(divUp(SubdivideEdgeArraySizeHost, block_6.x));
         device::maintainSubdivideEdgeNodePointer << <grid_6, block_6, 0, stream >> > (CenterBuffer, SubdivideArrayCenterBuffer, SubdivideEdgeArraySizeHost, NodeArraySize, SubdivideArray, SubdivideEdgeArray);
 
-        /**************************************** ¼ÆËãÏ¸·Ö½ÚµãÒşÊ½º¯ÊıµÄÖµ, Éú³ÉÏ¸·Ö¶¥µãµÄvexNumsºÍvexAddress ****************************************/
+        /**************************************** è®¡ç®—ç»†åˆ†èŠ‚ç‚¹éšå¼å‡½æ•°çš„å€¼, ç”Ÿæˆç»†åˆ†é¡¶ç‚¹çš„vexNumså’ŒvexAddress ****************************************/
         float* SubdivideVvalue = NULL;
         CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&SubdivideVvalue), sizeof(float) * SubdivideVertexArraySizeHost, stream));
         CHECKCUDA(cudaMemsetAsync(SubdivideVvalue, 0, sizeof(float) * SubdivideVertexArraySizeHost, stream));
@@ -1650,7 +1650,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::CoarserSubdivideNodeAndRebuildM
         CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&SubdivideVexAddress), sizeof(int) * SubdivideEdgeArraySizeHost, stream));
         CHECKCUDA(cudaMemsetAsync(SubdivideVexAddress, 0, sizeof(int) * SubdivideEdgeArraySizeHost, stream));
 
-        void* tempVexAddressStorage = NULL;	//¡¾Ëã·¨ÁÙÊ±±äÁ¿£¬ÓÃÍê¼´ÊÍ·Å¡¿ÅÅËûÇ°×ººÍµÄÁÙÊ±±äÁ¿
+        void* tempVexAddressStorage = NULL;	//ã€ç®—æ³•ä¸´æ—¶å˜é‡ï¼Œç”¨å®Œå³é‡Šæ”¾ã€‘æ’ä»–å‰ç¼€å’Œçš„ä¸´æ—¶å˜é‡
         size_t tempVexAddressStorageBytes = 0;
         cub::DeviceScan::ExclusiveSum(tempVexAddressStorage, tempVexAddressStorageBytes, SubdivideVexNums, SubdivideVexAddress, SubdivideEdgeArraySizeHost, stream);
         CHECKCUDA(cudaMallocAsync(&tempVexAddressStorage, tempVexAddressStorageBytes, stream));
@@ -1664,7 +1664,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::CoarserSubdivideNodeAndRebuildM
         CHECKCUDA(cudaMemcpyAsync(&SubdivideLastVexNums, SubdivideVexNums + SubdivideEdgeArraySizeHost - 1, sizeof(int), cudaMemcpyDeviceToHost, stream));
 
 
-        CHECKCUDA(cudaStreamSynchronize(stream));   // Á÷Í¬²½
+        CHECKCUDA(cudaStreamSynchronize(stream));   // æµåŒæ­¥
 
         int SubdivideAllVexNums = SubdivideLastVexAddr + SubdivideLastVexNums;
         //printf("SubdivideAllVexNums = %d\n", SubdivideAllVexNums);
@@ -1679,7 +1679,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::CoarserSubdivideNodeAndRebuildM
             continue;
         }
 
-        /**************************************** ¼ÆËãÏ¸·Ö¶¥µãµÄÈı½ÇĞÎºÍÁ¢·½ÌåÀàĞÍ ****************************************/
+        /**************************************** è®¡ç®—ç»†åˆ†é¡¶ç‚¹çš„ä¸‰è§’å½¢å’Œç«‹æ–¹ä½“ç±»å‹ ****************************************/
 
         int* SubdivideTriNums = NULL;
         CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&SubdivideTriNums), sizeof(int) * fixedDepthNodeNum[Constants::maxDepth_Host], stream));
@@ -1697,7 +1697,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::CoarserSubdivideNodeAndRebuildM
         CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&SubdivideTriAddress), sizeof(int) * fixedDepthNodeNum[Constants::maxDepth_Host], stream));
         CHECKCUDA(cudaMemsetAsync(SubdivideTriAddress, 0, sizeof(int) * fixedDepthNodeNum[Constants::maxDepth_Host], stream));
 
-        void* tempTriAddressStorage = NULL;	//¡¾Ëã·¨ÁÙÊ±±äÁ¿£¬ÓÃÍê¼´ÊÍ·Å¡¿ÅÅËûÇ°×ººÍµÄÁÙÊ±±äÁ¿
+        void* tempTriAddressStorage = NULL;	//ã€ç®—æ³•ä¸´æ—¶å˜é‡ï¼Œç”¨å®Œå³é‡Šæ”¾ã€‘æ’ä»–å‰ç¼€å’Œçš„ä¸´æ—¶å˜é‡
         size_t tempTriAddressStorageBytes = 0;
         cub::DeviceScan::ExclusiveSum(tempTriAddressStorage, tempTriAddressStorageBytes, SubdivideTriNums, SubdivideTriAddress, fixedDepthNodeNum[Constants::maxDepth_Host], stream);
         CHECKCUDA(cudaMallocAsync(&tempTriAddressStorage, tempTriAddressStorageBytes, stream));
@@ -1713,29 +1713,29 @@ void SparseSurfelFusion::ComputeTriangleIndices::CoarserSubdivideNodeAndRebuildM
         EdgeNode* SubdivideValidEdgeArray = NULL;
         CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&SubdivideValidEdgeArray), sizeof(EdgeNode) * SubdivideAllVexNums, stream));
 
-        int* SubdivideValidEdgeArraySize = NULL;    // ÓĞĞ§µÄÏ¸·Ö±ßdevice
-        int SubdivideValidEdgeArraySizeHost = -1;   // ÓĞĞ§µÄÏ¸·Ö±ßHost
+        int* SubdivideValidEdgeArraySize = NULL;    // æœ‰æ•ˆçš„ç»†åˆ†è¾¹device
+        int SubdivideValidEdgeArraySizeHost = -1;   // æœ‰æ•ˆçš„ç»†åˆ†è¾¹Host
         CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&SubdivideValidEdgeArraySize), sizeof(int), stream));
 
-        void* d_temp_storage_3 = NULL;    // ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´¿ÉÊÍ·Å
-        size_t temp_storage_bytes_3 = 0;  // ÖĞ¼ä±äÁ¿
-        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_3, temp_storage_bytes_3, SubdivideEdgeArray, markValidSubdivedeVexNum.Array().ptr(), SubdivideValidEdgeArray, SubdivideValidEdgeArraySize, SubdivideEdgeArraySizeHost, stream, false));	// È·¶¨ÁÙÊ±Éè±¸´æ´¢ĞèÇó
+        void* d_temp_storage_3 = NULL;    // ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³å¯é‡Šæ”¾
+        size_t temp_storage_bytes_3 = 0;  // ä¸­é—´å˜é‡
+        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_3, temp_storage_bytes_3, SubdivideEdgeArray, markValidSubdivedeVexNum.Array().ptr(), SubdivideValidEdgeArray, SubdivideValidEdgeArraySize, SubdivideEdgeArraySizeHost, stream, false));	// ç¡®å®šä¸´æ—¶è®¾å¤‡å­˜å‚¨éœ€æ±‚
         CHECKCUDA(cudaMallocAsync(&d_temp_storage_3, temp_storage_bytes_3, stream));
-        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_3, temp_storage_bytes_3, SubdivideEdgeArray, markValidSubdivedeVexNum.Array().ptr(), SubdivideValidEdgeArray, SubdivideValidEdgeArraySize, SubdivideEdgeArraySizeHost, stream, false));	// É¸Ñ¡	
+        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_3, temp_storage_bytes_3, SubdivideEdgeArray, markValidSubdivedeVexNum.Array().ptr(), SubdivideValidEdgeArray, SubdivideValidEdgeArraySize, SubdivideEdgeArraySizeHost, stream, false));	// ç­›é€‰	
         CHECKCUDA(cudaMemcpyAsync(&SubdivideValidEdgeArraySizeHost, SubdivideValidEdgeArraySize, sizeof(int), cudaMemcpyDeviceToHost, stream));
 
-        int* SubdivideValidVexAddress = NULL;    // ÓĞĞ§µÄÏ¸·Ö±ßdevice
+        int* SubdivideValidVexAddress = NULL;    // æœ‰æ•ˆçš„ç»†åˆ†è¾¹device
         CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&SubdivideValidVexAddress), sizeof(int) * SubdivideAllVexNums, stream));
 
-        int* SubdivideValidVexAddressSize = NULL;    // ÓĞĞ§µÄÏ¸·Ö±ßdevice
-        int SubdivideValidVexAddressSizeHost = -1;   // ÓĞĞ§µÄÏ¸·Ö±ßHost
+        int* SubdivideValidVexAddressSize = NULL;    // æœ‰æ•ˆçš„ç»†åˆ†è¾¹device
+        int SubdivideValidVexAddressSizeHost = -1;   // æœ‰æ•ˆçš„ç»†åˆ†è¾¹Host
         CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&SubdivideValidVexAddressSize), sizeof(int), stream));
 
-        void* d_temp_storage_4 = NULL;    // ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´¿ÉÊÍ·Å
-        size_t temp_storage_bytes_4 = 0;  // ÖĞ¼ä±äÁ¿
-        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_4, temp_storage_bytes_4, SubdivideVexAddress, markValidSubdivedeVexNum.Array().ptr(), SubdivideValidVexAddress, SubdivideValidVexAddressSize, SubdivideEdgeArraySizeHost, stream, false));	// È·¶¨ÁÙÊ±Éè±¸´æ´¢ĞèÇó
+        void* d_temp_storage_4 = NULL;    // ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³å¯é‡Šæ”¾
+        size_t temp_storage_bytes_4 = 0;  // ä¸­é—´å˜é‡
+        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_4, temp_storage_bytes_4, SubdivideVexAddress, markValidSubdivedeVexNum.Array().ptr(), SubdivideValidVexAddress, SubdivideValidVexAddressSize, SubdivideEdgeArraySizeHost, stream, false));	// ç¡®å®šä¸´æ—¶è®¾å¤‡å­˜å‚¨éœ€æ±‚
         CHECKCUDA(cudaMallocAsync(&d_temp_storage_4, temp_storage_bytes_4, stream));
-        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_4, temp_storage_bytes_4, SubdivideVexAddress, markValidSubdivedeVexNum.Array().ptr(), SubdivideValidVexAddress, SubdivideValidVexAddressSize, SubdivideEdgeArraySizeHost, stream, false));	// É¸Ñ¡	
+        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_4, temp_storage_bytes_4, SubdivideVexAddress, markValidSubdivedeVexNum.Array().ptr(), SubdivideValidVexAddress, SubdivideValidVexAddressSize, SubdivideEdgeArraySizeHost, stream, false));	// ç­›é€‰	
         CHECKCUDA(cudaMemcpyAsync(&SubdivideValidVexAddressSizeHost, SubdivideValidVexAddressSize, sizeof(int), cudaMemcpyDeviceToHost, stream));
 
         dim3 block_10(128);
@@ -1755,7 +1755,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::CoarserSubdivideNodeAndRebuildM
         int SubdivideLastTriNums;
         CHECKCUDA(cudaMemcpyAsync(&SubdivideLastTriAddr, SubdivideTriAddress + fixedDepthNodeNum[Constants::maxDepth_Host] - 1, sizeof(int), cudaMemcpyDeviceToHost));
         CHECKCUDA(cudaMemcpyAsync(&SubdivideLastTriNums, SubdivideTriNums + fixedDepthNodeNum[Constants::maxDepth_Host] - 1, sizeof(int), cudaMemcpyDeviceToHost));
-        CHECKCUDA(cudaStreamSynchronize(stream));   // Á÷Í¬²½
+        CHECKCUDA(cudaStreamSynchronize(stream));   // æµåŒæ­¥
         int SubdivideAllTriNums = SubdivideLastTriAddr + SubdivideLastTriNums;
         //printf("depth = %d   SubdivideAllTriNums = %d\n", i, SubdivideAllTriNums);
 
@@ -1775,7 +1775,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::CoarserSubdivideNodeAndRebuildM
         insertTriangle(SubdivideVertexBuffer, SubdivideAllVexNums, SubdivideTriangleBuffer, SubdivideAllTriNums, stream);
         //CHECKCUDA(cudaMemcpyAsync(SubdivideTriangleBufferHost.data(), SubdivideTriangleBuffer, sizeof(int) * 3 * SubdivideAllTriNums, cudaMemcpyDeviceToHost, stream));
 
-        CHECKCUDA(cudaStreamSynchronize(stream));   // Á÷Í¬²½
+        CHECKCUDA(cudaStreamSynchronize(stream));   // æµåŒæ­¥
         
 
 
@@ -1812,7 +1812,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::FinerSubdivideNodeAndRebuildMes
         dim3 grid_1(divUp(finerSubdivideNum, block_1.x));
         device::initFixedDepthNums << <grid_1, block_1, 0, stream >> > (SubdivideNode.ArrayView(), SubdivideDepthBuffer.DeviceArrayReadOnly(), finerDepthStart, finerSubdivideNum, fixedDepthNums);
 
-        //CHECKCUDA(cudaStreamSynchronize(stream));   // Á÷Í¬²½
+        //CHECKCUDA(cudaStreamSynchronize(stream));   // æµåŒæ­¥
         //std::vector<int> fixedDepthNumsHost;
         //fixedDepthNumsHost.resize(finerSubdivideNum * Constants::maxDepth_Host);
         //CHECKCUDA(cudaMemcpyAsync(fixedDepthNumsHost.data(), fixedDepthNums, sizeof(int) * finerSubdivideNum * Constants::maxDepth_Host, cudaMemcpyDeviceToHost, stream));
@@ -1833,7 +1833,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::FinerSubdivideNodeAndRebuildMes
         CHECKCUDA(cudaMemcpyAsync(&rebuildNums, rebuildNumsDevice, sizeof(int), cudaMemcpyDeviceToHost, stream));
         CHECKCUDA(cudaFreeAsync(d_temp_storage, stream));
         CHECKCUDA(cudaFreeAsync(rebuildNumsDevice, stream));
-        //CHECKCUDA(cudaStreamSynchronize(stream));   // Á÷Í¬²½
+        //CHECKCUDA(cudaStreamSynchronize(stream));   // æµåŒæ­¥
         //printf("depth = %d   rebuildNums = %d\n", i, rebuildNums);
 
         for (int depth = 1; depth <= Constants::maxDepth_Host; depth++) {
@@ -1848,7 +1848,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::FinerSubdivideNodeAndRebuildMes
             CHECKCUDA(cudaFreeAsync(d_temp_storage_1, stream));
             CHECKCUDA(cudaFreeAsync(LevelNodeCount, stream));
         }
-        //CHECKCUDA(cudaStreamSynchronize(stream));   // Á÷Í¬²½
+        //CHECKCUDA(cudaStreamSynchronize(stream));   // æµåŒæ­¥
         //for (int depth = 0; depth <= Constants::maxDepth_Host; depth++) {
         //    printf("depth = %d   depthNodeCount[%d] = %d\n", i, depth, depthNodeCount[depth]);
         //}
@@ -1876,7 +1876,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::FinerSubdivideNodeAndRebuildMes
             CHECKCUDA(cudaFreeAsync(d_temp_storage, stream));
         }
 
-        //CHECKCUDA(cudaStreamSynchronize(stream));   // Á÷Í¬²½
+        //CHECKCUDA(cudaStreamSynchronize(stream));   // æµåŒæ­¥
         //std::vector<int> fixedDepthAddressTest;
         //fixedDepthAddressTest.resize(finerSubdivideNum * Constants::maxDepth_Host);
         //CHECKCUDA(cudaMemcpy(fixedDepthAddressTest.data(), fixedDepthAddress, sizeof(int) * finerSubdivideNum * Constants::maxDepth_Host, cudaMemcpyDeviceToHost));
@@ -1884,7 +1884,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::FinerSubdivideNodeAndRebuildMes
         //    if (j % 1000 == 0) printf("depth = %d   fixedDepthAddress[%d] = %d\n", i, j, fixedDepthAddressTest[j]);
         //}
 
-        CHECKCUDA(cudaStreamSynchronize(stream));   // Á÷Í¬²½£¬»ñµÃrebuildNums
+        CHECKCUDA(cudaStreamSynchronize(stream));   // æµåŒæ­¥ï¼Œè·å¾—rebuildNums
 
         const unsigned int rebuildDLevelCount = rebuildNums - depthNodeAddress[Constants::maxDepth_Host];
         //printf("Depth = %d  rebuildNums = %d  depthNodeCount[max] = %d\n", i, rebuildNums, depthNodeCount[Constants::maxDepth_Host]);
@@ -1955,19 +1955,19 @@ void SparseSurfelFusion::ComputeTriangleIndices::FinerSubdivideNodeAndRebuildMes
         int RebuildVertexArraySizeHost = -1;
         CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&RebuildVertexArraySize), sizeof(int), stream));
 
-        void* d_temp_storage_1 = NULL;    // ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´¿ÉÊÍ·Å
-        size_t temp_storage_bytes_1 = 0;  // ÖĞ¼ä±äÁ¿
-        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_1, temp_storage_bytes_1, RebuildPreVertexArray, markValidFinerVexArray.Array().ptr(), RebuildVertexArray, RebuildVertexArraySize, 8 * rebuildDLevelCount, stream, false));	// È·¶¨ÁÙÊ±Éè±¸´æ´¢ĞèÇó
+        void* d_temp_storage_1 = NULL;    // ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³å¯é‡Šæ”¾
+        size_t temp_storage_bytes_1 = 0;  // ä¸­é—´å˜é‡
+        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_1, temp_storage_bytes_1, RebuildPreVertexArray, markValidFinerVexArray.Array().ptr(), RebuildVertexArray, RebuildVertexArraySize, 8 * rebuildDLevelCount, stream, false));	// ç¡®å®šä¸´æ—¶è®¾å¤‡å­˜å‚¨éœ€æ±‚
         CHECKCUDA(cudaMallocAsync(&d_temp_storage_1, temp_storage_bytes_1, stream));
-        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_1, temp_storage_bytes_1, RebuildPreVertexArray, markValidFinerVexArray.Array().ptr(), RebuildVertexArray, RebuildVertexArraySize, 8 * rebuildDLevelCount, stream, false));	// É¸Ñ¡	
+        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_1, temp_storage_bytes_1, RebuildPreVertexArray, markValidFinerVexArray.Array().ptr(), RebuildVertexArray, RebuildVertexArraySize, 8 * rebuildDLevelCount, stream, false));	// ç­›é€‰	
         CHECKCUDA(cudaMemcpyAsync(&RebuildVertexArraySizeHost, RebuildVertexArraySize, sizeof(int), cudaMemcpyDeviceToHost, stream));
 
-        CHECKCUDA(cudaFreeAsync(RebuildPreVertexArray, stream));   // ÁÙÊ±±äÁ¿£¬¼´Ê±É¾³ı
-        CHECKCUDA(cudaFreeAsync(RebuildVertexArraySize, stream));  // ÁÙÊ±±äÁ¿£¬¼´Ê±É¾³ı
-        CHECKCUDA(cudaFreeAsync(d_temp_storage_1, stream));        // ÁÙÊ±±äÁ¿£¬¼´Ê±É¾³ı
+        CHECKCUDA(cudaFreeAsync(RebuildPreVertexArray, stream));   // ä¸´æ—¶å˜é‡ï¼Œå³æ—¶åˆ é™¤
+        CHECKCUDA(cudaFreeAsync(RebuildVertexArraySize, stream));  // ä¸´æ—¶å˜é‡ï¼Œå³æ—¶åˆ é™¤
+        CHECKCUDA(cudaFreeAsync(d_temp_storage_1, stream));        // ä¸´æ—¶å˜é‡ï¼Œå³æ—¶åˆ é™¤
 
-        CHECKCUDA(cudaStreamSynchronize(stream));                   // »ñµÃRebuildVertexArraySizeHost
-        if (RebuildVertexArraySizeHost == 0) {                      // Ï¸·Ö¶¥µãÎª0£¬ÔòÖ±½ÓÏÂÒ»²ã¡¾¼ÆËãÒşÊ½º¯ÊıÖµ£¬¶¥µãºÍ±ßÈ±Ò»²»¿É¡¿
+        CHECKCUDA(cudaStreamSynchronize(stream));                   // è·å¾—RebuildVertexArraySizeHost
+        if (RebuildVertexArraySizeHost == 0) {                      // ç»†åˆ†é¡¶ç‚¹ä¸º0ï¼Œåˆ™ç›´æ¥ä¸‹ä¸€å±‚ã€è®¡ç®—éšå¼å‡½æ•°å€¼ï¼Œé¡¶ç‚¹å’Œè¾¹ç¼ºä¸€ä¸å¯ã€‘
             CHECKCUDA(cudaFreeAsync(fixedDepthNums, stream));
             CHECKCUDA(cudaFreeAsync(depthNodeAddress_Device, stream));
             CHECKCUDA(cudaFreeAsync(fixedDepthAddress, stream));
@@ -2003,19 +2003,19 @@ void SparseSurfelFusion::ComputeTriangleIndices::FinerSubdivideNodeAndRebuildMes
         int RebuildEdgeArraySizeHost = -1;
         CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&RebuildEdgeArraySize), sizeof(int), stream));
 
-        void* d_temp_storage_2 = NULL;    // ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´¿ÉÊÍ·Å
-        size_t temp_storage_bytes_2 = 0;  // ÖĞ¼ä±äÁ¿
-        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_2, temp_storage_bytes_2, RebuildPreEdgeArray, markValidFinerEdge.Array().ptr(), RebuildEdgeArray, RebuildEdgeArraySize, 12 * rebuildDLevelCount, stream, false));	// È·¶¨ÁÙÊ±Éè±¸´æ´¢ĞèÇó
+        void* d_temp_storage_2 = NULL;    // ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³å¯é‡Šæ”¾
+        size_t temp_storage_bytes_2 = 0;  // ä¸­é—´å˜é‡
+        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_2, temp_storage_bytes_2, RebuildPreEdgeArray, markValidFinerEdge.Array().ptr(), RebuildEdgeArray, RebuildEdgeArraySize, 12 * rebuildDLevelCount, stream, false));	// ç¡®å®šä¸´æ—¶è®¾å¤‡å­˜å‚¨éœ€æ±‚
         CHECKCUDA(cudaMallocAsync(&d_temp_storage_2, temp_storage_bytes_2, stream));
-        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_2, temp_storage_bytes_2, RebuildPreEdgeArray, markValidFinerEdge.Array().ptr(), RebuildEdgeArray, RebuildEdgeArraySize, 12 * rebuildDLevelCount, stream, false));	// É¸Ñ¡	
+        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_2, temp_storage_bytes_2, RebuildPreEdgeArray, markValidFinerEdge.Array().ptr(), RebuildEdgeArray, RebuildEdgeArraySize, 12 * rebuildDLevelCount, stream, false));	// ç­›é€‰	
         CHECKCUDA(cudaMemcpyAsync(&RebuildEdgeArraySizeHost, RebuildEdgeArraySize, sizeof(int), cudaMemcpyDeviceToHost, stream));
 
-        CHECKCUDA(cudaFreeAsync(RebuildPreEdgeArray, stream));      // ÁÙÊ±±äÁ¿£¬¼´Ê±É¾³ı
-        CHECKCUDA(cudaFreeAsync(RebuildEdgeArraySize, stream));     // ÁÙÊ±±äÁ¿£¬¼´Ê±É¾³ı
-        CHECKCUDA(cudaFreeAsync(d_temp_storage_2, stream));         // ÁÙÊ±±äÁ¿£¬¼´Ê±É¾³ı
+        CHECKCUDA(cudaFreeAsync(RebuildPreEdgeArray, stream));      // ä¸´æ—¶å˜é‡ï¼Œå³æ—¶åˆ é™¤
+        CHECKCUDA(cudaFreeAsync(RebuildEdgeArraySize, stream));     // ä¸´æ—¶å˜é‡ï¼Œå³æ—¶åˆ é™¤
+        CHECKCUDA(cudaFreeAsync(d_temp_storage_2, stream));         // ä¸´æ—¶å˜é‡ï¼Œå³æ—¶åˆ é™¤
 
-        CHECKCUDA(cudaStreamSynchronize(stream));                   // ÕâÀïĞèÒªÍ¬²½£¬»ñµÃRebuildEdgeArraySizeHost
-        if (RebuildEdgeArraySizeHost == 0) {                        // Ï¸·Ö±ßÎª0£¬ÔòÖ±½ÓÏÂÒ»²ã¡¾¼ÆËãÒşÊ½º¯ÊıÖµ£¬¶¥µãºÍ±ßÈ±Ò»²»¿É¡¿
+        CHECKCUDA(cudaStreamSynchronize(stream));                   // è¿™é‡Œéœ€è¦åŒæ­¥ï¼Œè·å¾—RebuildEdgeArraySizeHost
+        if (RebuildEdgeArraySizeHost == 0) {                        // ç»†åˆ†è¾¹ä¸º0ï¼Œåˆ™ç›´æ¥ä¸‹ä¸€å±‚ã€è®¡ç®—éšå¼å‡½æ•°å€¼ï¼Œé¡¶ç‚¹å’Œè¾¹ç¼ºä¸€ä¸å¯ã€‘
             CHECKCUDA(cudaFreeAsync(fixedDepthNums, stream));
             CHECKCUDA(cudaFreeAsync(depthNodeAddress_Device, stream));
             CHECKCUDA(cudaFreeAsync(fixedDepthAddress, stream));
@@ -2064,14 +2064,14 @@ void SparseSurfelFusion::ComputeTriangleIndices::FinerSubdivideNodeAndRebuildMes
         cub::DeviceScan::ExclusiveSum(d_temp_storage_3, temp_storage_bytes_3, RebuildVexNums, RebuildVexAddress, RebuildEdgeArraySizeHost, stream);
         CHECKCUDA(cudaFreeAsync(d_temp_storage_3, stream));
 
-        CHECKCUDA(cudaStreamSynchronize(stream));   // ĞèÒªÍ¬²½
+        CHECKCUDA(cudaStreamSynchronize(stream));   // éœ€è¦åŒæ­¥
         int RebuildLastVexAddr = -1;
         int RebuildLastVexNums = -1;
         CHECKCUDA(cudaMemcpyAsync(&RebuildLastVexAddr, RebuildVexAddress + RebuildEdgeArraySizeHost - 1, sizeof(int), cudaMemcpyDeviceToHost, stream));
         CHECKCUDA(cudaMemcpyAsync(&RebuildLastVexNums, RebuildVexNums + RebuildEdgeArraySizeHost - 1, sizeof(int), cudaMemcpyDeviceToHost, stream));
         int RebuildAllVexNums = RebuildLastVexAddr + RebuildLastVexNums;
 
-        CHECKCUDA(cudaStreamSynchronize(stream));   // ĞèÒªÍ¬²½
+        CHECKCUDA(cudaStreamSynchronize(stream));   // éœ€è¦åŒæ­¥
         //printf("depth = %d   RebuildAllVexNums = %d\n", i, RebuildAllVexNums);
 
         int* RebuildTriNums = NULL;
@@ -2109,11 +2109,11 @@ void SparseSurfelFusion::ComputeTriangleIndices::FinerSubdivideNodeAndRebuildMes
         int RebuildValidEdgeArraySizeHost = -1;
         CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&RebuildValidEdgeArraySize), sizeof(int), stream));
 
-        void* d_temp_storage_5 = NULL;    // ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´¿ÉÊÍ·Å
-        size_t temp_storage_bytes_5 = 0;  // ÖĞ¼ä±äÁ¿
-        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_5, temp_storage_bytes_5, RebuildEdgeArray, markValidFinerVexNum.Array().ptr(), RebuildValidEdgeArray, RebuildValidEdgeArraySize, RebuildEdgeArraySizeHost, stream, false));	// È·¶¨ÁÙÊ±Éè±¸´æ´¢ĞèÇó
+        void* d_temp_storage_5 = NULL;    // ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³å¯é‡Šæ”¾
+        size_t temp_storage_bytes_5 = 0;  // ä¸­é—´å˜é‡
+        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_5, temp_storage_bytes_5, RebuildEdgeArray, markValidFinerVexNum.Array().ptr(), RebuildValidEdgeArray, RebuildValidEdgeArraySize, RebuildEdgeArraySizeHost, stream, false));	// ç¡®å®šä¸´æ—¶è®¾å¤‡å­˜å‚¨éœ€æ±‚
         CHECKCUDA(cudaMallocAsync(&d_temp_storage_5, temp_storage_bytes_5, stream));
-        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_5, temp_storage_bytes_5, RebuildEdgeArray, markValidFinerVexNum.Array().ptr(), RebuildValidEdgeArray, RebuildValidEdgeArraySize, RebuildEdgeArraySizeHost, stream, false));	// É¸Ñ¡	
+        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_5, temp_storage_bytes_5, RebuildEdgeArray, markValidFinerVexNum.Array().ptr(), RebuildValidEdgeArray, RebuildValidEdgeArraySize, RebuildEdgeArraySizeHost, stream, false));	// ç­›é€‰	
         CHECKCUDA(cudaMemcpyAsync(&RebuildValidEdgeArraySizeHost, RebuildValidEdgeArraySize, sizeof(int), cudaMemcpyDeviceToHost, stream));
 
         CHECKCUDA(cudaFreeAsync(d_temp_storage_5, stream));
@@ -2126,11 +2126,11 @@ void SparseSurfelFusion::ComputeTriangleIndices::FinerSubdivideNodeAndRebuildMes
         int RebuildValidVexAddressSizeHost = -1;
         CHECKCUDA(cudaMallocAsync(reinterpret_cast<void**>(&RebuildValidVexAddressSize), sizeof(int), stream));
 
-        void* d_temp_storage_6 = NULL;    // ÖĞ¼ä±äÁ¿£¬ÓÃÍê¼´¿ÉÊÍ·Å
-        size_t temp_storage_bytes_6 = 0;  // ÖĞ¼ä±äÁ¿
-        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_6, temp_storage_bytes_6, RebuildVexAddress, markValidFinerVexNum.Array().ptr(), RebuildValidVexAddress, RebuildValidVexAddressSize, RebuildEdgeArraySizeHost, stream, false));	// È·¶¨ÁÙÊ±Éè±¸´æ´¢ĞèÇó
+        void* d_temp_storage_6 = NULL;    // ä¸­é—´å˜é‡ï¼Œç”¨å®Œå³å¯é‡Šæ”¾
+        size_t temp_storage_bytes_6 = 0;  // ä¸­é—´å˜é‡
+        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_6, temp_storage_bytes_6, RebuildVexAddress, markValidFinerVexNum.Array().ptr(), RebuildValidVexAddress, RebuildValidVexAddressSize, RebuildEdgeArraySizeHost, stream, false));	// ç¡®å®šä¸´æ—¶è®¾å¤‡å­˜å‚¨éœ€æ±‚
         CHECKCUDA(cudaMallocAsync(&d_temp_storage_6, temp_storage_bytes_6, stream));
-        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_6, temp_storage_bytes_6, RebuildVexAddress, markValidFinerVexNum.Array().ptr(), RebuildValidVexAddress, RebuildValidVexAddressSize, RebuildEdgeArraySizeHost, stream, false));	// É¸Ñ¡	
+        CHECKCUDA(cub::DeviceSelect::Flagged(d_temp_storage_6, temp_storage_bytes_6, RebuildVexAddress, markValidFinerVexNum.Array().ptr(), RebuildValidVexAddress, RebuildValidVexAddressSize, RebuildEdgeArraySizeHost, stream, false));	// ç­›é€‰	
         CHECKCUDA(cudaMemcpyAsync(&RebuildValidVexAddressSizeHost, RebuildValidVexAddressSize, sizeof(int), cudaMemcpyDeviceToHost, stream));
 
         CHECKCUDA(cudaFreeAsync(d_temp_storage_6, stream));
@@ -2162,7 +2162,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::FinerSubdivideNodeAndRebuildMes
         //std::vector<int> RebuildTriangleBufferHost;
         //RebuildTriangleBufferHost.resize(RebuildAllTriNums * 3);
 
-        CHECKCUDA(cudaStreamSynchronize(stream));   // Á÷Í¬²½
+        CHECKCUDA(cudaStreamSynchronize(stream));   // æµåŒæ­¥
         //printf("###############################   Depth = %d   #################################\n", i);
         dim3 block_11(128);
         dim3 grid_11(divUp(rebuildDLevelCount, block_11.x));
@@ -2172,7 +2172,7 @@ void SparseSurfelFusion::ComputeTriangleIndices::FinerSubdivideNodeAndRebuildMes
         //CHECKCUDA(cudaMemcpyAsync(RebuildVertexBufferHost.data(), RebuildVertexBuffer, sizeof(Point3D<float>) * RebuildAllVexNums, cudaMemcpyDeviceToHost, stream));
         //CHECKCUDA(cudaMemcpyAsync(RebuildTriangleBufferHost.data(), RebuildTriangleBuffer, sizeof(int) * 3 * RebuildAllTriNums, cudaMemcpyDeviceToHost, stream));
 
-        //CHECKCUDA(cudaStreamSynchronize(stream));   // Á÷Í¬²½
+        //CHECKCUDA(cudaStreamSynchronize(stream));   // æµåŒæ­¥
 
         //insertTriangle(RebuildVertexBufferHost.data(), RebuildAllVexNums, RebuildTriangleBufferHost.data(), RebuildAllTriNums, mesh);
 

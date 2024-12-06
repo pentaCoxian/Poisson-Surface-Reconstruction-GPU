@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   ComputeVectorField.h
- * \brief  ¼ÆËãÏòÁ¿³¡
+ * \brief  è®¡ç®—å‘é‡åœº
  * 
  * \author LUOJIAXUAN
  * \date   May 15th 2024
@@ -25,7 +25,7 @@ namespace SparseSurfelFusion {
 		__device__ float FCenterWidthPoint(int idx, int i, int j, const ConfirmedPPolynomial<CONVTIMES, CONVTIMES + 2>& BaseFunctionMaxDepth_d, const Point3D<float>& center, const float& width, const Point3D<float>& point);
 
 		/**
-		 * \brief ¶ÔÇ°Ãæ¶Ô½Úµã½øĞĞx,y,z·Ö¶Î±àÂëµÄÄÚÈİ½øĞĞ½âÂë.
+		 * \brief å¯¹å‰é¢å¯¹èŠ‚ç‚¹è¿›è¡Œx,y,zåˆ†æ®µç¼–ç çš„å†…å®¹è¿›è¡Œè§£ç .
 		 */
 		__device__ void getFunctionIdxNode(const int& key, const int& maxDepth, int* idx);
 
@@ -43,82 +43,82 @@ namespace SparseSurfelFusion {
 		using Ptr = std::shared_ptr<ComputeVectorField>;
 
 		/**
-		 * \brief ¹¹½¨VectorField¡¾ÎŞ×èÈû¡¿.
+		 * \brief æ„å»ºVectorFieldã€æ— é˜»å¡ã€‘.
 		 * 
-		 * \param orientedPoints ³íÃÜÓĞÏòµã
-		 * \param NodeArray °Ë²æÊ÷½ÚµãÊı×é
-		 * \param NodeArrayCount Ã¿Ò»²ã½ÚµãµÄÊıÁ¿
-		 * \param BaseAddressArray Ã¿Ò»²ãÊ×½ÚµãµÄÆ«ÒÆ
-		 * \param stream cudaÁ÷
+		 * \param orientedPoints ç¨ å¯†æœ‰å‘ç‚¹
+		 * \param NodeArray å…«å‰æ ‘èŠ‚ç‚¹æ•°ç»„
+		 * \param NodeArrayCount æ¯ä¸€å±‚èŠ‚ç‚¹çš„æ•°é‡
+		 * \param BaseAddressArray æ¯ä¸€å±‚é¦–èŠ‚ç‚¹çš„åç§»
+		 * \param stream cudaæµ
 		 */
 		void BuildVectorField(DeviceArrayView<OrientedPoint3D<float>> orientedPoints, DeviceArrayView<OctNode> NodeArray, const int* NodeArrayCount, const int* BaseAddressArray, cudaStream_t stream);
 
 		/**
-		 * \brief »ñµÃÏòÁ¿³¡.
+		 * \brief è·å¾—å‘é‡åœº.
 		 * 
-		 * \return ÏòÁ¿³¡
+		 * \return å‘é‡åœº
 		 */
 		DeviceArrayView<Point3D<float>> GetVectorField() { return VectorField.ArrayView(); }
 			
 		/**
-		 * \brief »ñµÃµã»ı±í<F, F>.
+		 * \brief è·å¾—ç‚¹ç§¯è¡¨<F, F>.
 		 * 
-		 * \return µã»ı±í<F, F>.
+		 * \return ç‚¹ç§¯è¡¨<F, F>.
 		 */
 		DeviceArrayView<double> GetValueTable_Dot_F_F() { return dot_F_F.ArrayView(); }
 
 		/**
-		 * \brief »ñµÃÒ»½×µ¼Êıµã»ı±í<F, dF>.
+		 * \brief è·å¾—ä¸€é˜¶å¯¼æ•°ç‚¹ç§¯è¡¨<F, dF>.
 		 * 
-		 * \return Ò»½×µ¼Êıµã»ı±í<F, dF>.
+		 * \return ä¸€é˜¶å¯¼æ•°ç‚¹ç§¯è¡¨<F, dF>.
 		 */
 		DeviceArrayView<double> GetValueTable_Dot_F_dF() { return dot_F_DF.ArrayView(); }
 
 		/**
-		 * \brief »ñµÃ¶ş½×µ¼Êıµã»ı±í<F, d2F>.
+		 * \brief è·å¾—äºŒé˜¶å¯¼æ•°ç‚¹ç§¯è¡¨<F, d2F>.
 		 * 
-		 * \return ¶ş½×µ¼Êıµã»ı±í<F, d2F>
+		 * \return äºŒé˜¶å¯¼æ•°ç‚¹ç§¯è¡¨<F, d2F>
 		 */
 		DeviceArrayView<double> GetValueTable_Dot_F_d2F() { return dot_F_D2F.ArrayView(); }
 		/**
-		 * \brief »ñµÃ»ùº¯Êı.
+		 * \brief è·å¾—åŸºå‡½æ•°.
 		 * 
-		 * \return »ùº¯Êı
+		 * \return åŸºå‡½æ•°
 		 */
 		DeviceArrayView<ConfirmedPPolynomial<CONVTIMES + 1, CONVTIMES + 2>> GetBaseFunction() { return baseFunctions_Device.ArrayView(); }
 	private:
 
 		const int normalize = NORMALIZE;
 
-		PPolynomial<CONVTIMES> ReconstructionFunction;		// Ô¤ÏÈ¼ÆËãÖØ½¨»ùº¯Êı
+		PPolynomial<CONVTIMES> ReconstructionFunction;		// é¢„å…ˆè®¡ç®—é‡å»ºåŸºå‡½æ•°
 
 		void AllocateBuffer();
 
 		/**
-		 * \brief Ô¤ÏÈ¼ÆËã¹¹½¨µã»ı±í.
+		 * \brief é¢„å…ˆè®¡ç®—æ„å»ºç‚¹ç§¯è¡¨.
 		 * 
-		 * \param stream cudaÁ÷
+		 * \param stream cudaæµ
 		 */
 		void BuildInnerProductTable(cudaStream_t stream);
 
 
-		DeviceBufferArray<double> dot_F_F; 	   // »ùº¯ÊıµÄµã»ı±í
-		DeviceBufferArray<double> dot_F_DF;	   // »ùº¯ÊıÒ»½×µ¼ÊıµÄµã»ı±í
-		DeviceBufferArray<double> dot_F_D2F;   // »ùº¯Êı¶ş½×µ¼ÊıµÄµã»ı±í
-		DeviceBufferArray<ConfirmedPPolynomial<CONVTIMES + 1, CONVTIMES + 2>> baseFunctions_Device;		// »ùº¯Êı¿½±´µ½GPU
-		DeviceBufferArray<ConfirmedPPolynomial<CONVTIMES, CONVTIMES + 2>> BaseFunctionMaxDepth_Device;	// ×î´ó²ãµÄ»ùº¯Êı¡¾»ùº¯ÊıÃ¿Ò»²ã[0, maxDepth]¶¼·ÅËõ£¬Ã¿Ò»²ãµÄ½Úµã¶¼ÓĞÓëÖ®Æ¥ÅäµÄ»ùº¯ÊıÆ¥Åä¡¿
-		DeviceBufferArray<Point3D<float>> VectorField;	// ÏòÁ¿Á÷(ÓĞ1¡ëµÄÎó²î)
+		DeviceBufferArray<double> dot_F_F; 	   // åŸºå‡½æ•°çš„ç‚¹ç§¯è¡¨
+		DeviceBufferArray<double> dot_F_DF;	   // åŸºå‡½æ•°ä¸€é˜¶å¯¼æ•°çš„ç‚¹ç§¯è¡¨
+		DeviceBufferArray<double> dot_F_D2F;   // åŸºå‡½æ•°äºŒé˜¶å¯¼æ•°çš„ç‚¹ç§¯è¡¨
+		DeviceBufferArray<ConfirmedPPolynomial<CONVTIMES + 1, CONVTIMES + 2>> baseFunctions_Device;		// åŸºå‡½æ•°æ‹·è´åˆ°GPU
+		DeviceBufferArray<ConfirmedPPolynomial<CONVTIMES, CONVTIMES + 2>> BaseFunctionMaxDepth_Device;	// æœ€å¤§å±‚çš„åŸºå‡½æ•°ã€åŸºå‡½æ•°æ¯ä¸€å±‚[0, maxDepth]éƒ½æ”¾ç¼©ï¼Œæ¯ä¸€å±‚çš„èŠ‚ç‚¹éƒ½æœ‰ä¸ä¹‹åŒ¹é…çš„åŸºå‡½æ•°åŒ¹é…ã€‘
+		DeviceBufferArray<Point3D<float>> VectorField;	// å‘é‡æµ(æœ‰1â€°çš„è¯¯å·®)
 
 		/**
-		 * \brief ¼ÆËãVectorField.
+		 * \brief è®¡ç®—VectorField.
 		 *
-		 * \param BaseFunctionMaxDepth_Device ×î´ó²ãµÄ»ùº¯Êı
-		 * \param DenseOrientedPoints ³íÃÜÓĞÏòµã
-		 * \param NodeArray °Ë²æÊ÷½ÚµãÊı×é
-		 * \param DLevelOffset D²ãÊ×½ÚµãÔÚNodeArrayÖĞµÄÆ«ÒÆ
-		 * \param DLevelNodeNum D²ã½ÚµãÊıÁ¿
-		 * \param VectorField ÏòÁ¿³¡
-		 * \param stream cudaÁ÷
+		 * \param BaseFunctionMaxDepth_Device æœ€å¤§å±‚çš„åŸºå‡½æ•°
+		 * \param DenseOrientedPoints ç¨ å¯†æœ‰å‘ç‚¹
+		 * \param NodeArray å…«å‰æ ‘èŠ‚ç‚¹æ•°ç»„
+		 * \param DLevelOffset Då±‚é¦–èŠ‚ç‚¹åœ¨NodeArrayä¸­çš„åç§»
+		 * \param DLevelNodeNum Då±‚èŠ‚ç‚¹æ•°é‡
+		 * \param VectorField å‘é‡åœº
+		 * \param stream cudaæµ
 		 */
 		void CalculateVectorField(ConfirmedPPolynomial<CONVTIMES, CONVTIMES + 2>* BaseFunctionMaxDepth_Device, DeviceArrayView<OrientedPoint3D<float>> DenseOrientedPoints, DeviceArrayView<OctNode> NodeArray, const unsigned int DLevelOffset, const unsigned int DLevelNodeNum, DeviceBufferArray<Point3D<float>>& VectorField, cudaStream_t stream);
 	};

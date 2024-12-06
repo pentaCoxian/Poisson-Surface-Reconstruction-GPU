@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   CommonUtils.h
- * \brief  Ö÷ÒªÊÇ¼ÇÂ¼Ò»Ğ©³£ÓÃº¯Êı£¬ÎÆÀíÄÚ´æ·ÖÅä£¬¿ª±ÙµÈ
+ * \brief  ä¸»è¦æ˜¯è®°å½•ä¸€äº›å¸¸ç”¨å‡½æ•°ï¼Œçº¹ç†å†…å­˜åˆ†é…ï¼Œå¼€è¾Ÿç­‰
  * 
  * \author LUO
  * \date   January 9th 2024
@@ -15,24 +15,24 @@
 #include <cuda.h>
 
 
- //  ´ËÀàĞÍ²»ÄÜÒşÊ½¿½±´/¸³Öµ
+ //  æ­¤ç±»å‹ä¸èƒ½éšå¼æ‹·è´/èµ‹å€¼
 #define NO_COPY_ASSIGN(TypeName)                        \
     TypeName(const TypeName&) = delete;                 \
     TypeName& operator=(const TypeName&) = delete
 
-// ´ËÀàĞÍ²»¿ÉÒÔÒşÊ½¿½±´/¸³Öµ/ÒÆ¶¯
+// æ­¤ç±»å‹ä¸å¯ä»¥éšå¼æ‹·è´/èµ‹å€¼/ç§»åŠ¨
 #define NO_COPY_ASSIGN_MOVE(TypeName)                   \
     TypeName(const TypeName&) = delete;                 \
     TypeName& operator=(const TypeName&) = delete;      \
     TypeName(TypeName&&) = delete;                      \
     TypeName& operator=(TypeName&&) = delete
 
-// ´ËÀàÄ¬ÈÏÒÆ¶¯
+// æ­¤ç±»é»˜è®¤ç§»åŠ¨
 #define DEFAULT_MOVE(TypeName)                          \
 	TypeName(TypeName&&) noexcept = default;            \
 	TypeName& operator=(TypeName&&) noexcept = default
 
-// ´ËÀàĞÍ¹¹ÔìºÍÎö¹¹º¯Êı¾ùÎªÄ¬ÈÏ
+// æ­¤ç±»å‹æ„é€ å’Œææ„å‡½æ•°å‡ä¸ºé»˜è®¤
 #define DEFAULT_CONSTRUCT_DESTRUCT(TypeName)            \
     TypeName() = default;                               \
     ~TypeName() = default
@@ -40,12 +40,12 @@
 namespace SparseSurfelFusion {
 	
     /**
-     * \brief ½«a£¬b½»»»£¬Í¨ÓÃÄ£°åº¯Êı
-     * \param a ½»»»²ÎÊıa
-     * \param b ½»»»²ÎÊıb
+     * \brief å°†aï¼Œbäº¤æ¢ï¼Œé€šç”¨æ¨¡æ¿å‡½æ•°
+     * \param a äº¤æ¢å‚æ•°a
+     * \param b äº¤æ¢å‚æ•°b
      * \return 
      */
-    template <typename T> // __forceinline__ÔÚ±àÒëµÄÊ±ºò¾Í°Ñº¯Êı·Åµ½¶ÔÓ¦µ÷ÓÃµÄÎ»ÖÃ£¬¼ÓËÙÁËËã·¨¹ı³Ì£¬Ôö¼ÓÁË±àÒëÎÄ¼şµÄ´óĞ¡
+    template <typename T> // __forceinline__åœ¨ç¼–è¯‘çš„æ—¶å€™å°±æŠŠå‡½æ•°æ”¾åˆ°å¯¹åº”è°ƒç”¨çš„ä½ç½®ï¼ŒåŠ é€Ÿäº†ç®—æ³•è¿‡ç¨‹ï¼Œå¢åŠ äº†ç¼–è¯‘æ–‡ä»¶çš„å¤§å°
     __host__ __device__ __forceinline__ void swap(T& a, T& b) noexcept
     {
         T c(a); a = b; b = c;
@@ -53,8 +53,8 @@ namespace SparseSurfelFusion {
 
 
     /**
-     * \brief ÄÚ²ÎµÄµ¹Êı
-     * \param intrinsic Ïà»úµÄÄÚ²Î¾ØÕó
+     * \brief å†…å‚çš„å€’æ•°
+     * \param intrinsic ç›¸æœºçš„å†…å‚çŸ©é˜µ
      * \return 
      */
     __host__ __forceinline__ IntrinsicInverse inverse(const Intrinsic& intrinsic) {
@@ -68,162 +68,162 @@ namespace SparseSurfelFusion {
 
 
     /**
-     * \brief ³õÊ¼»¯cuda²Ù×÷µÄÉÏÏÂÎÄºÍÇı¶¯³ÌĞòµÄAPI
-     * \param selected_device Ñ¡ÔñÊ¹ÓÃµÄGPUµÄID.
+     * \brief åˆå§‹åŒ–cudaæ“ä½œçš„ä¸Šä¸‹æ–‡å’Œé©±åŠ¨ç¨‹åºçš„API
+     * \param selected_device é€‰æ‹©ä½¿ç”¨çš„GPUçš„ID.
      */
     CUcontext initCudaContext(int selected_device = 0);
 
 
 
     /**
-     * \brief ÔÚ³ÌĞò½áÊøÊ±Çå³ıcudaÉÏÏÂÎÄ
-     * \param context cudaÉÏÏÂÎÄ
+     * \brief åœ¨ç¨‹åºç»“æŸæ—¶æ¸…é™¤cudaä¸Šä¸‹æ–‡
+     * \param context cudaä¸Šä¸‹æ–‡
      */
     void destroyCudaContext(CUcontext context);
 
-/*************************************** ÎªGPU·ÖÅä1Î¬£¬2Î¬ÎÆÀíÄÚ´æ ***************************************/
+/*************************************** ä¸ºGPUåˆ†é…1ç»´ï¼Œ2ç»´çº¹ç†å†…å­˜ ***************************************/
 
 
     /**
-     * \brief ´´½¨Ä¬ÈÏµÄ2DÎÆÀíÃèÊö×Ó£¬ÓÃÀ´Ö¸Ã÷cudaArray_tÓ¦¸ÃÊÇ¶àÉÙÍ¨µÀ£¬ÉùÃ÷Êı¾İÀàĞÍµÄÎÆÀíÊı¾İ.
+     * \brief åˆ›å»ºé»˜è®¤çš„2Dçº¹ç†æè¿°å­ï¼Œç”¨æ¥æŒ‡æ˜cudaArray_tåº”è¯¥æ˜¯å¤šå°‘é€šé“ï¼Œå£°æ˜æ•°æ®ç±»å‹çš„çº¹ç†æ•°æ®.
      *
-     * \param descriptor cudaÎÆÀíÃèÊö×Ó.
+     * \param descriptor cudaçº¹ç†æè¿°å­.
      */
     void createDefault2DTextureDescriptor(cudaTextureDesc& descriptor);
 
     /**
-     * \brief ´´½¨Ä¬ÈÏµÄ2D×ÊÔ´ÃèÊö×Ó£¬ÓÃÀ´Ö¸Ã÷cudaArray_tÓ¦¸ÃÊÇ¶àÉÙÍ¨µÀ£¬ÉùÃ÷Êı¾İÀàĞÍµÄÎÆÀíÊı¾İ.
+     * \brief åˆ›å»ºé»˜è®¤çš„2Dèµ„æºæè¿°å­ï¼Œç”¨æ¥æŒ‡æ˜cudaArray_tåº”è¯¥æ˜¯å¤šå°‘é€šé“ï¼Œå£°æ˜æ•°æ®ç±»å‹çš„çº¹ç†æ•°æ®.
      *
-     * \param descriptor cuda×ÊÔ´ÃèÊö×Ó
-     * \param cudaArray ´«ÈëµÄ×ÊÔ´Êı¾İ
+     * \param descriptor cudaèµ„æºæè¿°å­
+     * \param cudaArray ä¼ å…¥çš„èµ„æºæ•°æ®
      */
     void createDefault2DResourceDescriptor(cudaResourceDesc& descriptor, cudaArray_t& cudaArray);
 
     /**
-     * \brief ´´½¨·ÖÅäÉî¶ÈÎÆÀíÄÚ´æ£¬Êı¾İÀàĞÍÎªuint16(16Î»ÎŞ·ûºÅÕûĞÍ).
+     * \brief åˆ›å»ºåˆ†é…æ·±åº¦çº¹ç†å†…å­˜ï¼Œæ•°æ®ç±»å‹ä¸ºuint16(16ä½æ— ç¬¦å·æ•´å‹).
      *
-     * \param rows Í¼ÏñµÄ¸ß
-     * \param cols Í¼ÏñµÄ¿í
-     * \param texture ĞèÒª·ÖÅä´´½¨µÄÍ¼ÏñÎÆÀí(ÊäÈëcudaTextureObject_tÀàĞÍ)
-     * \param cudaArray ĞèÒª´«ÈëµÄÉî¶ÈÎÆÀíÊı¾İ(ÊäÈëcudaArray_tÀàĞÍ)
+     * \param rows å›¾åƒçš„é«˜
+     * \param cols å›¾åƒçš„å®½
+     * \param texture éœ€è¦åˆ†é…åˆ›å»ºçš„å›¾åƒçº¹ç†(è¾“å…¥cudaTextureObject_tç±»å‹)
+     * \param cudaArray éœ€è¦ä¼ å…¥çš„æ·±åº¦çº¹ç†æ•°æ®(è¾“å…¥cudaArray_tç±»å‹)
      */
     void createDepthTexture(const unsigned int rows, const unsigned int cols, cudaTextureObject_t& texture, cudaArray_t& cudaArray);
     
     /**
-      * \brief ´´½¨·ÖÅäÉî¶ÈÎÆÀí¼°±íÃæÄÚ´æ£¬Êı¾İÀàĞÍÎªuint16(16Î»ÎŞ·ûºÅÕûĞÍ).
+      * \brief åˆ›å»ºåˆ†é…æ·±åº¦çº¹ç†åŠè¡¨é¢å†…å­˜ï¼Œæ•°æ®ç±»å‹ä¸ºuint16(16ä½æ— ç¬¦å·æ•´å‹).
       *
-      * \param rows Í¼ÏñµÄ¸ß
-      * \param cols Í¼ÏñµÄ¿í
-      * \param texture ĞèÒª·ÖÅä´´½¨µÄÍ¼ÏñÎÆÀí(ÊäÈëcudaTextureObject_tÀàĞÍ)
-      * \param surface ĞèÒª·ÖÅä´´½¨µÄÍ¼Ïñ±íÃæ(ÊäÈëcudaSurfaceObject_tÀàĞÍ)
-      * \param cudaArray ĞèÒª´«ÈëµÄÉî¶ÈÎÆÀí(±íÃæ)Êı¾İ(ÊäÈëcudaArray_tÀàĞÍ)
+      * \param rows å›¾åƒçš„é«˜
+      * \param cols å›¾åƒçš„å®½
+      * \param texture éœ€è¦åˆ†é…åˆ›å»ºçš„å›¾åƒçº¹ç†(è¾“å…¥cudaTextureObject_tç±»å‹)
+      * \param surface éœ€è¦åˆ†é…åˆ›å»ºçš„å›¾åƒè¡¨é¢(è¾“å…¥cudaSurfaceObject_tç±»å‹)
+      * \param cudaArray éœ€è¦ä¼ å…¥çš„æ·±åº¦çº¹ç†(è¡¨é¢)æ•°æ®(è¾“å…¥cudaArray_tç±»å‹)
       */
     void createDepthTextureSurface(const unsigned int rows, const unsigned int cols, cudaTextureObject_t& texture, cudaSurfaceObject_t& surface, cudaArray_t& cudaArray);
     
     /**
-     * \brief ´´½¨·ÖÅäÉî¶ÈÎÆÀí¼°±íÃæÄÚ´æ£¬Êı¾İÀàĞÍÎªuint16(16Î»ÎŞ·ûºÅÕûĞÍ).
+     * \brief åˆ›å»ºåˆ†é…æ·±åº¦çº¹ç†åŠè¡¨é¢å†…å­˜ï¼Œæ•°æ®ç±»å‹ä¸ºuint16(16ä½æ— ç¬¦å·æ•´å‹).
      *
-     * \param rows Í¼ÏñµÄ¸ß
-     * \param cols Í¼ÏñµÄ¿í
-     * \param collect ĞèÒª´«ÈëµÄÎÆÀí¼°±íÃæÊı¾İ(ÊäÈëCudaTextureSurfaceÀàĞÍ)
+     * \param rows å›¾åƒçš„é«˜
+     * \param cols å›¾åƒçš„å®½
+     * \param collect éœ€è¦ä¼ å…¥çš„çº¹ç†åŠè¡¨é¢æ•°æ®(è¾“å…¥CudaTextureSurfaceç±»å‹)
      */
     void createDepthTextureSurface(const unsigned int rows, const unsigned int cols, CudaTextureSurface& collect);
 
 
 
     /**
-     * \brief ´´½¨·ÖÅä2Î¬Float1ÀàĞÍµÄÎÆÀí¼°±íÃæÄÚ´æ(ÎªÆ½¾ù³¡ÍÆÀí´´½¨2D float1ÎÆÀí(ºÍ±íÃæ)).
+     * \brief åˆ›å»ºåˆ†é…2ç»´Float1ç±»å‹çš„çº¹ç†åŠè¡¨é¢å†…å­˜(ä¸ºå¹³å‡åœºæ¨ç†åˆ›å»º2D float1çº¹ç†(å’Œè¡¨é¢)).
      *
-     * \param rows Í¼ÏñµÄ¸ß
-     * \param cols Í¼ÏñµÄ¿í
-     * \param texture ĞèÒª·ÖÅäµÄÎÆÀíÄÚ´æ(ÒÔcudaTextureObject_tĞÎÊ½ÊäÈë)
-     * \param surface ĞèÒª·ÖÅäµÄ±íÃæÄÚ´æ(ÒÔcudaSurfaceObject_tĞÎÊ½ÊäÈë)
-     * \param cudaArray Êı¾İµÄµØÖ·
+     * \param rows å›¾åƒçš„é«˜
+     * \param cols å›¾åƒçš„å®½
+     * \param texture éœ€è¦åˆ†é…çš„çº¹ç†å†…å­˜(ä»¥cudaTextureObject_tå½¢å¼è¾“å…¥)
+     * \param surface éœ€è¦åˆ†é…çš„è¡¨é¢å†…å­˜(ä»¥cudaSurfaceObject_tå½¢å¼è¾“å…¥)
+     * \param cudaArray æ•°æ®çš„åœ°å€
      */
     void createFloat1TextureSurface(const unsigned int rows, const unsigned int cols, cudaTextureObject_t& texture, cudaSurfaceObject_t& surface, cudaArray_t& cudaArray);
 
     /**
-     * \brief ´´½¨·ÖÅä2Î¬Float1ÀàĞÍµÄÎÆÀí¼°±íÃæÄÚ´æ(ÎªÆ½¾ù³¡ÍÆÀí´´½¨2D float1ÎÆÀí(ºÍ±íÃæ)).
+     * \brief åˆ›å»ºåˆ†é…2ç»´Float1ç±»å‹çš„çº¹ç†åŠè¡¨é¢å†…å­˜(ä¸ºå¹³å‡åœºæ¨ç†åˆ›å»º2D float1çº¹ç†(å’Œè¡¨é¢)).
      *
-     * \param rows Í¼ÏñµÄ¸ß
-     * \param cols Í¼ÏñµÄ¿í
-     * \param textureCollect ĞèÒª·ÖÅäµÄÎÆÀí¼°±íÃæÊı¾İµØÖ·(ÒÔCudaTextureSurfaceĞÎÊ½ÊäÈë)
+     * \param rows å›¾åƒçš„é«˜
+     * \param cols å›¾åƒçš„å®½
+     * \param textureCollect éœ€è¦åˆ†é…çš„çº¹ç†åŠè¡¨é¢æ•°æ®åœ°å€(ä»¥CudaTextureSurfaceå½¢å¼è¾“å…¥)
      */
     void createFloat1TextureSurface(const unsigned int rows, const unsigned int cols, CudaTextureSurface& textureCollect);
 
     /**
-     * \brief ´´½¨·ÖÅä2Î¬Float2ÀàĞÍµÄÎÆÀí¼°±íÃæÄÚ´æ(ÎªÌİ¶ÈÍ¼´´½¨2D float2ÎÆÀí(ºÍ±íÃæ)).
+     * \brief åˆ›å»ºåˆ†é…2ç»´Float2ç±»å‹çš„çº¹ç†åŠè¡¨é¢å†…å­˜(ä¸ºæ¢¯åº¦å›¾åˆ›å»º2D float2çº¹ç†(å’Œè¡¨é¢)).
      *
-     * \param rows Í¼ÏñµÄ¸ß
-     * \param cols Í¼ÏñµÄ¿í
-     * \param texture ĞèÒª·ÖÅäµÄÎÆÀíÄÚ´æ(ÒÔcudaTextureObject_tĞÎÊ½ÊäÈë)
-     * \param surface ĞèÒª·ÖÅäµÄ±íÃæÄÚ´æ(ÒÔcudaSurfaceObject_tĞÎÊ½ÊäÈë)
-     * \param cudaArray Êı¾İµÄµØÖ·
+     * \param rows å›¾åƒçš„é«˜
+     * \param cols å›¾åƒçš„å®½
+     * \param texture éœ€è¦åˆ†é…çš„çº¹ç†å†…å­˜(ä»¥cudaTextureObject_tå½¢å¼è¾“å…¥)
+     * \param surface éœ€è¦åˆ†é…çš„è¡¨é¢å†…å­˜(ä»¥cudaSurfaceObject_tå½¢å¼è¾“å…¥)
+     * \param cudaArray æ•°æ®çš„åœ°å€
      */
     void createFloat2TextureSurface(const unsigned int rows, const unsigned int cols, cudaTextureObject_t& texture, cudaSurfaceObject_t& surface, cudaArray_t& cudaArray);
 
     /**
-     * \brief ´´½¨·ÖÅä2Î¬Float2ÀàĞÍµÄÎÆÀí¼°±íÃæÄÚ´æ(ÎªÌİ¶ÈÍ¼´´½¨2D float2ÎÆÀí(ºÍ±íÃæ)).
+     * \brief åˆ›å»ºåˆ†é…2ç»´Float2ç±»å‹çš„çº¹ç†åŠè¡¨é¢å†…å­˜(ä¸ºæ¢¯åº¦å›¾åˆ›å»º2D float2çº¹ç†(å’Œè¡¨é¢)).
      *
-     * \param rows Í¼ÏñµÄ¸ß
-     * \param cols Í¼ÏñµÄ¿í
-     * \param textureCollect ĞèÒª·ÖÅäµÄÎÆÀí¼°±íÃæÊı¾İµØÖ·(ÒÔCudaTextureSurfaceĞÎÊ½ÊäÈë)
+     * \param rows å›¾åƒçš„é«˜
+     * \param cols å›¾åƒçš„å®½
+     * \param textureCollect éœ€è¦åˆ†é…çš„çº¹ç†åŠè¡¨é¢æ•°æ®åœ°å€(ä»¥CudaTextureSurfaceå½¢å¼è¾“å…¥)
      */
     void createFloat2TextureSurface(const unsigned int rows, const unsigned int cols, CudaTextureSurface& textureCollect);
 
     /**
-     * \brief ´´½¨·ÖÅä2Î¬UChar1ÀàĞÍµÄÎÆÀí¼°±íÃæÊı¾İ(Îª¶ş½øÖÆMaskÍ¼Ïñ´´½¨2D uchar1ÎÆÀí(ºÍ±íÃæ)).
+     * \brief åˆ›å»ºåˆ†é…2ç»´UChar1ç±»å‹çš„çº¹ç†åŠè¡¨é¢æ•°æ®(ä¸ºäºŒè¿›åˆ¶Maskå›¾åƒåˆ›å»º2D uchar1çº¹ç†(å’Œè¡¨é¢)).
      *
-     * \param rows Í¼ÏñµÄ¸ß
-     * \param cols Í¼ÏñµÄ¿í
-     * \param texture ĞèÒª·ÖÅäµÄÎÆÀíÄÚ´æ(ÒÔcudaTextureObject_tĞÎÊ½ÊäÈë)
-     * \param surface ĞèÒª·ÖÅäµÄ±íÃæÄÚ´æ(ÒÔcudaSurfaceObject_tĞÎÊ½ÊäÈë)
-     * \param cudaArray Êı¾İµÄµØÖ·
+     * \param rows å›¾åƒçš„é«˜
+     * \param cols å›¾åƒçš„å®½
+     * \param texture éœ€è¦åˆ†é…çš„çº¹ç†å†…å­˜(ä»¥cudaTextureObject_tå½¢å¼è¾“å…¥)
+     * \param surface éœ€è¦åˆ†é…çš„è¡¨é¢å†…å­˜(ä»¥cudaSurfaceObject_tå½¢å¼è¾“å…¥)
+     * \param cudaArray æ•°æ®çš„åœ°å€
      */
     void createUChar1TextureSurface(const unsigned rows, const unsigned cols, cudaTextureObject_t& texture, cudaSurfaceObject_t& surface, cudaArray_t& cudaArray);
 
     /**
-     * \brief ´´½¨·ÖÅä2Î¬UChar1ÀàĞÍµÄÎÆÀí¼°±íÃæÊı¾İ(Îª¶ş½øÖÆMaskÍ¼Ïñ´´½¨2D uchar1ÎÆÀí(ºÍ±íÃæ)).
+     * \brief åˆ›å»ºåˆ†é…2ç»´UChar1ç±»å‹çš„çº¹ç†åŠè¡¨é¢æ•°æ®(ä¸ºäºŒè¿›åˆ¶Maskå›¾åƒåˆ›å»º2D uchar1çº¹ç†(å’Œè¡¨é¢)).
      *
-     * \param rows Í¼ÏñµÄ¸ß
-     * \param cols Í¼ÏñµÄ¿í
-     * \param textureCollect ĞèÒª·ÖÅäµÄÎÆÀí¼°±íÃæÊı¾İµØÖ·(ÒÔCudaTextureSurfaceĞÎÊ½ÊäÈë)
+     * \param rows å›¾åƒçš„é«˜
+     * \param cols å›¾åƒçš„å®½
+     * \param textureCollect éœ€è¦åˆ†é…çš„çº¹ç†åŠè¡¨é¢æ•°æ®åœ°å€(ä»¥CudaTextureSurfaceå½¢å¼è¾“å…¥)
      */
     void createUChar1TextureSurface(const unsigned rows, const unsigned cols, CudaTextureSurface& textureCollect);
 
     /**
-     * \brief ·ÖÅä¶şÎ¬Í¼ÏñµÄfloat4ÀàĞÍÎÆÀícudaTextureObject_tºÍ±íÃæcudaSurfaceObject_tÄÚ´æ.
+     * \brief åˆ†é…äºŒç»´å›¾åƒçš„float4ç±»å‹çº¹ç†cudaTextureObject_tå’Œè¡¨é¢cudaSurfaceObject_tå†…å­˜.
      *
-     * \param rows Í¼ÏñµÄ¸ß
-     * \param cols Í¼ÏñµÄ¿í
-     * \param texture ĞèÒª¿ª±ÙµÄÎÆÀíÄÚ´æ
-     * \param surface ĞèÒª¿ª±ÙµÄ±íÃæÄÚ´æ
-     * \param cudaArray ´æÈëµÄÊı¾İÎÆÀí(±íÃæ)Êı¾İ
+     * \param rows å›¾åƒçš„é«˜
+     * \param cols å›¾åƒçš„å®½
+     * \param texture éœ€è¦å¼€è¾Ÿçš„çº¹ç†å†…å­˜
+     * \param surface éœ€è¦å¼€è¾Ÿçš„è¡¨é¢å†…å­˜
+     * \param cudaArray å­˜å…¥çš„æ•°æ®çº¹ç†(è¡¨é¢)æ•°æ®
      */
     void createFloat4TextureSurface(const unsigned int rows, const unsigned int cols, cudaTextureObject_t& texture, cudaSurfaceObject_t& surface, cudaArray_t& cudaArray);
 
     /**
-     * \brief ·ÖÅä¶şÎ¬Í¼ÏñµÄfloat4ÀàĞÍÎÆÀíCudaTextureSurfaceÄÚ´æ.
+     * \brief åˆ†é…äºŒç»´å›¾åƒçš„float4ç±»å‹çº¹ç†CudaTextureSurfaceå†…å­˜.
      *
-     * \param rows Í¼ÏñµÄ¸ß
-     * \param cols Í¼ÏñµÄ¿í
-     * \param textureCollect ĞèÒª¿ª±ÙµÄÎÆÀí±íÃæÄÚ´æ
+     * \param rows å›¾åƒçš„é«˜
+     * \param cols å›¾åƒçš„å®½
+     * \param textureCollect éœ€è¦å¼€è¾Ÿçš„çº¹ç†è¡¨é¢å†…å­˜
      */
     void createFloat4TextureSurface(const unsigned int rows, const unsigned int cols, CudaTextureSurface& textureCollect);
 
     /**
-     * \brief ÊÍ·Å2DÎÆÀí
+     * \brief é‡Šæ”¾2Dçº¹ç†
      *
-     * \param textureCollect ĞèÒªÊÍ·ÅµÄÎÆÀí(´«ÈëCudaTextureSurfaceÀàĞÍ)
+     * \param textureCollect éœ€è¦é‡Šæ”¾çš„çº¹ç†(ä¼ å…¥CudaTextureSurfaceç±»å‹)
      */
     void releaseTextureCollect(CudaTextureSurface& textureCollect);
 
     /**
-     * \brief 2DÎÆÀí²éÑ¯º¯Êı£¬²éÑ¯2D ArrayºÍ2DÏßĞÔÄÚ´æÔÚ2¸öÎ¬¶ÈÏÂµÄ³ß´ç(CUDA APIÖĞÊ¹ÓÃ½á¹¹ÌåcudaExtentÃèÊö3D ArrayºÍ3DÏßĞÔÄÚ´æÔÚÈı¸öÎ¬¶ÈÉÏµÄ³ß´ç)
+     * \brief 2Dçº¹ç†æŸ¥è¯¢å‡½æ•°ï¼ŒæŸ¥è¯¢2D Arrayå’Œ2Dçº¿æ€§å†…å­˜åœ¨2ä¸ªç»´åº¦ä¸‹çš„å°ºå¯¸(CUDA APIä¸­ä½¿ç”¨ç»“æ„ä½“cudaExtentæè¿°3D Arrayå’Œ3Dçº¿æ€§å†…å­˜åœ¨ä¸‰ä¸ªç»´åº¦ä¸Šçš„å°ºå¯¸)
      *
-     * \param texture ĞèÒª²éÑ¯µÄ2DÎÆÀí
-     * \param width ÎÆÀíÔÚ2Î¬ÏÂµÄ³ß´ç(´Ë´¦Ìî¿í)
-     * \param height ÎÆÀíÔÚ2Î¬ÏÂµÄ³ß´ç(´Ë´¦Ìî¸ß)
+     * \param texture éœ€è¦æŸ¥è¯¢çš„2Dçº¹ç†
+     * \param width çº¹ç†åœ¨2ç»´ä¸‹çš„å°ºå¯¸(æ­¤å¤„å¡«å®½)
+     * \param height çº¹ç†åœ¨2ç»´ä¸‹çš„å°ºå¯¸(æ­¤å¤„å¡«é«˜)
      */
     void query2DTextureExtent(cudaTextureObject_t texture, unsigned int& width, unsigned int& height);
 

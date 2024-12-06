@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   ComputeTriangleIndices.h
- * \brief  ²åÈëĞŞ¸´Èı½ÇÍø¸ñ£¬¹¹½¨Íø¸ñ
+ * \brief  æ’å…¥ä¿®å¤ä¸‰è§’ç½‘æ ¼ï¼Œæ„å»ºç½‘æ ¼
  * 
  * \author LUOJIAXUAN
  * \date   June 3rd 2024
@@ -17,211 +17,211 @@
 namespace SparseSurfelFusion {
 	namespace device {
 		/**
-		 * \brief ¼ÆËã¶¥µãvertexÒşÊ½º¯ÊıºËº¯Êı.
+		 * \brief è®¡ç®—é¡¶ç‚¹vertexéšå¼å‡½æ•°æ ¸å‡½æ•°.
 		 * 
-		 * \param VertexArray ¶¥µãÊı×é
-		 * \param NodeArray ½ÚµãÊı×é
-		 * \param BaseFunctions »ùº¯Êı
-		 * \param dx É¢¶È
-		 * \param encodeNodeIndexInFunction »ùº¯ÊıË÷Òı
-		 * \param isoValue µÈÖµ
-		 * \param vvalue ¶¥µãÒşº¯ÊıÖµ
+		 * \param VertexArray é¡¶ç‚¹æ•°ç»„
+		 * \param NodeArray èŠ‚ç‚¹æ•°ç»„
+		 * \param BaseFunctions åŸºå‡½æ•°
+		 * \param dx æ•£åº¦
+		 * \param encodeNodeIndexInFunction åŸºå‡½æ•°ç´¢å¼•
+		 * \param isoValue ç­‰å€¼
+		 * \param vvalue é¡¶ç‚¹éšå‡½æ•°å€¼
 		 */
 		__global__ void ComputeVertexImplicitFunctionValueKernel(DeviceArrayView<VertexNode> VertexArray, DeviceArrayView<OctNode> NodeArray, DeviceArrayView<ConfirmedPPolynomial<CONVTIMES + 1, CONVTIMES + 2>> BaseFunctions, DeviceArrayView<float> dx, DeviceArrayView<int> encodeNodeIndexInFunction, const unsigned int VertexArraySize, const float isoValue, float* vvalue);
 	
 		/**
-		 * \brief Éú³É¶¥µãµÄvertexNumsºÍ¶¥µãµÄvertexAddressµÄºËº¯Êı.
+		 * \brief ç”Ÿæˆé¡¶ç‚¹çš„vertexNumså’Œé¡¶ç‚¹çš„vertexAddressçš„æ ¸å‡½æ•°.
 		 *
-		 * \param EdgeArray ±ßÊı×é
-		 * \param NodeArray ½ÚµãÊı×é
-		 * \param vvalue ¶¥µãÒşÊ½º¯ÊıÖµ
-		 * \param vexNums ¸¨Öú¼ÆËã½ÚµãÎ»ÖÃVertexAddress
+		 * \param EdgeArray è¾¹æ•°ç»„
+		 * \param NodeArray èŠ‚ç‚¹æ•°ç»„
+		 * \param vvalue é¡¶ç‚¹éšå¼å‡½æ•°å€¼
+		 * \param vexNums è¾…åŠ©è®¡ç®—èŠ‚ç‚¹ä½ç½®VertexAddress
 		 */
 		__global__ void generateVertexNumsKernel(DeviceArrayView<EdgeNode> EdgeArray, DeviceArrayView<OctNode> NodeArray, DeviceArrayView<float> vvalue, const unsigned int EdgeArraySize, int* vexNums, bool* markValidVertex);
 
 		/**
-		 * \brief Éú³ÉTriangleNumsÒÔ¼°cubeCatagoryºËº¯Êı.
+		 * \brief ç”ŸæˆTriangleNumsä»¥åŠcubeCatagoryæ ¸å‡½æ•°.
 		 * 
-		 * \param NodeArray ½ÚµãÊı×é
-		 * \param vvalue ¶¥µãÒşÊ½º¯ÊıÖµ
-		 * \param DLevelOffset µÚmaxDepth²ãµÄÊ×½ÚµãÔÚNodeArrayÖĞÆ«ÒÆ
-		 * \param DLevelNodeCount µÚmaxDepth²ã½ÚµãÊıÁ¿
-		 * \param triNums Èı½ÇĞÎÊıÁ¿
-		 * \param cubeCatagory Á¢·½ÌåÀàĞÍ
+		 * \param NodeArray èŠ‚ç‚¹æ•°ç»„
+		 * \param vvalue é¡¶ç‚¹éšå¼å‡½æ•°å€¼
+		 * \param DLevelOffset ç¬¬maxDepthå±‚çš„é¦–èŠ‚ç‚¹åœ¨NodeArrayä¸­åç§»
+		 * \param DLevelNodeCount ç¬¬maxDepthå±‚èŠ‚ç‚¹æ•°é‡
+		 * \param triNums ä¸‰è§’å½¢æ•°é‡
+		 * \param cubeCatagory ç«‹æ–¹ä½“ç±»å‹
 		 */
 		__global__ void generateTriangleNumsKernel(DeviceArrayView<OctNode> NodeArray, DeviceArrayView<float> vvalue, const unsigned int DLevelOffset, const unsigned int DLevelNodeCount, int* triNums, int* cubeCatagory);
 
 		/**
-		 * \brief Éú³É½»²æµã.
+		 * \brief ç”Ÿæˆäº¤å‰ç‚¹.
 		 * 
-		 * \param NodeArray ½ÚµãÊı×é
-		 * \param validEdgeArray É¸Ñ¡ºóÓĞĞ§µÄ±ßÊı×é
-		 * \param VertexArray ¶¥µãÊı×é
-		 * \param vvalue ¶¥µãÒşÊ½º¯ÊıÖµ
-		 * \param validVexAddress ÓĞĞ§¶¥µãµÄÎ»ÖÃ
-		 * \param validEdgeArraySize ÓĞĞ§±ßÊı×éµÄ´óĞ¡
-		 * \param VertexBuffer ÓĞĞ§µÄ¶¥µã
+		 * \param NodeArray èŠ‚ç‚¹æ•°ç»„
+		 * \param validEdgeArray ç­›é€‰åæœ‰æ•ˆçš„è¾¹æ•°ç»„
+		 * \param VertexArray é¡¶ç‚¹æ•°ç»„
+		 * \param vvalue é¡¶ç‚¹éšå¼å‡½æ•°å€¼
+		 * \param validVexAddress æœ‰æ•ˆé¡¶ç‚¹çš„ä½ç½®
+		 * \param validEdgeArraySize æœ‰æ•ˆè¾¹æ•°ç»„çš„å¤§å°
+		 * \param VertexBuffer æœ‰æ•ˆçš„é¡¶ç‚¹
 		 */
 		__global__ void generateIntersectionPoint(DeviceArrayView<OctNode> NodeArray, DeviceArrayView<VertexNode> VertexArray, DeviceArrayView<float> vvalue, const EdgeNode* validEdgeArray, const int* validVexAddress, const unsigned int validEdgeArraySize, Point3D<float>* VertexBuffer);
 		
 		/**
-		 * \brief ¼ÆËãÁ½µãÖ®¼äµÄ²åÈëµã.
+		 * \brief è®¡ç®—ä¸¤ç‚¹ä¹‹é—´çš„æ’å…¥ç‚¹.
 		 * 
-		 * \param p1 µã1
-		 * \param p2 µã2
-		 * \param dim ĞèÒª½øĞĞ²åÈëµÄÎ¬¶È
-		 * \param v1 ÒşÊ½º¯ÊıÖµ1
-		 * \param v2 ÒşÊ½º¯ÊıÖµ2
-		 * \param out ¡¾ÊäÈë¡¿²åÈëµãµÄ×ø±ê
+		 * \param p1 ç‚¹1
+		 * \param p2 ç‚¹2
+		 * \param dim éœ€è¦è¿›è¡Œæ’å…¥çš„ç»´åº¦
+		 * \param v1 éšå¼å‡½æ•°å€¼1
+		 * \param v2 éšå¼å‡½æ•°å€¼2
+		 * \param out ã€è¾“å…¥ã€‘æ’å…¥ç‚¹çš„åæ ‡
 		 */
 		__device__ void interpolatePoint(const Point3D<float>& p1, const Point3D<float>& p2, const int& dim, const float& v1, const float& v2, Point3D<float>& out);
 
 		/**
-		 * \brief Éú³ÉÈı½ÇĞÎÎ»ÖÃÒÔ¼°¹¹ÔìÃæÊÇ·ñÏà½»µÄÊı×é.
+		 * \brief ç”Ÿæˆä¸‰è§’å½¢ä½ç½®ä»¥åŠæ„é€ é¢æ˜¯å¦ç›¸äº¤çš„æ•°ç»„.
 		 * 
-		 * \param NodeArray ½ÚµãÊı×é
-		 * \param FaceArray ÃæÊı×é
-		 * \param DLevelOffset µÚmaxDepth²ãµÄÊ×½ÚµãÔÚNodeArrayÖĞÆ«ÒÆ
-		 * \param DLevelNodeCount µÚmaxDepth²ã½ÚµãÊıÁ¿
-		 * \param triNums Èı½ÇĞÎÊıÁ¿
-		 * \param cubeCatagory Á¢·½ÌåÀàĞÍ
-		 * \param vexAddress ¶¥µãÆ«ÒÆµØÖ·
-		 * \param triAddress Èı½ÇĞÎÆ«ÒÆµØÖ·
-		 * \param TriangleBuffer ¼ÇÂ¼Ëù¹¹³ÉµÄÈı½ÇĞÎ
+		 * \param NodeArray èŠ‚ç‚¹æ•°ç»„
+		 * \param FaceArray é¢æ•°ç»„
+		 * \param DLevelOffset ç¬¬maxDepthå±‚çš„é¦–èŠ‚ç‚¹åœ¨NodeArrayä¸­åç§»
+		 * \param DLevelNodeCount ç¬¬maxDepthå±‚èŠ‚ç‚¹æ•°é‡
+		 * \param triNums ä¸‰è§’å½¢æ•°é‡
+		 * \param cubeCatagory ç«‹æ–¹ä½“ç±»å‹
+		 * \param vexAddress é¡¶ç‚¹åç§»åœ°å€
+		 * \param triAddress ä¸‰è§’å½¢åç§»åœ°å€
+		 * \param TriangleBuffer è®°å½•æ‰€æ„æˆçš„ä¸‰è§’å½¢
 		 */
 		__global__ void generateTrianglePos(DeviceArrayView<OctNode> NodeArray, DeviceArrayView<FaceNode> FaceArray, DeviceArrayView<int> triNums, DeviceArrayView<int> cubeCatagory, DeviceArrayView<int> vexAddress, DeviceArrayView<int> triAddress, const unsigned int DLevelOffset, const unsigned int DLevelNodeCount, TriangleIndex* TriangleBuffer, int* hasSurfaceIntersection);
 
 		/**
-		 * \brief »ñµÃÏ¸·ÖÈı½ÇĞÎÎ»ÖÃ.
+		 * \brief è·å¾—ç»†åˆ†ä¸‰è§’å½¢ä½ç½®.
 		 */
 		__global__ void generateSubdivideTrianglePos(const EasyOctNode* SubdivideArray, const unsigned int DLevelOffset, const unsigned int DLevelNodeCount, const int* SubdivideTriNums, const int* SubdivideCubeCatagory, const int* SubdivideVexAddress, const int* SubdivideTriAddress, TriangleIndex* SubdivideTriangleBuffer);
 
 		/**
-		 * \brief ´¦ÀíÆäËû²ã¼¶µÄÒ¶×Ó½ÚµãµÄÈı½ÇĞÎºÍÏà½»Çé¿ö, ¼ÇÂ¼ÔÚNodeArrayÖĞ.
+		 * \brief å¤„ç†å…¶ä»–å±‚çº§çš„å¶å­èŠ‚ç‚¹çš„ä¸‰è§’å½¢å’Œç›¸äº¤æƒ…å†µ, è®°å½•åœ¨NodeArrayä¸­.
 		 * 
-		 * \param VertexArray ¶¥µãÊı×é
-		 * \param vvalue ¶¥µãÒşÊ½º¯ÊıÖµ
-		 * \param OtherDepthNodeCount µÚ[0, maxDepth - 1]²ãµÄÊ×½ÚµãÔÚNodeArrayÖĞÆ«ÒÆ
-		 * \param hasSurfaceIntersection ÊÇ·ñÃæÏà½»
-		 * \param NodeArray ½ÚµãÊı×é
-		 * \param markValidSubdividedNode ±ê¼Ç¿ÉÒÔÏ¸·ÖµÄ½Úµãidx
+		 * \param VertexArray é¡¶ç‚¹æ•°ç»„
+		 * \param vvalue é¡¶ç‚¹éšå¼å‡½æ•°å€¼
+		 * \param OtherDepthNodeCount ç¬¬[0, maxDepth - 1]å±‚çš„é¦–èŠ‚ç‚¹åœ¨NodeArrayä¸­åç§»
+		 * \param hasSurfaceIntersection æ˜¯å¦é¢ç›¸äº¤
+		 * \param NodeArray èŠ‚ç‚¹æ•°ç»„
+		 * \param markValidSubdividedNode æ ‡è®°å¯ä»¥ç»†åˆ†çš„èŠ‚ç‚¹idx
 		 */
 		__global__ void ProcessLeafNodesAtOtherDepth(DeviceArrayView<VertexNode> VertexArray, DeviceArrayView<float> vvalue, const unsigned int OtherDepthNodeCount, const int* hasSurfaceIntersection, OctNode* NodeArray, bool* markValidSubdividedNode);
 	
 		/**
-		 * \brief ¼ÆËãÏ¸·Ö½ÚµãËùÔÚµÄÉî¶È£¬ÒÔ¼°Ã¿Ò»²ãÒ»¸ö¶àÉÙÏ¸·Ö½Úµã.
+		 * \brief è®¡ç®—ç»†åˆ†èŠ‚ç‚¹æ‰€åœ¨çš„æ·±åº¦ï¼Œä»¥åŠæ¯ä¸€å±‚ä¸€ä¸ªå¤šå°‘ç»†åˆ†èŠ‚ç‚¹.
 		 * 
-		 * \param SubdivideNode Ï¸·Ö½ÚµãÊı×é
-		 * \param DepthBuffer ¼ÇÂ¼NodeArrayÉî¶È½ÚµãµÄÊı×é
-		 * \param SubdivideNum Ï¸·Ö½ÚµãµÄÊıÁ¿
-		 * \param SubdivideDepthBuffer ¼ÇÂ¼Ï¸·Ö½ÚµãËùÔÚÉî¶ÈÊı×é
-		 * \param SubdivideDepthNum ¼ÇÂ¼µ±Ç°Éî¶ÈÏ¸·Ö½ÚµãµÄ×ÜÊı
+		 * \param SubdivideNode ç»†åˆ†èŠ‚ç‚¹æ•°ç»„
+		 * \param DepthBuffer è®°å½•NodeArrayæ·±åº¦èŠ‚ç‚¹çš„æ•°ç»„
+		 * \param SubdivideNum ç»†åˆ†èŠ‚ç‚¹çš„æ•°é‡
+		 * \param SubdivideDepthBuffer è®°å½•ç»†åˆ†èŠ‚ç‚¹æ‰€åœ¨æ·±åº¦æ•°ç»„
+		 * \param SubdivideDepthNum è®°å½•å½“å‰æ·±åº¦ç»†åˆ†èŠ‚ç‚¹çš„æ€»æ•°
 		 */
 		__global__ void precomputeSubdivideDepth(DeviceArrayView<OctNode> SubdivideNode, DeviceArrayView<unsigned int> DepthBuffer, const int SubdivideNum, int* SubdivideDepthBuffer, int* SubdivideDepthNum);
 	
 		/**
-		 * \brief ÖØ¹¹NodeArray£¬¼ÇÂ¼ÔÚSubdivideArrayÖĞ.
+		 * \brief é‡æ„NodeArrayï¼Œè®°å½•åœ¨SubdivideArrayä¸­.
 		 * 
-		 * \param SubdivideNode Ï¸·Ö½Úµã
-		 * \param SubdivideDepthBuffer Ï¸·Ö½ÚµãÉî¶È
-		 * \param iterRound µü´ú´ÎÊı
-		 * \param NodeArraySize NodeArrayÊı×éµÄ³¤¶È
-		 * \param SubdivideArraySize Ï¸·Ö½ÚµãÊı×éµÄ³¤¶È
-		 * \param SubdivideArray ¼ÇÂ¼ÖØ¹¹µÄÊı¾İ
-		 * \param SubdivideArrayDepthBuffer ÖØ¹¹Êı¾İ½ÚµãÉî¶È
-		 * \param SubdivideArrayCenterBuffer ÖØ¹¹Êı¾İ½ÚµãÖĞĞÄµãÎ»ÖÃ
+		 * \param SubdivideNode ç»†åˆ†èŠ‚ç‚¹
+		 * \param SubdivideDepthBuffer ç»†åˆ†èŠ‚ç‚¹æ·±åº¦
+		 * \param iterRound è¿­ä»£æ¬¡æ•°
+		 * \param NodeArraySize NodeArrayæ•°ç»„çš„é•¿åº¦
+		 * \param SubdivideArraySize ç»†åˆ†èŠ‚ç‚¹æ•°ç»„çš„é•¿åº¦
+		 * \param SubdivideArray è®°å½•é‡æ„çš„æ•°æ®
+		 * \param SubdivideArrayDepthBuffer é‡æ„æ•°æ®èŠ‚ç‚¹æ·±åº¦
+		 * \param SubdivideArrayCenterBuffer é‡æ„æ•°æ®èŠ‚ç‚¹ä¸­å¿ƒç‚¹ä½ç½®
 		 */
 		__global__ void singleRebuildArray(DeviceArrayView<OctNode> SubdivideNode, DeviceArrayView<int> SubdivideDepthBuffer, const unsigned int iterRound, const unsigned int NodeArraySize, const unsigned int SubdivideArraySize, EasyOctNode* SubdivideArray, int* SubdivideArrayDepthBuffer, Point3D<float>* SubdivideArrayCenterBuffer);
 
 		/**
-		 * \brief »ñµÃÏ¸·Ö½ÚµãµÄÉî¶È.
+		 * \brief è·å¾—ç»†åˆ†èŠ‚ç‚¹çš„æ·±åº¦.
 		 * 
-		 * \param rootDepth Ï¸·Ö½Úµã¸ùµÄÉî¶È
-		 * \param idx Ï¸·Ö½ÚµãµÄindex
+		 * \param rootDepth ç»†åˆ†èŠ‚ç‚¹æ ¹çš„æ·±åº¦
+		 * \param idx ç»†åˆ†èŠ‚ç‚¹çš„index
 		 */
 		__device__ int getSubdivideDepth(const int& rootDepth, const int& idx);
 
 		/**
-		 * \brief »ñµÃµ±Ç°½ÚµãµÄÖĞĞÄµã.
+		 * \brief è·å¾—å½“å‰èŠ‚ç‚¹çš„ä¸­å¿ƒç‚¹.
 		 * 
-		 * \param key µ±Ç°½ÚµãµÄkey¼üÖµ
-		 * \param currentDepth µ±Ç°Éî¶È
-		 * \param center ¡¾Êä³ö¡¿µ±Ç°½ÚµãµÄÖĞĞÄµã
+		 * \param key å½“å‰èŠ‚ç‚¹çš„keyé”®å€¼
+		 * \param currentDepth å½“å‰æ·±åº¦
+		 * \param center ã€è¾“å‡ºã€‘å½“å‰èŠ‚ç‚¹çš„ä¸­å¿ƒç‚¹
 		 */
 		__device__ void getNodeCenterAllDepth(const int& key, const int& currentDepth, Point3D<float>& center);
 
 		/**
-		 * \brief ¼ÆËãÖØ¹¹µÄ½ÚµãÁÚ¾Ó.
+		 * \brief è®¡ç®—é‡æ„çš„èŠ‚ç‚¹é‚»å±….
 		 * 
-		 * \param NodeArray Ô­Ê¼½ÚµãÊı×é
-		 * \param currentLevelOffset µ±Ç°²ã½ÚµãµÄÆ«ÒÆ
-		 * \param currentLevelNodesCount µ±Ç°²ã½ÚµãµÄÊıÁ¿
-		 * \param NodeArraySize Ô­Ê¼½ÚµãÊıÁ¿
-		 * \param depth µ±Ç°Éî¶È
-		 * \param SubdivideArray Ï¸·Ö½ÚµãÊı×é
+		 * \param NodeArray åŸå§‹èŠ‚ç‚¹æ•°ç»„
+		 * \param currentLevelOffset å½“å‰å±‚èŠ‚ç‚¹çš„åç§»
+		 * \param currentLevelNodesCount å½“å‰å±‚èŠ‚ç‚¹çš„æ•°é‡
+		 * \param NodeArraySize åŸå§‹èŠ‚ç‚¹æ•°é‡
+		 * \param depth å½“å‰æ·±åº¦
+		 * \param SubdivideArray ç»†åˆ†èŠ‚ç‚¹æ•°ç»„
 		 */
 		__global__ void computeRebuildNeighbor(DeviceArrayView<OctNode> NodeArray, const unsigned int currentLevelOffset, const unsigned int currentLevelNodesCount, const unsigned int NodeArraySize, const unsigned int depth, EasyOctNode* SubdivideArray);
 	
 		/**
-		 * \brief ³õÊ¼»¯Ï¸·Ö¶¥µãµÄËùÓµÓĞµÄÏ¸·Ö½Úµã.
+		 * \brief åˆå§‹åŒ–ç»†åˆ†é¡¶ç‚¹çš„æ‰€æ‹¥æœ‰çš„ç»†åˆ†èŠ‚ç‚¹.
 		 * 
-		 * \param SubdivideArray Ï¸·Ö½ÚµãÊı×é
-		 * \param SubdivideArrayCenterBuffer Ï¸·Ö½ÚµãÖĞĞÄµãÊı×é
-		 * \param currentLevelOffset µ±Ç°²ã½ÚµãµÄÆ«ÒÆ
-		 * \param currentLevelNodesCount µ±Ç°²ã½ÚµãµÄÊıÁ¿
-		 * \param NodeArraySize Ô­Ê¼½ÚµãÊıÁ¿
-		 * \param SubdividePreVertexArray Ô¤´¦ÀíÏ¸·Ö½Úµã£¬ºóĞø»ñµÃÓĞĞ§µÄVertexArray
+		 * \param SubdivideArray ç»†åˆ†èŠ‚ç‚¹æ•°ç»„
+		 * \param SubdivideArrayCenterBuffer ç»†åˆ†èŠ‚ç‚¹ä¸­å¿ƒç‚¹æ•°ç»„
+		 * \param currentLevelOffset å½“å‰å±‚èŠ‚ç‚¹çš„åç§»
+		 * \param currentLevelNodesCount å½“å‰å±‚èŠ‚ç‚¹çš„æ•°é‡
+		 * \param NodeArraySize åŸå§‹èŠ‚ç‚¹æ•°é‡
+		 * \param SubdividePreVertexArray é¢„å¤„ç†ç»†åˆ†èŠ‚ç‚¹ï¼Œåç»­è·å¾—æœ‰æ•ˆçš„VertexArray
 		 */
 		__global__ void initSubdivideVertexOwner(const EasyOctNode* SubdivideArray, const Point3D<float>* SubdivideArrayCenterBuffer, const unsigned int currentLevelOffset, const unsigned int currentLevelNodesCount, const unsigned int NodeArraySize, VertexNode* SubdividePreVertexArray, bool* markValidSubdivideVertex);
 
 		/**
-		 * \brief ¼ÆËãÁ½µãÖ®¼ä¾àÀëÆ½·½.
+		 * \brief è®¡ç®—ä¸¤ç‚¹ä¹‹é—´è·ç¦»å¹³æ–¹.
 		 *
-		 * \param p1 µã1
-		 * \param p2 µã2
-		 * \return ·µ»ØÁ½µãÖ®¼ä¾àÀëÆ½·½
+		 * \param p1 ç‚¹1
+		 * \param p2 ç‚¹2
+		 * \return è¿”å›ä¸¤ç‚¹ä¹‹é—´è·ç¦»å¹³æ–¹
 		 */
 		__forceinline__ __device__ double SquareDistance(const Point3D<float>& p1, const Point3D<float>& p2);
 
 		/**
-		 * \brief ¸üĞÂSubdivideArrayÖĞµÄ¶¥µã.
+		 * \brief æ›´æ–°SubdivideArrayä¸­çš„é¡¶ç‚¹.
 		 * 
-		 * \param CenterBuffer ½ÚµãµÄÖĞĞÄÎ»ÖÃ
-		 * \param VertexArraySize ¶¥µãÊıÁ¿
-		 * \param NodeArraySize ½ÚµãÊıÁ¿
-		 * \param SubdivideArrayCenterBuffer Ï¸·Ö½ÚµãµÄÖĞĞÄÎ»ÖÃ
-		 * \param VertexArray ¶¥µãÊı×é
-		 * \param SubdivideArray Ï¸·ÖÊı×é
+		 * \param CenterBuffer èŠ‚ç‚¹çš„ä¸­å¿ƒä½ç½®
+		 * \param VertexArraySize é¡¶ç‚¹æ•°é‡
+		 * \param NodeArraySize èŠ‚ç‚¹æ•°é‡
+		 * \param SubdivideArrayCenterBuffer ç»†åˆ†èŠ‚ç‚¹çš„ä¸­å¿ƒä½ç½®
+		 * \param VertexArray é¡¶ç‚¹æ•°ç»„
+		 * \param SubdivideArray ç»†åˆ†æ•°ç»„
 		 */
 		__global__ void maintainSubdivideVertexNodePointer(DeviceArrayView<Point3D<float>> CenterBuffer, const unsigned int VertexArraySize, const unsigned int NodeArraySize, const Point3D<float>* SubdivideArrayCenterBuffer, VertexNode* VertexArray, EasyOctNode* SubdivideArray);
 
 		/**
-		 * \brief ³õÊ¼»¯Ï¸·Ö¶¥µãµÄËùÓĞ±ß.
+		 * \brief åˆå§‹åŒ–ç»†åˆ†é¡¶ç‚¹çš„æ‰€æœ‰è¾¹.
 		 * 
-		 * \param SubdivideArray Ï¸·ÖÊı×é
-		 * \param SubdivideArrayCenterBuffer Ï¸·Ö½ÚµãµÄÖĞĞÄÎ»ÖÃ
-		 * \param NodeArraySize ½ÚµãÊıÁ¿
-		 * \param DLevelOffset ×î´ó²ãÆ«ÒÆ
-		 * \param DLevelNodeCount ×î´ó²ã½ÚµãÊıÁ¿
-		 * \param SubdividePreEdgeArray Ô¤´¦Àí±ßÊı×é£¬ºóĞø»áÉ¸µôÎŞĞ§±ß
-		 * \param markValidSubdivideEdge ¶ÔÓĞĞ§±ß×ö±ê¼Ç
+		 * \param SubdivideArray ç»†åˆ†æ•°ç»„
+		 * \param SubdivideArrayCenterBuffer ç»†åˆ†èŠ‚ç‚¹çš„ä¸­å¿ƒä½ç½®
+		 * \param NodeArraySize èŠ‚ç‚¹æ•°é‡
+		 * \param DLevelOffset æœ€å¤§å±‚åç§»
+		 * \param DLevelNodeCount æœ€å¤§å±‚èŠ‚ç‚¹æ•°é‡
+		 * \param SubdividePreEdgeArray é¢„å¤„ç†è¾¹æ•°ç»„ï¼Œåç»­ä¼šç­›æ‰æ— æ•ˆè¾¹
+		 * \param markValidSubdivideEdge å¯¹æœ‰æ•ˆè¾¹åšæ ‡è®°
 		 */ 
 		__global__ void initSubdivideEdgeArray(const EasyOctNode* SubdivideArray, const Point3D<float>* SubdivideArrayCenterBuffer, const unsigned int NodeArraySize, const unsigned int DLevelOffset, const unsigned int DLevelNodeCount, EdgeNode* SubdividePreEdgeArray, bool* markValidSubdivideEdge);
 
 		/**
-		 * \brief Î¬»¤¸üĞÂÏ¸·Ö±ßµÄ²ÎÊı.
+		 * \brief ç»´æŠ¤æ›´æ–°ç»†åˆ†è¾¹çš„å‚æ•°.
 		 * 
-		 * \param CenterBuffer ½ÚµãµÄÖĞĞÄÎ»ÖÃ
-		 * \param SubdivideArrayCenterBuffer Ï¸·Ö½ÚµãµÄÖĞĞÄÎ»ÖÃ
-		 * \param EdgeArraySize ±ßÊı×éµÄ´óĞ¡
-		 * \param NodeArraySize ½ÚµãÊıÁ¿
-		 * \param SubdivideArray Ï¸·ÖÊı×é
-		 * \param EdgeArray Ï¸·Ö±ßÊı×é
+		 * \param CenterBuffer èŠ‚ç‚¹çš„ä¸­å¿ƒä½ç½®
+		 * \param SubdivideArrayCenterBuffer ç»†åˆ†èŠ‚ç‚¹çš„ä¸­å¿ƒä½ç½®
+		 * \param EdgeArraySize è¾¹æ•°ç»„çš„å¤§å°
+		 * \param NodeArraySize èŠ‚ç‚¹æ•°é‡
+		 * \param SubdivideArray ç»†åˆ†æ•°ç»„
+		 * \param EdgeArray ç»†åˆ†è¾¹æ•°ç»„
 		 */
 		__global__ void maintainSubdivideEdgeNodePointer(DeviceArrayView<Point3D<float>> CenterBuffer, const Point3D<float>* SubdivideArrayCenterBuffer, const unsigned int EdgeArraySize, const unsigned int NodeArraySize, EasyOctNode* SubdivideArray, EdgeNode* EdgeArray);
 		
 		/**
-		 * \brief ¼ÆËãÏ¸·Ö¶¥µãµÄÒşÊ½º¯ÊıÖµ.
+		 * \brief è®¡ç®—ç»†åˆ†é¡¶ç‚¹çš„éšå¼å‡½æ•°å€¼.
 		 * 
 		 * \param SubdivideVertexArray 
 		 * \param SubdivideArray
@@ -238,7 +238,7 @@ namespace SparseSurfelFusion {
 		__global__ void computeSubdivideVertexImplicitFunctionValue(const VertexNode* SubdivideVertexArray, const EasyOctNode* SubdivideArray, DeviceArrayView<OctNode> NodeArray, DeviceArrayView<float> dx, DeviceArrayView<int> EncodedNodeIdxInFunction, DeviceArrayView<ConfirmedPPolynomial<CONVTIMES + 1, CONVTIMES + 2>> baseFunctions, const unsigned int NodeArraySize, const unsigned int rootId, const unsigned int SubdivideVertexArraySize, const float isoValue, float* SubdivideVvalue);
 
 		/**
-		 * \brief ¼ÆËãÏ¸·Ö¶¥µãµÄÒşÊ½º¯ÊıÖµ¡¾Finer¡¿.
+		 * \brief è®¡ç®—ç»†åˆ†é¡¶ç‚¹çš„éšå¼å‡½æ•°å€¼ã€Finerã€‘.
 		 */
 		__global__ void computeSubdivideVertexImplicitFunctionValue(const VertexNode* SubdivideVertexArray, const EasyOctNode* SubdivideArray, DeviceArrayView<OctNode> NodeArray, DeviceArrayView<float> dx, DeviceArrayView<int> EncodedNodeIdxInFunction, DeviceArrayView<ConfirmedPPolynomial<CONVTIMES + 1, CONVTIMES + 2>> baseFunctions, const unsigned int NodeArraySize, const int* ReplacedNodeId, const int* IsRoot, const unsigned int SubdivideVertexArraySize, const float isoValue, float* SubdivideVvalue);
 			 
@@ -248,52 +248,52 @@ namespace SparseSurfelFusion {
 			
 
 		/**
-		 * \brief ¼ÆËãÏ¸·Ö¶¥µãÊıÁ¿£¬´Ó¶ø»ñµÃAddress.
+		 * \brief è®¡ç®—ç»†åˆ†é¡¶ç‚¹æ•°é‡ï¼Œä»è€Œè·å¾—Address.
 		 * 
-		 * \param SubdivideEdgeArray Ï¸·Ö±ß
-		 * \param SubdivideArray Ï¸·ÖÊı×é
-		 * \param SubdivideEdgeArraySize Ï¸·Ö±ßÊı×éµÄ´óĞ¡
-		 * \param NodeArraySize ½ÚµãÊıÁ¿
-		 * \param SubdivideVvalue ½ÚµãµÄÒşÊ½º¯ÊıÖµ
-		 * \param markValidSubdivedeVexNum ±ê¼ÇÓĞĞ§µÄÏ¸·ÖvexNumµÄindex
+		 * \param SubdivideEdgeArray ç»†åˆ†è¾¹
+		 * \param SubdivideArray ç»†åˆ†æ•°ç»„
+		 * \param SubdivideEdgeArraySize ç»†åˆ†è¾¹æ•°ç»„çš„å¤§å°
+		 * \param NodeArraySize èŠ‚ç‚¹æ•°é‡
+		 * \param SubdivideVvalue èŠ‚ç‚¹çš„éšå¼å‡½æ•°å€¼
+		 * \param markValidSubdivedeVexNum æ ‡è®°æœ‰æ•ˆçš„ç»†åˆ†vexNumçš„index
 		 */
 		__global__ void generateSubdivideVexNums(const EdgeNode* SubdivideEdgeArray, const EasyOctNode* SubdivideArray, const unsigned int SubdivideEdgeArraySize, const unsigned int NodeArraySize, const float* SubdivideVvalue, int* SubdivideVexNums, bool* markValidSubdivedeVexNum);
 
 		/**
-		 * \brief Éú³ÉÏ¸·Ö½ÚµãµÄÈı½ÇĞÎ.
+		 * \brief ç”Ÿæˆç»†åˆ†èŠ‚ç‚¹çš„ä¸‰è§’å½¢.
 		 * 
-		 * \param SubdivideNodeArray Ï¸·Ö½ÚµãÊı×é£¬ÓëÇ°ÃæµÄNodeArray²»Ò»Ñù
-		 * \param DLevelOffset maxDepth²ãµÄÊ×½ÚµãÔÚSubdivideNodeArrayÖĞµÄÎ»ÖÃ
-		 * \param DLevelNodeCount maxDepth²ãµÄ½ÚµãÊıÁ¿
-		 * \param vvalue Òşº¯ÊıÖµ
-		 * \param triNums Èı½ÇĞÎÊıÁ¿
-		 * \param cubeCatagory Á¢·½ÌåÀàĞÍ
+		 * \param SubdivideNodeArray ç»†åˆ†èŠ‚ç‚¹æ•°ç»„ï¼Œä¸å‰é¢çš„NodeArrayä¸ä¸€æ ·
+		 * \param DLevelOffset maxDepthå±‚çš„é¦–èŠ‚ç‚¹åœ¨SubdivideNodeArrayä¸­çš„ä½ç½®
+		 * \param DLevelNodeCount maxDepthå±‚çš„èŠ‚ç‚¹æ•°é‡
+		 * \param vvalue éšå‡½æ•°å€¼
+		 * \param triNums ä¸‰è§’å½¢æ•°é‡
+		 * \param cubeCatagory ç«‹æ–¹ä½“ç±»å‹
 		 */
 		__global__ void generateTriNums(const EasyOctNode* SubdivideNodeArray, const unsigned int DLevelOffset, const unsigned int DLevelNodeCount, const float* vvalue, int* triNums, int* cubeCatagory);
 
 		
 		/**
-		 * \brief Éú³ÉÏ¸·ÖµÄÏà½»µã.
+		 * \brief ç”Ÿæˆç»†åˆ†çš„ç›¸äº¤ç‚¹.
 		 */
 		__global__ void generateSubdivideIntersectionPoint(const EdgeNode* SubdivideValidEdgeArray, const VertexNode* SubdivideVertexArray, const EasyOctNode* SubdivideArray, const int* SubdivideValidVexAddress, const float* SubdivideVvalue, const unsigned int SubdivideValidEdgeArraySize, const unsigned int NodeArraySize, Point3D<float>* SubdivideVertexBuffer);
 	
 		/**
-		 * \brief ³õÊ¼»¯¹Ì¶¨Ã¿²ãµÄ½ÚµãÊıÁ¿.
+		 * \brief åˆå§‹åŒ–å›ºå®šæ¯å±‚çš„èŠ‚ç‚¹æ•°é‡.
 		 */
 		__global__ void initFixedDepthNums(DeviceArrayView<OctNode> SubdivideNode, DeviceArrayView<int> SubdivideDepthBuffer, const unsigned int DepthOffset, const unsigned int DepthNodeCount, int* fixedDepthNums);
 
 		/**
-		 * \brief ÖØ½¨Õû¸öÊı×é.
+		 * \brief é‡å»ºæ•´ä¸ªæ•°ç»„.
 		 */
 		__global__ void wholeRebuildArray(DeviceArrayView<OctNode> SubdivideNode, const unsigned int finerDepthStart, const unsigned int finerSubdivideNum, const unsigned int NodeArraySize, const int* SubdivideDepthBuffer, const int* depthNodeAddress_Device, const int* fixedDepthAddress, EasyOctNode* RebuildArray, int* RebuildDepthBuffer, Point3D<float>* RebuildCenterBuffer, int* ReplaceNodeId, int* IsRoot, OctNode* NodeArray);
 
 		/**
-		 * \brief »ñµÃÓĞĞ§µÄÍø¸ñ¶¥µã.
+		 * \brief è·å¾—æœ‰æ•ˆçš„ç½‘æ ¼é¡¶ç‚¹.
 		 */
 		__global__ void markValidMeshVertexIndex(const Point3D<float>* VertexBuffer, const unsigned int verticesNum, bool* markValidVertices);
 
 		/**
-		 * \brief »ñµÃÓĞĞ§µÄÈı½ÇÃæÔªË÷Òı.
+		 * \brief è·å¾—æœ‰æ•ˆçš„ä¸‰è§’é¢å…ƒç´¢å¼•.
 		 */
 		__global__ void markValidMeshTriangleIndex(TriangleIndex* TriangleBuffer, const unsigned int previousVertexOffset, const unsigned int allTriNums, const unsigned int verticesNum, bool* markValidTriangleIndex);
 	}
@@ -307,35 +307,35 @@ namespace SparseSurfelFusion {
 		using Ptr = std::shared_ptr<ComputeTriangleIndices>;
 
 		/**
-		 * \brief ¼ÆËã¶¥µã¹¹ÔìÈı½ÇÆÊ·ÖµÄË÷ÒıÊı×é.
+		 * \brief è®¡ç®—é¡¶ç‚¹æ„é€ ä¸‰è§’å‰–åˆ†çš„ç´¢å¼•æ•°ç»„.
 		 * 
-		 * \param VertexArray ¶¥µãÊı×é
-		 * \param EdgeArray ±ßÊı×é
-		 * \param FaceArray ÃæÊı×é
-		 * \param NodeArray ½ÚµãÊı×é
-		 * \param BaseFunction »ùº¯Êı
-		 * \param dx É¢¶È
-		 * \param encodeNodeIndexInFunction »ùº¯ÊıË÷Òı
-		 * \param BaseFunctions »ùº¯Êı
-		 * \param isoValue µÈÖµ
-		 * \param DLevelOffset maxDepth²ãNodeArrayÆ«ÒÆ
-		 * \param stream cudaÁ÷
+		 * \param VertexArray é¡¶ç‚¹æ•°ç»„
+		 * \param EdgeArray è¾¹æ•°ç»„
+		 * \param FaceArray é¢æ•°ç»„
+		 * \param NodeArray èŠ‚ç‚¹æ•°ç»„
+		 * \param BaseFunction åŸºå‡½æ•°
+		 * \param dx æ•£åº¦
+		 * \param encodeNodeIndexInFunction åŸºå‡½æ•°ç´¢å¼•
+		 * \param BaseFunctions åŸºå‡½æ•°
+		 * \param isoValue ç­‰å€¼
+		 * \param DLevelOffset maxDepthå±‚NodeArrayåç§»
+		 * \param stream cudaæµ
 		 */
 		void calculateTriangleIndices(DeviceArrayView<VertexNode> VertexArray, DeviceArrayView<EdgeNode> EdgeArray, DeviceArrayView<FaceNode> FaceArray, DeviceBufferArray<OctNode>& NodeArray, DeviceArrayView<ConfirmedPPolynomial<CONVTIMES + 1, CONVTIMES + 2>> BaseFunction, DeviceArrayView<float> dx, DeviceArrayView<int> encodeNodeIndexInFunction, DeviceArrayView<unsigned int> DepthBuffer, DeviceArrayView<Point3D<float>> CenterBuffer, const float isoValue, const unsigned int DLevelOffset, const unsigned int DLevelNodeCount, cudaStream_t stream);
 
 		/**
-		 * \brief »ñµÃÖØ½¨Íø¸ñµÄ¶¥µã.
+		 * \brief è·å¾—é‡å»ºç½‘æ ¼çš„é¡¶ç‚¹.
 		 *
-		 * \return ÖØ½¨Íø¸ñµÄ¶¥µã.
+		 * \return é‡å»ºç½‘æ ¼çš„é¡¶ç‚¹.
 		 */
 		DeviceArrayView<Point3D<float>> GetRebuildMeshVertices() {
 			return MeshTriangleVertex.ArrayView();
 		}
 
 		/**
-		 * \brief »ñµÃÖØ½¨Íø¸ñµÄË÷Òı.
+		 * \brief è·å¾—é‡å»ºç½‘æ ¼çš„ç´¢å¼•.
 		 *
-		 * \return ÖØ½¨Íø¸ñµÄË÷Òı.
+		 * \return é‡å»ºç½‘æ ¼çš„ç´¢å¼•.
 		 */
 		DeviceArrayView<TriangleIndex> GetRebuildMeshTriangleIndices() {
 			return MeshTriangleIndex.ArrayView();
@@ -343,146 +343,146 @@ namespace SparseSurfelFusion {
 
 
 	private:
-		DeviceBufferArray<float> vvalue;								// ¡¾ÂÛÎÄ²ÎÊı¡¿¶¥µãÒşÊ½º¯ÊıÖµ
-		DeviceBufferArray<int> vexNums;									// ¡¾ÂÛÎÄ²ÎÊı¡¿¶¥µãµÄÊıÁ¿
-		DeviceBufferArray<int> vexAddress;								// ¡¾ÂÛÎÄ²ÎÊı¡¿¶¥µãµÄÎ»ÖÃ
-		DeviceBufferArray<int> triNums;									// ¡¾ÂÛÎÄ²ÎÊı¡¿Èı½ÇĞÎÊıÁ¿
-		DeviceBufferArray<int> triAddress;								// ¡¾ÂÛÎÄ²ÎÊı¡¿Èı½ÇĞÎÎ»ÖÃ
-		DeviceBufferArray<int> cubeCatagory;							// ¼ÇÂ¼ÕâÊÇÊôÓÚÄÄÒ»ÖÖÀàĞÍµÄÁ¢·½Ìå£¬·½±ãÊ¹ÓÃMarching CubesËã·¨¹¹½¨Íø¸ñ
+		DeviceBufferArray<float> vvalue;								// ã€è®ºæ–‡å‚æ•°ã€‘é¡¶ç‚¹éšå¼å‡½æ•°å€¼
+		DeviceBufferArray<int> vexNums;									// ã€è®ºæ–‡å‚æ•°ã€‘é¡¶ç‚¹çš„æ•°é‡
+		DeviceBufferArray<int> vexAddress;								// ã€è®ºæ–‡å‚æ•°ã€‘é¡¶ç‚¹çš„ä½ç½®
+		DeviceBufferArray<int> triNums;									// ã€è®ºæ–‡å‚æ•°ã€‘ä¸‰è§’å½¢æ•°é‡
+		DeviceBufferArray<int> triAddress;								// ã€è®ºæ–‡å‚æ•°ã€‘ä¸‰è§’å½¢ä½ç½®
+		DeviceBufferArray<int> cubeCatagory;							// è®°å½•è¿™æ˜¯å±äºå“ªä¸€ç§ç±»å‹çš„ç«‹æ–¹ä½“ï¼Œæ–¹ä¾¿ä½¿ç”¨Marching Cubesç®—æ³•æ„å»ºç½‘æ ¼
 
-		DeviceBufferArray<bool> markValidVertex;						// ±ê¼ÇÓĞĞ§µÄ¶¥µãµÄÎ»ÖÃ
+		DeviceBufferArray<bool> markValidVertex;						// æ ‡è®°æœ‰æ•ˆçš„é¡¶ç‚¹çš„ä½ç½®
 
-		DeviceBufferArray<bool> markValidSubdividedNode;				// ±ê¼Ç½ÚµãÊÇ·ñ¿ÉÒÔ±»Ï¸·ÖÓÅ»¯
+		DeviceBufferArray<bool> markValidSubdividedNode;				// æ ‡è®°èŠ‚ç‚¹æ˜¯å¦å¯ä»¥è¢«ç»†åˆ†ä¼˜åŒ–
 
-		DeviceBufferArray<TriangleIndex> MeshTriangleIndex;				// Èı½ÇÍø¸ñ»æÖÆË÷Òı
-		DeviceBufferArray<bool> markValidTriangleIndex;					// ±ê¼ÇÓĞĞ§µÄÍø¸ñË÷Òı
-		DeviceBufferArray<Point3D<float>> MeshTriangleVertex;			// Íø¸ñ¶¥µã
-		DeviceBufferArray<bool> markValidTriangleVertex;				// ±ê¼ÇÓĞĞ§µÄÍø¸ñ¶¥µã
+		DeviceBufferArray<TriangleIndex> MeshTriangleIndex;				// ä¸‰è§’ç½‘æ ¼ç»˜åˆ¶ç´¢å¼•
+		DeviceBufferArray<bool> markValidTriangleIndex;					// æ ‡è®°æœ‰æ•ˆçš„ç½‘æ ¼ç´¢å¼•
+		DeviceBufferArray<Point3D<float>> MeshTriangleVertex;			// ç½‘æ ¼é¡¶ç‚¹
+		DeviceBufferArray<bool> markValidTriangleVertex;				// æ ‡è®°æœ‰æ•ˆçš„ç½‘æ ¼é¡¶ç‚¹
 
-		DeviceBufferArray<OctNode> SubdivideNode;						// Ï¸·Ö½Úµã£¬½«Éú³ÉµÄÈı½ÇÆÊ·ÖÏ¸·Ö
+		DeviceBufferArray<OctNode> SubdivideNode;						// ç»†åˆ†èŠ‚ç‚¹ï¼Œå°†ç”Ÿæˆçš„ä¸‰è§’å‰–åˆ†ç»†åˆ†
 
-		int SubdivideDepthCount[Constants::maxDepth_Host] = { 0 };		// Ï¸·Ö½ÚµãÃ¿Ò»²ã½ÚµãµÄÊıÁ¿
-		int SubdivideDepthAddress[Constants::maxDepth_Host] = { 0 };	// Ï¸·Ö½ÚµãÃ¿²ãÔÚSubdivideNodeµÄÆ«ÒÆ
+		int SubdivideDepthCount[Constants::maxDepth_Host] = { 0 };		// ç»†åˆ†èŠ‚ç‚¹æ¯ä¸€å±‚èŠ‚ç‚¹çš„æ•°é‡
+		int SubdivideDepthAddress[Constants::maxDepth_Host] = { 0 };	// ç»†åˆ†èŠ‚ç‚¹æ¯å±‚åœ¨SubdivideNodeçš„åç§»
 
-		int SubdivideNodeNumHost = 0;									// Ï¸·Ö½ÚµãµÄ¸öÊı
-		SynchronizeArray<int> SubdivideDepthBuffer;						// ¼ÇÂ¼SubdivideNodeÊı×éÏ¸·Ö½ÚµãµÄÉî¶È
+		int SubdivideNodeNumHost = 0;									// ç»†åˆ†èŠ‚ç‚¹çš„ä¸ªæ•°
+		SynchronizeArray<int> SubdivideDepthBuffer;						// è®°å½•SubdivideNodeæ•°ç»„ç»†åˆ†èŠ‚ç‚¹çš„æ·±åº¦
 
-		// Ï¸»¯½ÚµãµÄ²ã£º[0, finerDepth)ÊÇCoarser²ã, [finerDepth, maxDepth]ÊÇFiner²ã
+		// ç»†åŒ–èŠ‚ç‚¹çš„å±‚ï¼š[0, finerDepth)æ˜¯Coarserå±‚, [finerDepth, maxDepth]æ˜¯Finerå±‚
 		const unsigned int finerDepth = MAX_DEPTH_OCTREE - COARSER_DIVERGENCE_LEVEL_NUM;	
-		int fixedDepthNodeNum[Constants::maxDepth_Host + 1] = { 0 };	// Ã¿²ã½ÚµãÊıÁ¿ÉèÖÃ¹Ì¶¨´óĞ¡¡¾ÓÃÓÚCoarser²ãÏ¸·Ö¡¿
-		int fixedDepthNodeAddress[Constants::maxDepth_Host + 1] = { 0 };// Ã¿²ã½ÚµãÆ«ÒÆ¡¾ÓÃÓÚCoarser²ãÏ¸·Ö¡¿
-		int depthNodeCount[Constants::maxDepth_Host + 1] = { 0 };;		// Ã¿²ã½ÚµãµÄÊıÁ¿¡¾ÓÃÓÚFiner²ãÏ¸·Ö¡¿
-		int depthNodeAddress[Constants::maxDepth_Host + 1] = { 0 };;	// Ã¿²ã½ÚµãµÄÆ«ÒÆ¡¾ÓÃÓÚFiner²ãÏ¸·Ö¡¿
+		int fixedDepthNodeNum[Constants::maxDepth_Host + 1] = { 0 };	// æ¯å±‚èŠ‚ç‚¹æ•°é‡è®¾ç½®å›ºå®šå¤§å°ã€ç”¨äºCoarserå±‚ç»†åˆ†ã€‘
+		int fixedDepthNodeAddress[Constants::maxDepth_Host + 1] = { 0 };// æ¯å±‚èŠ‚ç‚¹åç§»ã€ç”¨äºCoarserå±‚ç»†åˆ†ã€‘
+		int depthNodeCount[Constants::maxDepth_Host + 1] = { 0 };;		// æ¯å±‚èŠ‚ç‚¹çš„æ•°é‡ã€ç”¨äºFinerå±‚ç»†åˆ†ã€‘
+		int depthNodeAddress[Constants::maxDepth_Host + 1] = { 0 };;	// æ¯å±‚èŠ‚ç‚¹çš„åç§»ã€ç”¨äºFinerå±‚ç»†åˆ†ã€‘
 
-		DeviceBufferArray<bool> markValidSubdivideVertex;				// Ï¸·Ö½ÚµãÖĞ±ê¼ÇÓĞĞ§µÄ¶¥µã¡¾ÓÃÓÚCoarser²ãÏ¸·Ö¡¿
-		DeviceBufferArray<bool> markValidSubdivideEdge;					// Ï¸·Ö½ÚµãÖĞ±ê¼ÇÓĞĞ§µÄ±ß¡¾ÓÃÓÚCoarser²ãÏ¸·Ö¡¿
-		DeviceBufferArray<bool> markValidSubdivedeVexNum;				// Ï¸·Ö½ÚµãÖĞ±ê¼ÇÓĞĞ§µÄvexNums¡¾ÓÃÓÚCoarser²ãÏ¸·Ö¡¿
+		DeviceBufferArray<bool> markValidSubdivideVertex;				// ç»†åˆ†èŠ‚ç‚¹ä¸­æ ‡è®°æœ‰æ•ˆçš„é¡¶ç‚¹ã€ç”¨äºCoarserå±‚ç»†åˆ†ã€‘
+		DeviceBufferArray<bool> markValidSubdivideEdge;					// ç»†åˆ†èŠ‚ç‚¹ä¸­æ ‡è®°æœ‰æ•ˆçš„è¾¹ã€ç”¨äºCoarserå±‚ç»†åˆ†ã€‘
+		DeviceBufferArray<bool> markValidSubdivedeVexNum;				// ç»†åˆ†èŠ‚ç‚¹ä¸­æ ‡è®°æœ‰æ•ˆçš„vexNumsã€ç”¨äºCoarserå±‚ç»†åˆ†ã€‘
 
 		DeviceBufferArray<bool> markValidFinerVexArray;
 		DeviceBufferArray<bool> markValidFinerEdge;
 		DeviceBufferArray<bool> markValidFinerVexNum;
 		/**
-		 * \brief ¼ÆËã¶¥µãvertexµÄÒşÊ½º¯ÊıÖµ.
+		 * \brief è®¡ç®—é¡¶ç‚¹vertexçš„éšå¼å‡½æ•°å€¼.
 		 *
-		 * \param VertexArray ¶¥µãÊı×é
-		 * \param NodeArray ½ÚµãÊı×é
-		 * \param BaseFunction »ùº¯Êı
-		 * \param dx É¢¶È
-		 * \param encodeNodeIndexInFunction »ùº¯ÊıË÷Òı
-		 * \param isoValue µÈÖµ
-		 * \param stream cudaÁ÷
+		 * \param VertexArray é¡¶ç‚¹æ•°ç»„
+		 * \param NodeArray èŠ‚ç‚¹æ•°ç»„
+		 * \param BaseFunction åŸºå‡½æ•°
+		 * \param dx æ•£åº¦
+		 * \param encodeNodeIndexInFunction åŸºå‡½æ•°ç´¢å¼•
+		 * \param isoValue ç­‰å€¼
+		 * \param stream cudaæµ
 		 */
 		void ComputeVertexImplicitFunctionValue(DeviceArrayView<VertexNode> VertexArray, DeviceArrayView<OctNode> NodeArray, DeviceArrayView<ConfirmedPPolynomial<CONVTIMES + 1, CONVTIMES + 2>> BaseFunction, DeviceArrayView<float> dx, DeviceArrayView<int> encodeNodeIndexInFunction, const float isoValue, cudaStream_t stream);
 
 		/**
-		 * \brief Éú³É¶¥µãµÄvertexNumsºÍ¶¥µãµÄvertexAddress.
+		 * \brief ç”Ÿæˆé¡¶ç‚¹çš„vertexNumså’Œé¡¶ç‚¹çš„vertexAddress.
 		 *
-		 * \param EdgeArray ±ßÊı×é
-		 * \param NodeArray ½ÚµãÊı×é
-		 * \param vvalue ¶¥µãÒşÊ½º¯ÊıÖµ
-		 * \param stream cudaÁ÷
+		 * \param EdgeArray è¾¹æ•°ç»„
+		 * \param NodeArray èŠ‚ç‚¹æ•°ç»„
+		 * \param vvalue é¡¶ç‚¹éšå¼å‡½æ•°å€¼
+		 * \param stream cudaæµ
 		 */
 		void generateVertexNumsAndVertexAddress(DeviceArrayView<EdgeNode> EdgeArray, DeviceArrayView<OctNode> NodeArray, DeviceArrayView<float> vvalue, const unsigned int DLevelOffset, cudaStream_t stream);
 
 		/**
-		 * \brief Éú³ÉTriNumsºÍTriAddress£¬ÒÔ¼°Á¢·½ÌåÀàĞÍcubeCatagory.
+		 * \brief ç”ŸæˆTriNumså’ŒTriAddressï¼Œä»¥åŠç«‹æ–¹ä½“ç±»å‹cubeCatagory.
 		 *
-		 * \param NodeArray ½ÚµãÊı×é
-		 * \param vvalue ¶¥µãÒşÊ½º¯ÊıÖµ
-		 * \param DLevelOffset µÚmaxDepth²ãµÄÊ×½ÚµãÔÚNodeArrayÖĞÆ«ÒÆ
-		 * \param DLevelNodeCount µÚmaxDepth²ã½ÚµãÊıÁ¿
-		 * \param stream cudaÁ÷
+		 * \param NodeArray èŠ‚ç‚¹æ•°ç»„
+		 * \param vvalue é¡¶ç‚¹éšå¼å‡½æ•°å€¼
+		 * \param DLevelOffset ç¬¬maxDepthå±‚çš„é¦–èŠ‚ç‚¹åœ¨NodeArrayä¸­åç§»
+		 * \param DLevelNodeCount ç¬¬maxDepthå±‚èŠ‚ç‚¹æ•°é‡
+		 * \param stream cudaæµ
 		 */
 		void generateTriangleNumsAndTriangleAddress(DeviceArrayView<OctNode> NodeArray, DeviceArrayView<float> vvalue, const unsigned int DLevelOffset, const unsigned int DLevelNodeCount, cudaStream_t stream);
 
 		/**
-		 * \brief Éú³É¶¥µãÒÔ¼°Èı½ÇĞÎ.
+		 * \brief ç”Ÿæˆé¡¶ç‚¹ä»¥åŠä¸‰è§’å½¢.
 		 * 
-		 * \param VertexArray ¶¥µãÊı×é
-		 * \param EdgeArray ±ßÊı×é
-		 * \param FaceArray ÃæÊı×é
-		 * \param DLevelOffset µÚmaxDepth²ãµÄÊ×½ÚµãÔÚNodeArrayÖĞÆ«ÒÆ
-		 * \param DLevelNodeCount µÚmaxDepth²ã½ÚµãÊıÁ¿
-		 * \param stream cudaÁ÷
+		 * \param VertexArray é¡¶ç‚¹æ•°ç»„
+		 * \param EdgeArray è¾¹æ•°ç»„
+		 * \param FaceArray é¢æ•°ç»„
+		 * \param DLevelOffset ç¬¬maxDepthå±‚çš„é¦–èŠ‚ç‚¹åœ¨NodeArrayä¸­åç§»
+		 * \param DLevelNodeCount ç¬¬maxDepthå±‚èŠ‚ç‚¹æ•°é‡
+		 * \param stream cudaæµ
 		 */
 		void generateVerticesAndTriangle(DeviceBufferArray<OctNode>& NodeArray, DeviceArrayView<VertexNode> VertexArray, DeviceArrayView<EdgeNode> EdgeArray, DeviceArrayView<FaceNode> FaceArray, const unsigned int DLevelOffset, const unsigned int DLevelNodeCount, cudaStream_t stream);
 
 		/**
-		 * \brief ²åÈëÈı½ÇĞÎ.
+		 * \brief æ’å…¥ä¸‰è§’å½¢.
 		 *
-		 * \param VertexBuffer ¶¥µãÊı×é
-		 * \param allVexNums ËùÓĞÓĞĞ§¶¥µãÊıÁ¿
-		 * \param TriangleBuffer Èı½ÇĞÎÊı×é
-		 * \param allTriNums ËùÓĞÓĞĞ§Èı½ÇĞÎÊıÁ¿
-		 * \param mesh Íø¸ñ
+		 * \param VertexBuffer é¡¶ç‚¹æ•°ç»„
+		 * \param allVexNums æ‰€æœ‰æœ‰æ•ˆé¡¶ç‚¹æ•°é‡
+		 * \param TriangleBuffer ä¸‰è§’å½¢æ•°ç»„
+		 * \param allTriNums æ‰€æœ‰æœ‰æ•ˆä¸‰è§’å½¢æ•°é‡
+		 * \param mesh ç½‘æ ¼
 		 */
 		void insertTriangle(const Point3D<float>* VertexBufferHost, const int& allVexNums, const int* TriangleBufferHost, const int& allTriNums, CoredVectorMeshData& mesh);
 	
 		/**
-		 * \brief ²åÈëÈı½ÇĞÎ.
+		 * \brief æ’å…¥ä¸‰è§’å½¢.
 		 *
-		 * \param VertexBuffer ¶¥µãÊı×é
-		 * \param allVexNums ËùÓĞÓĞĞ§¶¥µãÊıÁ¿
-		 * \param TriangleBuffer Èı½ÇĞÎÊı×é
-		 * \param allTriNums ËùÓĞÓĞĞ§Èı½ÇĞÎÊıÁ¿
+		 * \param VertexBuffer é¡¶ç‚¹æ•°ç»„
+		 * \param allVexNums æ‰€æœ‰æœ‰æ•ˆé¡¶ç‚¹æ•°é‡
+		 * \param TriangleBuffer ä¸‰è§’å½¢æ•°ç»„
+		 * \param allTriNums æ‰€æœ‰æœ‰æ•ˆä¸‰è§’å½¢æ•°é‡
 		 */
 		void insertTriangle(Point3D<float>* VertexBuffer, const int allVexNums, TriangleIndex* TriangleBuffer, const int allTriNums, cudaStream_t stream);
 
 		/**
-		 * \brief Éú³ÉÏ¸·Ö½ÚµãµÄÊı×éÒÔ¼°²»Í¬²ãÏ¸·Ö½ÚµãµÄÊıÁ¿ºÍÆ«ÒÆ¡¾GPUÓ²¼şÏŞÖÆ£¬ÎŞ·¨Ê¹ÓÃÁ÷Òì²½²Ù×÷£¬ĞèÒªShare Memory > 64kbµÄGPU¡¿.
+		 * \brief ç”Ÿæˆç»†åˆ†èŠ‚ç‚¹çš„æ•°ç»„ä»¥åŠä¸åŒå±‚ç»†åˆ†èŠ‚ç‚¹çš„æ•°é‡å’Œåç§»ã€GPUç¡¬ä»¶é™åˆ¶ï¼Œæ— æ³•ä½¿ç”¨æµå¼‚æ­¥æ“ä½œï¼Œéœ€è¦Share Memory > 64kbçš„GPUã€‘.
 		 * 
-		 * \param NodeArray ½ÚµãÊı×é
-		 * \param DepthBuffer ½ÚµãÊı×éNodeArrayµÄÉî¶È²éÕÒÊı×é
-		 * \param OtherDepthNodeCount µÚ[0, maxDepth - 1]²ãµÄÊ×½ÚµãÔÚNodeArrayÖĞÆ«ÒÆ
-		 * \param stream cudaÁ÷
+		 * \param NodeArray èŠ‚ç‚¹æ•°ç»„
+		 * \param DepthBuffer èŠ‚ç‚¹æ•°ç»„NodeArrayçš„æ·±åº¦æŸ¥æ‰¾æ•°ç»„
+		 * \param OtherDepthNodeCount ç¬¬[0, maxDepth - 1]å±‚çš„é¦–èŠ‚ç‚¹åœ¨NodeArrayä¸­åç§»
+		 * \param stream cudaæµ
 		 */
 		void generateSubdivideNodeArrayCountAndAddress(DeviceBufferArray<OctNode>& NodeArray, DeviceArrayView<unsigned int> DepthBuffer, const unsigned int OtherDepthNodeCount, cudaStream_t stream);
 
 		/**
-		 * \brief ´Ö½ÚµãÏ¸·Ö²¢ÖØ¹¹Íø¸ñ, Òì²½ËÙ¶È¿ìÁË69.47%£¬Ô­ÏÈ´úÂë147.503ms£¬µ±Ç°´úÂë45.0349ms¡¾ËÆºõ¿ÉÒÔÓëFiner²¢ĞĞ£¬¿ªÁ½¸öÏß³Ì¡¿.
+		 * \brief ç²—èŠ‚ç‚¹ç»†åˆ†å¹¶é‡æ„ç½‘æ ¼, å¼‚æ­¥é€Ÿåº¦å¿«äº†69.47%ï¼ŒåŸå…ˆä»£ç 147.503msï¼Œå½“å‰ä»£ç 45.0349msã€ä¼¼ä¹å¯ä»¥ä¸Finerå¹¶è¡Œï¼Œå¼€ä¸¤ä¸ªçº¿ç¨‹ã€‘.
 		 * 
-		 * \param NodeArray ½ÚµãÊı×é
-		 * \param DepthBuffer ½ÚµãÉî¶ÈÊı×é
-		 * \param CenterBuffer ½ÚµãÖĞĞÄÎ»ÖÃÊı×é
-		 * \param BaseFunction »ùº¯Êı
-		 * \param dx ½Úµã
-		 * \param encodeNodeIndexInFunction »ùº¯Êı½Úµã±àÂë
-		 * \param isoValue µÈÖµ
-		 * \param stream cudaÁ÷
+		 * \param NodeArray èŠ‚ç‚¹æ•°ç»„
+		 * \param DepthBuffer èŠ‚ç‚¹æ·±åº¦æ•°ç»„
+		 * \param CenterBuffer èŠ‚ç‚¹ä¸­å¿ƒä½ç½®æ•°ç»„
+		 * \param BaseFunction åŸºå‡½æ•°
+		 * \param dx èŠ‚ç‚¹
+		 * \param encodeNodeIndexInFunction åŸºå‡½æ•°èŠ‚ç‚¹ç¼–ç 
+		 * \param isoValue ç­‰å€¼
+		 * \param stream cudaæµ
 		 */
 		void CoarserSubdivideNodeAndRebuildMesh(DeviceBufferArray<OctNode>& NodeArray, DeviceArrayView<unsigned int> DepthBuffer, DeviceArrayView<Point3D<float>> CenterBuffer, DeviceArrayView<ConfirmedPPolynomial<CONVTIMES + 1, CONVTIMES + 2>> BaseFunction, DeviceArrayView<float> dx, DeviceArrayView<int> encodeNodeIndexInFunction, const float isoValue, cudaStream_t stream);
 
 		/**
-		 * \brief ¾«½ÚµãÏ¸·Ö²¢ÖØ¹¹Íø¸ñ¡¾ËÆºõ¿ÉÒÔÓëCoarser²¢ĞĞ£¬¿ªÁ½¸öÏß³Ì¡¿.
+		 * \brief ç²¾èŠ‚ç‚¹ç»†åˆ†å¹¶é‡æ„ç½‘æ ¼ã€ä¼¼ä¹å¯ä»¥ä¸Coarserå¹¶è¡Œï¼Œå¼€ä¸¤ä¸ªçº¿ç¨‹ã€‘.
 		 *
-		 * \param NodeArray ½ÚµãÊı×é
-		 * \param DepthBuffer ½ÚµãÉî¶ÈÊı×é
-		 * \param CenterBuffer ½ÚµãÖĞĞÄÎ»ÖÃÊı×é
-		 * \param BaseFunction »ùº¯Êı
-		 * \param dx ½Úµã
-		 * \param encodeNodeIndexInFunction »ùº¯Êı½Úµã±àÂë
-		 * \param isoValue µÈÖµ
-		 * \param stream cudaÁ÷
+		 * \param NodeArray èŠ‚ç‚¹æ•°ç»„
+		 * \param DepthBuffer èŠ‚ç‚¹æ·±åº¦æ•°ç»„
+		 * \param CenterBuffer èŠ‚ç‚¹ä¸­å¿ƒä½ç½®æ•°ç»„
+		 * \param BaseFunction åŸºå‡½æ•°
+		 * \param dx èŠ‚ç‚¹
+		 * \param encodeNodeIndexInFunction åŸºå‡½æ•°èŠ‚ç‚¹ç¼–ç 
+		 * \param isoValue ç­‰å€¼
+		 * \param stream cudaæµ
 		 */
 		void FinerSubdivideNodeAndRebuildMesh(DeviceBufferArray<OctNode>& NodeArray, DeviceArrayView<unsigned int> DepthBuffer, DeviceArrayView<Point3D<float>> CenterBuffer, DeviceArrayView<ConfirmedPPolynomial<CONVTIMES + 1, CONVTIMES + 2>> BaseFunction, DeviceArrayView<float> dx, DeviceArrayView<int> encodeNodeIndexInFunction, const float isoValue, cudaStream_t stream);
 

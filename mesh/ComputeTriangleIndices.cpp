@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   ComputeTriangleIndices.cpp
- * \brief  ²åÈëĞŞ¸´Èı½ÇÍø¸ñ£¬¹¹½¨Íø¸ñ
+ * \brief  æ’å…¥ä¿®å¤ä¸‰è§’ç½‘æ ¼ï¼Œæ„å»ºç½‘æ ¼
  * 
  * \author LUOJIAXUAN
  * \date   June 3rd 2024
@@ -16,10 +16,10 @@ SparseSurfelFusion::ComputeTriangleIndices::ComputeTriangleIndices()
 	triAddress.AllocateBuffer(D_LEVEL_MAX_NODE);
 	cubeCatagory.AllocateBuffer(D_LEVEL_MAX_NODE);
 	markValidVertex.AllocateBuffer(TOTAL_EDGEARRAY_MAX_COUNT);
-	SubdivideNode.AllocateBuffer(TOTAL_NODEARRAY_MAX_COUNT - D_LEVEL_MAX_NODE);				// ·ÇmaxDepth²ãµÄ×î´ó½ÚµãÊıÁ¿
-	markValidSubdividedNode.AllocateBuffer(TOTAL_NODEARRAY_MAX_COUNT - D_LEVEL_MAX_NODE);	// ·ÇmaxDepth²ãµÄ×î´ó½ÚµãÊıÁ¿
+	SubdivideNode.AllocateBuffer(TOTAL_NODEARRAY_MAX_COUNT - D_LEVEL_MAX_NODE);				// émaxDepthå±‚çš„æœ€å¤§èŠ‚ç‚¹æ•°é‡
+	markValidSubdividedNode.AllocateBuffer(TOTAL_NODEARRAY_MAX_COUNT - D_LEVEL_MAX_NODE);	// émaxDepthå±‚çš„æœ€å¤§èŠ‚ç‚¹æ•°é‡
 	SubdivideDepthBuffer.AllocateBuffer(TOTAL_NODEARRAY_MAX_COUNT - D_LEVEL_MAX_NODE);
-	markValidSubdivideVertex.AllocateBuffer(int(1 << 21));									// ÉèÖÃ×î´óÎª8^7
+	markValidSubdivideVertex.AllocateBuffer(int(1 << 21));									// è®¾ç½®æœ€å¤§ä¸º8^7
 	markValidSubdivideEdge.AllocateBuffer(int(1 << 21));
 	markValidSubdivedeVexNum.AllocateBuffer(int(1 << 21));
 	markValidFinerVexArray.AllocateBuffer(int(1 << 22));
@@ -63,84 +63,84 @@ SparseSurfelFusion::ComputeTriangleIndices::~ComputeTriangleIndices()
 void SparseSurfelFusion::ComputeTriangleIndices::calculateTriangleIndices(DeviceArrayView<VertexNode> VertexArray, DeviceArrayView<EdgeNode> EdgeArray, DeviceArrayView<FaceNode> FaceArray, DeviceBufferArray<OctNode>& NodeArray, DeviceArrayView<ConfirmedPPolynomial<CONVTIMES + 1, CONVTIMES + 2>> BaseFunction, DeviceArrayView<float> dx, DeviceArrayView<int> encodeNodeIndexInFunction, DeviceArrayView<unsigned int> DepthBuffer, DeviceArrayView<Point3D<float>> CenterBuffer, const float isoValue, const unsigned int DLevelOffset, const unsigned int DLevelNodeCount, cudaStream_t stream)
 {
 #ifdef CHECK_MESH_BUILD_TIME_COST
-	auto time1 = std::chrono::high_resolution_clock::now();					// ¼ÇÂ¼¿ªÊ¼Ê±¼äµã
+	auto time1 = std::chrono::high_resolution_clock::now();					// è®°å½•å¼€å§‹æ—¶é—´ç‚¹
 #endif // CHECK_MESH_BUILD_TIME_COST
-	/**************************** Step 0: Çå¿ÕÉÏÒ»Ö¡µÄMesh¶¥µã¼°Ë÷Òı ****************************/
+	/**************************** Step 0: æ¸…ç©ºä¸Šä¸€å¸§çš„Meshé¡¶ç‚¹åŠç´¢å¼• ****************************/
 	MeshTriangleIndex.ResizeArrayOrException(0);
 	MeshTriangleVertex.ResizeArrayOrException(0);
 
 	//printf("VertexCount = %d   EdgeCount = %d   FaceCount = %d\n", VertexArray.Size(), EdgeArray.Size(), FaceArray.Size());
 
-	/**************************** Step 1: ¼ÆËã°Ë²æÊ÷¶¥µãµÄÒşÊ½º¯ÊıÖµ ****************************/
+	/**************************** Step 1: è®¡ç®—å…«å‰æ ‘é¡¶ç‚¹çš„éšå¼å‡½æ•°å€¼ ****************************/
 	ComputeVertexImplicitFunctionValue(VertexArray, NodeArray.ArrayView(), BaseFunction, dx, encodeNodeIndexInFunction, isoValue, stream);
 #ifdef CHECK_MESH_BUILD_TIME_COST
 	CHECKCUDA(cudaStreamSynchronize(stream));
-	auto time2 = std::chrono::high_resolution_clock::now();					// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration1 = time2 - time1;		// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "¼ÆËã¶¥µãÒşÊ½º¯ÊıÖµµÄÊ±¼ä: " << duration1.count() << " ms" << std::endl;
+	auto time2 = std::chrono::high_resolution_clock::now();					// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration1 = time2 - time1;		// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "è®¡ç®—é¡¶ç‚¹éšå¼å‡½æ•°å€¼çš„æ—¶é—´: " << duration1.count() << " ms" << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 
-	/**************************** Step 2: ¼ÆËã±ßµÄÊıÁ¿ÒÔ¼°Æ«ÒÆ ****************************/
+	/**************************** Step 2: è®¡ç®—è¾¹çš„æ•°é‡ä»¥åŠåç§» ****************************/
 	generateVertexNumsAndVertexAddress(EdgeArray, NodeArray.ArrayView(), vvalue.ArrayView(), DLevelOffset, stream);
 #ifdef CHECK_MESH_BUILD_TIME_COST
 	CHECKCUDA(cudaStreamSynchronize(stream));
-	auto time3 = std::chrono::high_resolution_clock::now();							// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration2 = time3 - time2;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "¼ÆËã¶¥µãÊıÁ¿ÒÔ¼°¶¥µãÎ»ÖÃÆ«ÒÆµÄÊ±¼ä: " << duration2.count() << " ms" << std::endl;
+	auto time3 = std::chrono::high_resolution_clock::now();							// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration2 = time3 - time2;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "è®¡ç®—é¡¶ç‚¹æ•°é‡ä»¥åŠé¡¶ç‚¹ä½ç½®åç§»çš„æ—¶é—´: " << duration2.count() << " ms" << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 
-	/**************************** Step 3: ¼ÆËãÈı½ÇĞÎÊıÁ¿ÒÔ¼°µØÖ· ****************************/
+	/**************************** Step 3: è®¡ç®—ä¸‰è§’å½¢æ•°é‡ä»¥åŠåœ°å€ ****************************/
 	generateTriangleNumsAndTriangleAddress(NodeArray.ArrayView(), vvalue.ArrayView(), DLevelOffset, DLevelNodeCount, stream);
 #ifdef CHECK_MESH_BUILD_TIME_COST
 	CHECKCUDA(cudaStreamSynchronize(stream));
-	auto time4 = std::chrono::high_resolution_clock::now();							// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration3 = time4 - time3;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "¼ÆËãÈı½ÇÆÊ·ÖÊıÁ¿ÒÔ¼°Èı½ÇĞÎÆ«ÒÆÎ»ÖÃµÄÊ±¼ä: " << duration3.count() << " ms" << std::endl;
+	auto time4 = std::chrono::high_resolution_clock::now();							// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration3 = time4 - time3;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "è®¡ç®—ä¸‰è§’å‰–åˆ†æ•°é‡ä»¥åŠä¸‰è§’å½¢åç§»ä½ç½®çš„æ—¶é—´: " << duration3.count() << " ms" << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 
-	/**************************** Step 4 & 5: Éú³É½Úµã¼°Èı½ÇĞÎÍø¸ñ ****************************/
+	/**************************** Step 4 & 5: ç”ŸæˆèŠ‚ç‚¹åŠä¸‰è§’å½¢ç½‘æ ¼ ****************************/
 	generateVerticesAndTriangle(NodeArray, VertexArray, EdgeArray, FaceArray, DLevelOffset, DLevelNodeCount, stream);
 #ifdef CHECK_MESH_BUILD_TIME_COST
 	CHECKCUDA(cudaStreamSynchronize(stream));
-	auto time5 = std::chrono::high_resolution_clock::now();							// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration4 = time5 - time4;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "Éú³É½ÚµãºÍÍø¸ñMeshµÄÊ±¼ä: " << duration4.count() << " ms" << std::endl;
+	auto time5 = std::chrono::high_resolution_clock::now();							// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration4 = time5 - time4;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "ç”ŸæˆèŠ‚ç‚¹å’Œç½‘æ ¼Meshçš„æ—¶é—´: " << duration4.count() << " ms" << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 
-	/**************************** Step 6: Éú³ÉÏ¸·Ö½ÚµãÊı×é¼°ÆäÃ¿²ãÏ¸·Ö½ÚµãÆ«ÒÆºÍÏ¸·Ö½ÚµãÊıÁ¿ ****************************/
+	/**************************** Step 6: ç”Ÿæˆç»†åˆ†èŠ‚ç‚¹æ•°ç»„åŠå…¶æ¯å±‚ç»†åˆ†èŠ‚ç‚¹åç§»å’Œç»†åˆ†èŠ‚ç‚¹æ•°é‡ ****************************/
 	generateSubdivideNodeArrayCountAndAddress(NodeArray, DepthBuffer, DLevelOffset, stream);
 #ifdef CHECK_MESH_BUILD_TIME_COST
 	CHECKCUDA(cudaStreamSynchronize(stream));
-	auto time6 = std::chrono::high_resolution_clock::now();							// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration5 = time6 - time5;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "Éú³ÉÏ¸·Ö½ÚµãÊı×é¼°ÆäÃ¿²ãÆ«ÒÆºÍÊıÁ¿µÄÊ±¼ä: " << duration5.count() << " ms" << std::endl;
+	auto time6 = std::chrono::high_resolution_clock::now();							// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration5 = time6 - time5;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "ç”Ÿæˆç»†åˆ†èŠ‚ç‚¹æ•°ç»„åŠå…¶æ¯å±‚åç§»å’Œæ•°é‡çš„æ—¶é—´: " << duration5.count() << " ms" << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 
-	/**************************** Step 7: ´¦Àí´Ö½ÚµãÏ¸·ÖÖØ¹¹Íø¸ñ¡¾CoarserºÍFinerºóĞø¿ÉÒÔÓÃÁ½¸öÏß³ÌÁ½¸öÁ÷Ö´ĞĞ¡¿ ****************************/
+	/**************************** Step 7: å¤„ç†ç²—èŠ‚ç‚¹ç»†åˆ†é‡æ„ç½‘æ ¼ã€Coarserå’ŒFineråç»­å¯ä»¥ç”¨ä¸¤ä¸ªçº¿ç¨‹ä¸¤ä¸ªæµæ‰§è¡Œã€‘ ****************************/
 	CoarserSubdivideNodeAndRebuildMesh(NodeArray, DepthBuffer, CenterBuffer, BaseFunction, dx, encodeNodeIndexInFunction, isoValue, stream);
 #ifdef CHECK_MESH_BUILD_TIME_COST	
 	CHECKCUDA(cudaStreamSynchronize(stream));
-	auto time7 = std::chrono::high_resolution_clock::now();							// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration6 = time7 - time6;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "Coarser½ÚµãÏ¸·ÖÖØ¹¹Íø¸ñµÄÊ±¼ä: " << duration6.count() << " ms" << std::endl;
+	auto time7 = std::chrono::high_resolution_clock::now();							// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration6 = time7 - time6;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "CoarserèŠ‚ç‚¹ç»†åˆ†é‡æ„ç½‘æ ¼çš„æ—¶é—´: " << duration6.count() << " ms" << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 
-	/**************************** Step 8: ´¦Àí¾«½ÚµãÏ¸·ÖÖØ¹¹Íø¸ñ¡¾CoarserºÍFinerºóĞø¿ÉÒÔÓÃÁ½¸öÏß³ÌÁ½¸öÁ÷Ö´ĞĞ¡¿ ****************************/
+	/**************************** Step 8: å¤„ç†ç²¾èŠ‚ç‚¹ç»†åˆ†é‡æ„ç½‘æ ¼ã€Coarserå’ŒFineråç»­å¯ä»¥ç”¨ä¸¤ä¸ªçº¿ç¨‹ä¸¤ä¸ªæµæ‰§è¡Œã€‘ ****************************/
 	FinerSubdivideNodeAndRebuildMesh(NodeArray, DepthBuffer, CenterBuffer, BaseFunction, dx, encodeNodeIndexInFunction, isoValue, stream);
 #ifdef CHECK_MESH_BUILD_TIME_COST		
 	CHECKCUDA(cudaStreamSynchronize(stream));
-	auto time8 = std::chrono::high_resolution_clock::now();							// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration7 = time8 - time7;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "Finer½ÚµãÏ¸·ÖÖØ¹¹Íø¸ñµÄÊ±¼ä: " << duration7.count() << " ms" << std::endl;
+	auto time8 = std::chrono::high_resolution_clock::now();							// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration7 = time8 - time7;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "FinerèŠ‚ç‚¹ç»†åˆ†é‡æ„ç½‘æ ¼çš„æ—¶é—´: " << duration7.count() << " ms" << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 
 #ifdef CHECK_MESH_BUILD_TIME_COST
-	CHECKCUDA(cudaStreamSynchronize(stream));	// Á÷Í¬²½
-	auto time9 = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration8 = time9 - time1;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "¼ÆËãÈı½ÇÆÊ·ÖÍø¸ñË÷ÒıËùĞèÊ±¼ä: " << duration8.count() << " ms" << std::endl;		// Êä³ö
+	CHECKCUDA(cudaStreamSynchronize(stream));	// æµåŒæ­¥
+	auto time9 = std::chrono::high_resolution_clock::now();						// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration8 = time9 - time1;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "è®¡ç®—ä¸‰è§’å‰–åˆ†ç½‘æ ¼ç´¢å¼•æ‰€éœ€æ—¶é—´: " << duration8.count() << " ms" << std::endl;		// è¾“å‡º
 	std::cout << std::endl;
-	std::cout << "-----------------------------------------------------" << std::endl;	// Êä³ö
+	std::cout << "-----------------------------------------------------" << std::endl;	// è¾“å‡º
 	std::cout << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 }

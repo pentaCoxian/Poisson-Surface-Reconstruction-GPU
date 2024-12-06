@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   BinaryNode.h
- * \brief  ÅäÊÊBÑùÌõ»ùº¯Êı¼ÆËãµÄ½Úµã
+ * \brief  é…é€‚Bæ ·æ¡åŸºå‡½æ•°è®¡ç®—çš„èŠ‚ç‚¹
  * 
  * \author LUOJIAXUAN
  * \date   May 18th 2024
@@ -16,9 +16,9 @@ namespace SparseSurfelFusion {
         /**     2^depth                                         */
         __host__ __device__ static inline int CenterCount(int depth) { return 1 << depth; }
         /**
-         * \brief ÇóºÍ2^0 + 2^1 + ... + 2^maxDepth = 2^(maxDepth+1) - 1.
+         * \brief æ±‚å’Œ2^0 + 2^1 + ... + 2^maxDepth = 2^(maxDepth+1) - 1.
          * 
-         * \param maxDepth ×î´óÉî¶È
+         * \param maxDepth æœ€å¤§æ·±åº¦
          * \return 
          */
         __host__ __device__ static inline int CumulativeCenterCount(int maxDepth) { return (1 << (maxDepth + 1)) - 1; }

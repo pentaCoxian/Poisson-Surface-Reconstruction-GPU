@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   SynchronizeArray.h
- * \brief  ¾ßÓĞÍ¬²½¹¦ÄÜµÄÊı×é¡£×¢Òâ£¬Êı×éµÄÄÚÈİ²»ÄÜ±£Ö¤Í¬²½£¬ĞèÒªÏÔÊ½Í¬²½¡£ µ«ÊÇ£¬Ö÷»úÕóÁĞºÍÉè±¸ÕóÁĞµÄÕóÁĞ´óĞ¡×ÜÊÇÏàÍ¬µÄ¡£
+ * \brief  å…·æœ‰åŒæ­¥åŠŸèƒ½çš„æ•°ç»„ã€‚æ³¨æ„ï¼Œæ•°ç»„çš„å†…å®¹ä¸èƒ½ä¿è¯åŒæ­¥ï¼Œéœ€è¦æ˜¾å¼åŒæ­¥ã€‚ ä½†æ˜¯ï¼Œä¸»æœºé˜µåˆ—å’Œè®¾å¤‡é˜µåˆ—çš„é˜µåˆ—å¤§å°æ€»æ˜¯ç›¸åŒçš„ã€‚
  * 
  * \author LUO
  * \date   February 4th 2024
@@ -15,20 +15,20 @@
 namespace SparseSurfelFusion {
 
 	/**
-	 * \brief ¾ßÓĞÍ¬²½¹¦ÄÜµÄÊı×é¡£×¢Òâ£¬Êı×éµÄÄÚÈİ²»ÄÜ±£Ö¤Í¬²½£¬ĞèÒªÏÔÊ½Í¬²½¡£µ«ÊÇ£¬Ö÷»úÕóÁĞºÍÉè±¸ÕóÁĞµÄÕóÁĞ´óĞ¡×ÜÊÇÏàÍ¬µÄ¡£
+	 * \brief å…·æœ‰åŒæ­¥åŠŸèƒ½çš„æ•°ç»„ã€‚æ³¨æ„ï¼Œæ•°ç»„çš„å†…å®¹ä¸èƒ½ä¿è¯åŒæ­¥ï¼Œéœ€è¦æ˜¾å¼åŒæ­¥ã€‚ä½†æ˜¯ï¼Œä¸»æœºé˜µåˆ—å’Œè®¾å¤‡é˜µåˆ—çš„é˜µåˆ—å¤§å°æ€»æ˜¯ç›¸åŒçš„ã€‚
 	 */
 	template<typename T>
 	class SynchronizeArray {
 	private:
-		std::vector<T> hostArray;			//CPUÉÏµÄÊı×é
-		DeviceBufferArray<T> deviceArray;	//GPUÉÏµÄÊı×é
+		std::vector<T> hostArray;			//CPUä¸Šçš„æ•°ç»„
+		DeviceBufferArray<T> deviceArray;	//GPUä¸Šçš„æ•°ç»„
 
 	public:
 		explicit SynchronizeArray() : hostArray(), deviceArray() {}
 		/**
-		 * \brief ¹¹ÔìSynchronizeArrayÀàĞÍ£¬¸øHost·ÖÅävectorÀàĞÍÄÚ´æ£¬¸øGPU·ÖÅäDeviceBufferArrayÀàĞÍÄÚ´æ£¬¿ª±ÙÈİÁ¿.
+		 * \brief æ„é€ SynchronizeArrayç±»å‹ï¼Œç»™Hoståˆ†é…vectorç±»å‹å†…å­˜ï¼Œç»™GPUåˆ†é…DeviceBufferArrayç±»å‹å†…å­˜ï¼Œå¼€è¾Ÿå®¹é‡.
 		 * 
-		 * \param capacity HostºÍDevice¿ª±ÙµÄÈİÁ¿
+		 * \param capacity Hostå’ŒDeviceå¼€è¾Ÿçš„å®¹é‡
 		 */
 		explicit SynchronizeArray(size_t capacity) {
 			AllocateBuffer(capacity);
@@ -37,67 +37,67 @@ namespace SparseSurfelFusion {
 		NO_COPY_ASSIGN_MOVE(SynchronizeArray);
 
 		/**
-		 * \brief ·µ»ØGPU¿ª±ÙÄÚ´æÈİÁ¿´óĞ¡.
+		 * \brief è¿”å›GPUå¼€è¾Ÿå†…å­˜å®¹é‡å¤§å°.
 		 * 
-		 * \return ·µ»ØGPU¿ª±ÙÄÚ´æÈİÁ¿´óĞ¡
+		 * \return è¿”å›GPUå¼€è¾Ÿå†…å­˜å®¹é‡å¤§å°
 		 */
 		size_t Capacity() const { return deviceArray.Capacity(); }
 		/**
-		 * \brief ·µ»ØGPUÄÚ´æ´æ´¢µÄÊı¾İ´óĞ¡(Êı¾İ´óĞ¡ ¡Ü ¿ª±ÙµÄÄÚ´æÈİÁ¿).
+		 * \brief è¿”å›GPUå†…å­˜å­˜å‚¨çš„æ•°æ®å¤§å°(æ•°æ®å¤§å° â‰¤ å¼€è¾Ÿçš„å†…å­˜å®¹é‡).
 		 * 
-		 * \return GPUÄÚ´æ´æ´¢µÄÊı¾İ´óĞ¡
+		 * \return GPUå†…å­˜å­˜å‚¨çš„æ•°æ®å¤§å°
 		 */
 		size_t DeviceArraySize() const { return deviceArray.ArraySize(); }
 		/**
-		 * \brief ·µ»ØÔÚHostÉÏ´æ´¢µÄÊı¾İ´óĞ¡.
+		 * \brief è¿”å›åœ¨Hostä¸Šå­˜å‚¨çš„æ•°æ®å¤§å°.
 		 * 
-		 * \return ÔÚHostÉÏ´æ´¢µÄÊı¾İ´óĞ¡
+		 * \return åœ¨Hostä¸Šå­˜å‚¨çš„æ•°æ®å¤§å°
 		 */
 		size_t HostArraySize() const { return hostArray.size(); }
 		/**
-		 * \brief »ñµÃGPUÉÏµÄÊı¾İ£¬Ö»¶ÁĞÎÊ½.
+		 * \brief è·å¾—GPUä¸Šçš„æ•°æ®ï¼Œåªè¯»å½¢å¼.
 		 * 
-		 * \return GPUÉÏµÄÊı¾İ(´«³öÒÔDeviceArrayView<T>ÀàĞÍ)
+		 * \return GPUä¸Šçš„æ•°æ®(ä¼ å‡ºä»¥DeviceArrayView<T>ç±»å‹)
 		 */
 		DeviceArrayView<T> DeviceArrayReadOnly() const { return DeviceArrayView<T>(deviceArray.Array()); }
 		/**
-		 * \brief »ñµÃGPUÉÏµÄÊı¾İ£¬¿É¶ÁĞ´ĞÎÊ½.
+		 * \brief è·å¾—GPUä¸Šçš„æ•°æ®ï¼Œå¯è¯»å†™å½¢å¼.
 		 * 
-		 * \return GPUÉÏµÄÊı¾İ(´«³öÒÔSparseSurfelFusion::DeviceArray<T>ĞÎÊ½)
+		 * \return GPUä¸Šçš„æ•°æ®(ä¼ å‡ºä»¥SparseSurfelFusion::DeviceArray<T>å½¢å¼)
 		 */
 		SparseSurfelFusion::DeviceArray<T> DeviceArray() const { return deviceArray.Array(); }
 		/**
-		 * \brief »ñµÃGPUÉÏµÄÊı¾İ£¬¿É¶ÁĞ´ĞÎÊ½.
+		 * \brief è·å¾—GPUä¸Šçš„æ•°æ®ï¼Œå¯è¯»å†™å½¢å¼.
 		 * 
-		 * \return GPUÉÏµÄÊı¾İ(´«³öÒÔDeviceArrayHandle<T>ĞÎÊ½)
+		 * \return GPUä¸Šçš„æ•°æ®(ä¼ å‡ºä»¥DeviceArrayHandle<T>å½¢å¼)
 		 */
 		DeviceArrayHandle<T> DeviceArrayReadWrite() { return deviceArray.ArrayHandle(); }
 
 		/**
-		 * \brief »ñµÃHostÉÏµÄÊı¾İ£¬·Ç¿½±´ĞÎÊ½£¬ÒıÓÃ´«µİ.
+		 * \brief è·å¾—Hostä¸Šçš„æ•°æ®ï¼Œéæ‹·è´å½¢å¼ï¼Œå¼•ç”¨ä¼ é€’.
 		 * 
-		 * \return HostÉÏµÄÊı¾İ
+		 * \return Hostä¸Šçš„æ•°æ®
 		 */
 		std::vector<T>& HostArray() { return hostArray; }
 		/**
-		 * \brief »ñµÃHostÉÏµÄÊı¾İ£¬·Ç¿½±´ĞÎÊ½£¬ÒıÓÃ´«µİ.
+		 * \brief è·å¾—Hostä¸Šçš„æ•°æ®ï¼Œéæ‹·è´å½¢å¼ï¼Œå¼•ç”¨ä¼ é€’.
 		 * 
-		 * \return HostÉÏµÄÊı¾İ
+		 * \return Hostä¸Šçš„æ•°æ®
 		 */
 		const std::vector<T>& HostArray() const { return hostArray; }
 
 		/**
-		 * \brief ·ÃÎÊGPUÉÏÔ­Ê¼µÄµØÖ·.
+		 * \brief è®¿é—®GPUä¸ŠåŸå§‹çš„åœ°å€.
 		 * 
-		 * \return GPUÉÏÔ­Ê¼µÄµØÖ·(DeviceBufferArray).
+		 * \return GPUä¸ŠåŸå§‹çš„åœ°å€(DeviceBufferArray).
 		 */
 		const T* DevicePtr() const { return deviceArray.Ptr(); }
 		T* DevicePtr() { return deviceArray.Ptr(); }
 
 		/**
-		 * \brief ¸øHost·ÖÅävectorÀàĞÍÄÚ´æ£¬¸øGPU·ÖÅäDeviceBufferArrayÀàĞÍÄÚ´æ£¬¿ª±ÙÈİÁ¿.
+		 * \brief ç»™Hoståˆ†é…vectorç±»å‹å†…å­˜ï¼Œç»™GPUåˆ†é…DeviceBufferArrayç±»å‹å†…å­˜ï¼Œå¼€è¾Ÿå®¹é‡.
 		 * 
-		 * \param capacity ÈİÁ¿´óĞ¡
+		 * \param capacity å®¹é‡å¤§å°
 		 */
 		void AllocateBuffer(size_t capacity) {
 			hostArray.reserve(capacity);
@@ -105,11 +105,11 @@ namespace SparseSurfelFusion {
 		}
 
 		/**
-		 * \brief ÖØĞÂµ÷ÕûhostºÍdeviceÄÚ´æ´óĞ¡.
+		 * \brief é‡æ–°è°ƒæ•´hostå’Œdeviceå†…å­˜å¤§å°.
 		 * 
-		 * \param size ĞèÒªµ÷ÕûµÄdeviceºÍhostÄÚ´æ´óĞ¡
-		 * \param allocate Èç¹û´óĞ¡²»¹»ÊÇ·ñÖØĞÂ·ÖÅä´óĞ¡
-		 * \return µ÷ÕûdeviceºÍhostÄÚ´æ´óĞ¡ÊÇ·ñ³É¹¦
+		 * \param size éœ€è¦è°ƒæ•´çš„deviceå’Œhostå†…å­˜å¤§å°
+		 * \param allocate å¦‚æœå¤§å°ä¸å¤Ÿæ˜¯å¦é‡æ–°åˆ†é…å¤§å°
+		 * \return è°ƒæ•´deviceå’Œhostå†…å­˜å¤§å°æ˜¯å¦æˆåŠŸ
 		 */
 		bool ResizeArray(size_t size, bool allocate = false) {
 			if (deviceArray.ResizeArray(size, allocate) == true) {
@@ -117,55 +117,55 @@ namespace SparseSurfelFusion {
 				return true;
 			}
 
-			//Éè±¸ÕóÁĞÎŞ·¨³É¹¦µ÷Õû´óĞ¡
-			//Ö÷»úºÍÉè±¸´óĞ¡Ò»ÖÂ
+			//è®¾å¤‡é˜µåˆ—æ— æ³•æˆåŠŸè°ƒæ•´å¤§å°
+			//ä¸»æœºå’Œè®¾å¤‡å¤§å°ä¸€è‡´
 			return false;
 		}
 		/**
-		 * \brief µ÷ÕûhostÉÏArrayµÄ´óĞ¡ÒÔ¼°GPUÉÏArrayµÄ´óĞ¡.
+		 * \brief è°ƒæ•´hostä¸ŠArrayçš„å¤§å°ä»¥åŠGPUä¸ŠArrayçš„å¤§å°.
 		 * 
-		 * \param size Èç¹ûÔ¤·ÖÅäµÄBufferĞ¡ÓÚsize£¬ÄÇÃ´Ôò±¨´í£¬·ñÔòÔÚGPUÉÏ·ÖÅäÒ»¸ö´óĞ¡ÎªsizeµÄÄÚ´æ¿Õ¼ä
+		 * \param size å¦‚æœé¢„åˆ†é…çš„Bufferå°äºsizeï¼Œé‚£ä¹ˆåˆ™æŠ¥é”™ï¼Œå¦åˆ™åœ¨GPUä¸Šåˆ†é…ä¸€ä¸ªå¤§å°ä¸ºsizeçš„å†…å­˜ç©ºé—´
 		 */
 		void ResizeArrayOrException(size_t size) {
 			deviceArray.ResizeArrayOrException(size);
 			hostArray.resize(size);
 		}
 
-		//Çå³ıÖ÷»úÕóÁĞºÍÉè±¸ÕóÁĞµÄArray, µ«ÊÇ²»»áÉæ¼°ÒÑ·ÖÅäµÄ»º´æ
+		//æ¸…é™¤ä¸»æœºé˜µåˆ—å’Œè®¾å¤‡é˜µåˆ—çš„Array, ä½†æ˜¯ä¸ä¼šæ¶‰åŠå·²åˆ†é…çš„ç¼“å­˜
 		void ClearArray() {
 			ResizeArray(0);
 		}
 
 		
 		/**
-		 * \brief ½«GPUµÄÊı¾İÓëCPUÍ¬²½£¬ÕâÀïÖ±½Ó½«hostArray.data()¿½±´¸ødeviceArray.Ptr().
+		 * \brief å°†GPUçš„æ•°æ®ä¸CPUåŒæ­¥ï¼Œè¿™é‡Œç›´æ¥å°†hostArray.data()æ‹·è´ç»™deviceArray.Ptr().
 		 * 
-		 * \param stream cudaÁ÷ID
+		 * \param stream cudaæµID
 		 */
 		void SynchronizeToDevice(cudaStream_t stream = 0) {
-			//µ÷ÕûGPUÉÏÊı×é´óĞ¡
+			//è°ƒæ•´GPUä¸Šæ•°ç»„å¤§å°
 			deviceArray.ResizeArrayOrException(hostArray.size());
 
-			//Êµ¼ÊµÄÍ¬²½
+			//å®é™…çš„åŒæ­¥
 			CHECKCUDA(cudaMemcpyAsync(deviceArray.Ptr(), hostArray.data(), sizeof(T) * hostArray.size(), cudaMemcpyHostToDevice, stream));
 		}
 
 		/**
-		 * \brief ½«CPUµÄÊı¾İÓëGPUÍ¬²½£¬ÕâÀï½«deviceArray.Ptr()Êı¾İ¿½±´µ½hostArray.data()ÖĞ.
+		 * \brief å°†CPUçš„æ•°æ®ä¸GPUåŒæ­¥ï¼Œè¿™é‡Œå°†deviceArray.Ptr()æ•°æ®æ‹·è´åˆ°hostArray.data()ä¸­.
 		 * 
-		 * \param stream cudaÁ÷ID
-		 * \param sync ÊÇ·ñ½øĞĞcudaÁ÷Í¬²½(Ä¬ÈÏ½øĞĞ)
+		 * \param stream cudaæµID
+		 * \param sync æ˜¯å¦è¿›è¡ŒcudaæµåŒæ­¥(é»˜è®¤è¿›è¡Œ)
 		 */
 		void SynchronizeToHost(cudaStream_t stream = 0, bool sync = true) {
-			//µ÷ÕûÖ÷»úÕóÁĞ´óĞ¡
+			//è°ƒæ•´ä¸»æœºé˜µåˆ—å¤§å°
 			hostArray.resize(deviceArray.ArraySize());
 
-			//Êµ¼ÊµÄÍ¬²½
+			//å®é™…çš„åŒæ­¥
 			CHECKCUDA(cudaMemcpyAsync(hostArray.data(), deviceArray.Ptr(), sizeof(T) * hostArray.size(), cudaMemcpyDeviceToHost, stream));
 
 			if (sync) {
-				//ÔÚÖ÷»úÉÏÊ¹ÓÃÖ®Ç°£¬±ØĞëµ÷ÓÃÁ÷Í¬²½
-				//Õâ¸ö»Øµ÷¿ÉÄÜ»áÍÆ³Ù
+				//åœ¨ä¸»æœºä¸Šä½¿ç”¨ä¹‹å‰ï¼Œå¿…é¡»è°ƒç”¨æµåŒæ­¥
+				//è¿™ä¸ªå›è°ƒå¯èƒ½ä¼šæ¨è¿Ÿ
 				CHECKCUDA(cudaStreamSynchronize(stream));
 			}
 		}

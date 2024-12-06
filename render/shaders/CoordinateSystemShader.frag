@@ -2,9 +2,9 @@
 
 in vec3 color;
 
-out vec4 FragColor; // 输出颜色
+out vec4 FragColor; // 杈撳嚭棰滆壊
 
 void main()
 {
-    FragColor = vec4(color.x, color.y, color.z, 1.0f); // 片段着色器设置顶点颜色
+    FragColor = vec4(color.x, color.y, color.z, 1.0f); // 鐗囨鐫�鑹插櫒璁剧疆椤剁偣棰滆壊
 } 

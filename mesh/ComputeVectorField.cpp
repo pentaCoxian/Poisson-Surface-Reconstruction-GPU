@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   ComputeVectorField.cpp
- * \brief  ¼ÆËãÏòÁ¿³¡·½·¨
+ * \brief  è®¡ç®—å‘é‡åœºæ–¹æ³•
  * 
  * \author LUOJIAXUAN
  * \date   May 15th 2024
@@ -37,14 +37,14 @@ void SparseSurfelFusion::ComputeVectorField::AllocateBuffer()
 void SparseSurfelFusion::ComputeVectorField::BuildVectorField(DeviceArrayView<OrientedPoint3D<float>> orientedPoints, DeviceArrayView<OctNode> NodeArray, const int* NodeArrayCount, const int* BaseAddressArray, cudaStream_t stream)
 {
 #ifdef CHECK_MESH_BUILD_TIME_COST
-    auto start = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼¿ªÊ¼Ê±¼äµã
+    auto start = std::chrono::high_resolution_clock::now();						// è®°å½•å¼€å§‹æ—¶é—´ç‚¹
 #endif // CHECK_MESH_BUILD_TIME_COST
 
 
     ConfirmedPPolynomial<CONVTIMES, CONVTIMES + 2> BaseFunctionMaxDepth(ReconstructionFunction.scale(1.0 / (1 << Constants::maxDepth_Host)));
     
     //for (int i = 0; i < CONVTIMES + 2; i++) {
-    //    printf("µÚ %d ¸ö¶àÏîÊ½ÏµÊı£ºcoefficients = %.5f   %.5f\n", i, BaseFunctionMaxDepth.polys[i].p.coefficients[0], BaseFunctionMaxDepth.polys[i].p.coefficients[1]);
+    //    printf("ç¬¬ %d ä¸ªå¤šé¡¹å¼ç³»æ•°ï¼šcoefficients = %.5f   %.5f\n", i, BaseFunctionMaxDepth.polys[i].p.coefficients[0], BaseFunctionMaxDepth.polys[i].p.coefficients[1]);
     //}
     
     BaseFunctionMaxDepth_Device.ResizeArrayOrException(sizeof(BaseFunctionMaxDepth));
@@ -63,11 +63,11 @@ void SparseSurfelFusion::ComputeVectorField::BuildVectorField(DeviceArrayView<Or
 
 #ifdef CHECK_MESH_BUILD_TIME_COST
     CHECKCUDA(cudaStreamSynchronize(stream));
-    auto end = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼½áÊøÊ±¼äµã
-    std::chrono::duration<double, std::milli> duration = end - start;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-    std::cout << "¹¹½¨ÏòÁ¿³¡Ê±¼ä: " << duration.count() << " ms" << std::endl;		// Êä³ö
+    auto end = std::chrono::high_resolution_clock::now();						// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+    std::chrono::duration<double, std::milli> duration = end - start;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+    std::cout << "æ„å»ºå‘é‡åœºæ—¶é—´: " << duration.count() << " ms" << std::endl;		// è¾“å‡º
     std::cout << std::endl;
-    std::cout << "-----------------------------------------------------" << std::endl;	// Êä³ö
+    std::cout << "-----------------------------------------------------" << std::endl;	// è¾“å‡º
     std::cout << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 }
@@ -76,7 +76,7 @@ void SparseSurfelFusion::ComputeVectorField::BuildVectorField(DeviceArrayView<Or
 
 void SparseSurfelFusion::ComputeVectorField::BuildInnerProductTable(cudaStream_t stream)
 {
-    auto start = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼¿ªÊ¼Ê±¼äµã
+    auto start = std::chrono::high_resolution_clock::now();						// è®°å½•å¼€å§‹æ—¶é—´ç‚¹
 
     ReconstructionFunction = PPolynomial<CONVTIMES>::GaussianApproximation();
     FunctionData<CONVTIMES, double> fData;
@@ -112,10 +112,10 @@ void SparseSurfelFusion::ComputeVectorField::BuildInnerProductTable(cudaStream_t
     CHECKCUDA(cudaMemcpyAsync(baseFunctions_Device.Array().ptr(), baseFunctions_Host.data(), sizeof(ConfirmedPPolynomial<CONVTIMES + 1, CONVTIMES + 2>) * fData.res, cudaMemcpyHostToDevice, stream));
 
     CHECKCUDA(cudaStreamSynchronize(stream));
-    auto end = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼½áÊøÊ±¼äµã
-    std::chrono::duration<double, std::milli> duration = end - start;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-    std::cout << "Ô¤ÏÈ¼ÆËãµã»ı±íÊ±¼ä: " << duration.count() << " ms" << std::endl;		// Êä³ö
+    auto end = std::chrono::high_resolution_clock::now();						// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+    std::chrono::duration<double, std::milli> duration = end - start;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+    std::cout << "é¢„å…ˆè®¡ç®—ç‚¹ç§¯è¡¨æ—¶é—´: " << duration.count() << " ms" << std::endl;		// è¾“å‡º
     std::cout << std::endl;
-    std::cout << "-----------------------------------------------------" << std::endl;	// Êä³ö
+    std::cout << "-----------------------------------------------------" << std::endl;	// è¾“å‡º
     std::cout << std::endl;
 }

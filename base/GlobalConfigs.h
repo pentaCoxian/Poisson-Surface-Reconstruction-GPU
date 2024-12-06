@@ -1,11 +1,11 @@
 #pragma once
 
-//#define CHECK_MESH_BUILD_TIME_COST	// ²é¿´Íø¸ñÖØ½¨¹ý³ÌÖÐÃ¿¸ö²½ÖèÊ±¼äÏûºÄ
+//#define CHECK_MESH_BUILD_TIME_COST	// æŸ¥çœ‹ç½‘æ ¼é‡å»ºè¿‡ç¨‹ä¸­æ¯ä¸ªæ­¥éª¤æ—¶é—´æ¶ˆè€—
 
 #define CUB_IGNORE_DEPRECATED_API
 
-#define MAX_SURFEL_COUNT 300000			// ×î´óÃæÔª¸öÊý
-#define MAX_MESH_TRIANGLE_COUNT 1000000	// ×î´óÍø¸ñÈý½ÇÐÎÊýÁ¿
+#define MAX_SURFEL_COUNT 300000			// æœ€å¤§é¢å…ƒä¸ªæ•°
+#define MAX_MESH_TRIANGLE_COUNT 1000000	// æœ€å¤§ç½‘æ ¼ä¸‰è§’å½¢æ•°é‡
 
 #define FORCE_UNIT_NORMALS 1
 
@@ -31,24 +31,24 @@
 
 #define MAX_THREADS 10
 
-#define MAX_DEPTH_OCTREE 7	// octree×î´óÉî¶È
+#define MAX_DEPTH_OCTREE 7	// octreeæœ€å¤§æ·±åº¦
 
-#define MAX_MESH_STREAM 5	// ×î´óÖ´ÐÐmeshÈÎÎñµÄcudaÁ÷ÊýÁ¿
+#define MAX_MESH_STREAM 5	// æœ€å¤§æ‰§è¡Œmeshä»»åŠ¡çš„cudaæµæ•°é‡
 
 #define F_DATA_RES ((1 << (MAX_DEPTH_OCTREE + 1)) - 1)					// 2^(maxDepth + 1) - 1
 #define F_DATA_RES_SQUARE F_DATA_RES * F_DATA_RES						// 2047^2
 
-#define D_LEVEL_MAX_NODE 8 * MAX_SURFEL_COUNT							// maxDepth²ã½ÚµãµÄ×î»µÇé¿öÓ¦¸ÃÊÇ8 * MAX_SURFEL_COUNT
-#define TOTAL_NODEARRAY_MAX_COUNT MAX_SURFEL_COUNT * 10					// NodeArray×î´óµÄÊýÁ¿
-#define TOTAL_VERTEXARRAY_MAX_COUNT 8* TOTAL_NODEARRAY_MAX_COUNT		// NodeArray×î´óµÄÊýÁ¿ * 8(8¸ö¶¥µã)
-#define TOTAL_EDGEARRAY_MAX_COUNT 12 * D_LEVEL_MAX_NODE					// NodeArrayÖÐmaxDepth²ãÖÐ½ÚµãÊýÁ¿ * 12
-#define TOTAL_FACEARRAY_MAX_COUNT 6 * TOTAL_NODEARRAY_MAX_COUNT			// NodeArray×î´óµÄÊýÁ¿ * 6(6¸öÃæ)
+#define D_LEVEL_MAX_NODE 8 * MAX_SURFEL_COUNT							// maxDepthå±‚èŠ‚ç‚¹çš„æœ€åæƒ…å†µåº”è¯¥æ˜¯8 * MAX_SURFEL_COUNT
+#define TOTAL_NODEARRAY_MAX_COUNT MAX_SURFEL_COUNT * 10					// NodeArrayæœ€å¤§çš„æ•°é‡
+#define TOTAL_VERTEXARRAY_MAX_COUNT 8* TOTAL_NODEARRAY_MAX_COUNT		// NodeArrayæœ€å¤§çš„æ•°é‡ * 8(8ä¸ªé¡¶ç‚¹)
+#define TOTAL_EDGEARRAY_MAX_COUNT 12 * D_LEVEL_MAX_NODE					// NodeArrayä¸­maxDepthå±‚ä¸­èŠ‚ç‚¹æ•°é‡ * 12
+#define TOTAL_FACEARRAY_MAX_COUNT 6 * TOTAL_NODEARRAY_MAX_COUNT			// NodeArrayæœ€å¤§çš„æ•°é‡ * 6(6ä¸ªé¢)
 
-#define RESOLUTION (1 << (MAX_DEPTH_OCTREE + 1)) - 1	// ·Ö±æÂÊ
+#define RESOLUTION (1 << (MAX_DEPTH_OCTREE + 1)) - 1	// åˆ†è¾¨çŽ‡
 
-#define COARSER_DIVERGENCE_LEVEL_NUM 4												// ¼ÆËã´ÖÂÔ½ÚµãËùÐè½Úµã²ãÊý[0, LevelNum]
-#define TOTAL_FINER_NODE_NUM 6 * MAX_SURFEL_COUNT									// [maxDepth - LevelNum, maxDepth]²ãµÄ½Úµã×ÜÊý
-#define TOTAL_COARSER_NODE_NUM TOTAL_NODEARRAY_MAX_COUNT - TOTAL_FINER_NODE_NUM		// [1, maxDepth - LevelNum - 1]²ãµÄ½Úµã×ÜÊý
+#define COARSER_DIVERGENCE_LEVEL_NUM 4												// è®¡ç®—ç²—ç•¥èŠ‚ç‚¹æ‰€éœ€èŠ‚ç‚¹å±‚æ•°[0, LevelNum]
+#define TOTAL_FINER_NODE_NUM 6 * MAX_SURFEL_COUNT									// [maxDepth - LevelNum, maxDepth]å±‚çš„èŠ‚ç‚¹æ€»æ•°
+#define TOTAL_COARSER_NODE_NUM TOTAL_NODEARRAY_MAX_COUNT - TOTAL_FINER_NODE_NUM		// [1, maxDepth - LevelNum - 1]å±‚çš„èŠ‚ç‚¹æ€»æ•°
 
 #define EPSILON float(1e-6)
 

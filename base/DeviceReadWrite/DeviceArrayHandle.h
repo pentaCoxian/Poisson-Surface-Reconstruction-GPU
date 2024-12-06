@@ -1,7 +1,7 @@
 /*****************************************************************//**
  * \file   DeviceArrayHandle.h
- * \brief  DeviceArrayHandleÊÇ¶ÔGPUµÄ»º´æ½øĞĞ¶ÁĞ´µÄÀà£¬ÊôÓÚÇáÁ¿¼¶£¬²¢²»ÓµÓĞÊı×éÄÚ´æ£¬Ö»ÊÇ¶ÔÊı×éµÄÒ»¸öÒıÓÃ»òÊÓÍ¼£¬Í¬Ê±Ğ´ÁË½Ó¿Ú·½±ã¶ÔÊı×é½øĞĞĞ´Èë¡£
- *		   DeviceSliceBufferArrayÊÇ¹ÜÀíÊı×éµÄ»º³åÇø£¬²¢ÇÒ¿ÉÒÔ¶ÔDeviceArrayHandleÊı×éÖĞÄ³Ò»Æ¬¶Î½øĞĞÇĞÆ¬£¬²¢¹ÜÀí¡£
+ * \brief  DeviceArrayHandleæ˜¯å¯¹GPUçš„ç¼“å­˜è¿›è¡Œè¯»å†™çš„ç±»ï¼Œå±äºè½»é‡çº§ï¼Œå¹¶ä¸æ‹¥æœ‰æ•°ç»„å†…å­˜ï¼Œåªæ˜¯å¯¹æ•°ç»„çš„ä¸€ä¸ªå¼•ç”¨æˆ–è§†å›¾ï¼ŒåŒæ—¶å†™äº†æ¥å£æ–¹ä¾¿å¯¹æ•°ç»„è¿›è¡Œå†™å…¥ã€‚
+ *		   DeviceSliceBufferArrayæ˜¯ç®¡ç†æ•°ç»„çš„ç¼“å†²åŒºï¼Œå¹¶ä¸”å¯ä»¥å¯¹DeviceArrayHandleæ•°ç»„ä¸­æŸä¸€ç‰‡æ®µè¿›è¡Œåˆ‡ç‰‡ï¼Œå¹¶ç®¡ç†ã€‚
  * 
  * \author LUO
  * \date   January 8th 2024
@@ -15,191 +15,191 @@
 
 namespace SparseSurfelFusion {
 
-	// ¶ÔÓÑÔªµÄÏòÇ°ÉùÃ÷
+	// å¯¹å‹å…ƒçš„å‘å‰å£°æ˜
 	template<typename T>
 	class DeviceSliceBufferArray;
 
 	/**
-	 * \brief Õâ¸öÀàÊÇ¶ÔGPU»º´æ½øĞĞ¶ÁÈ¡ºÍĞ´ÈëµÄÀà.
+	 * \brief è¿™ä¸ªç±»æ˜¯å¯¹GPUç¼“å­˜è¿›è¡Œè¯»å–å’Œå†™å…¥çš„ç±».
 	 */
 	template<typename T>
 	class DeviceArrayHandle {
 	private:
-		T* deviceArray;				//´æÈëGPUµÄµØÖ·£¬ Ã»ÓĞconst£¬¼´deviceArrayÊÇ¿ÉÒÔ±»¸³ÖµµÄ
-		size_t deviceArraySize;		//dataµÄ³¤¶È(Êı¾İ¸öÊı)
+		T* deviceArray;				//å­˜å…¥GPUçš„åœ°å€ï¼Œ æ²¡æœ‰constï¼Œå³deviceArrayæ˜¯å¯ä»¥è¢«èµ‹å€¼çš„
+		size_t deviceArraySize;		//dataçš„é•¿åº¦(æ•°æ®ä¸ªæ•°)
 	public:
-		// Ä¬ÈÏµÄ¿½±´/¸³Öµ/ÒÆ¶¯/Îö¹¹
-		// ¹¹Ôìº¯Êı£ºÖ¸ÕëÎª¿Õ£¬´óĞ¡Îª0¡£ÊÊÓÃ·¶Î§£º¡°host & device¡±
+		// é»˜è®¤çš„æ‹·è´/èµ‹å€¼/ç§»åŠ¨/ææ„
+		// æ„é€ å‡½æ•°ï¼šæŒ‡é’ˆä¸ºç©ºï¼Œå¤§å°ä¸º0ã€‚é€‚ç”¨èŒƒå›´ï¼šâ€œhost & deviceâ€
 		__host__ __device__ DeviceArrayHandle() : deviceArray(nullptr), deviceArraySize(0) {}
-		// ¹¹Ôìº¯Êı£º´«ÈëÊı¾İÊ×µØÖ·£¬Êı¾İ´óĞ¡¡£ÊÊÓÃ·¶Î§£º¡°host & device¡±
+		// æ„é€ å‡½æ•°ï¼šä¼ å…¥æ•°æ®é¦–åœ°å€ï¼Œæ•°æ®å¤§å°ã€‚é€‚ç”¨èŒƒå›´ï¼šâ€œhost & deviceâ€
 		__host__ __device__ DeviceArrayHandle(T* dev_arr, size_t size) : deviceArray(dev_arr), deviceArraySize(size) {}
-		// ¹¹Ôìº¯Êı£º´«ÈëÊ×µØÖ·£¬Êı¾İÆğÊ¼µÄÎ»ÖÃ(´ÓµÚ¼¸¸ö¿ªÊ¼)£¬Êı¾İ½áÊøµÄÎ»ÖÃ(µ½µÚ¼¸¸ö½áÊø) ÊÊÓÃ·¶Î§£º¡°host & device¡±
+		// æ„é€ å‡½æ•°ï¼šä¼ å…¥é¦–åœ°å€ï¼Œæ•°æ®èµ·å§‹çš„ä½ç½®(ä»ç¬¬å‡ ä¸ªå¼€å§‹)ï¼Œæ•°æ®ç»“æŸçš„ä½ç½®(åˆ°ç¬¬å‡ ä¸ªç»“æŸ) é€‚ç”¨èŒƒå›´ï¼šâ€œhost & deviceâ€
 		__host__ __device__ DeviceArrayHandle(T* arr, size_t start, size_t end) {
 			deviceArraySize = end - start;
 			deviceArray = arr + start;
 		}
-		// ÏÔÊ¾¹¹Ôìº¯Êı£º´«¸øÒ»¸öDeviceArray<T>ÀàĞÍ£¬·ÀÖ¹ÒşÊ½µ÷ÓÃ
+		// æ˜¾ç¤ºæ„é€ å‡½æ•°ï¼šä¼ ç»™ä¸€ä¸ªDeviceArray<T>ç±»å‹ï¼Œé˜²æ­¢éšå¼è°ƒç”¨
 		explicit __host__ DeviceArrayHandle(const DeviceArray<T>& arr) : deviceArray((T*)arr.ptr()), deviceArraySize(arr.size()) {}
 
-		// ¼òµ¥½Ó¿Ú
-		// »ñµÃGPUÊı¾İÊıÁ¿
+		// ç®€å•æ¥å£
+		// è·å¾—GPUæ•°æ®æ•°é‡
 		__host__ __device__ __forceinline__ size_t Size() const { return deviceArraySize; }
-		// »ñµÃGPUÖĞÕâ´®Êı¾İÕ¼¶àÉÙbyte
+		// è·å¾—GPUä¸­è¿™ä¸²æ•°æ®å å¤šå°‘byte
 		__host__ __device__ __forceinline__ size_t ByteSize() const { return deviceArraySize * sizeof(T); }
-		// »ñµÃÊı¾İÔÚGPUÖĞµÄÊ×µØÖ·
+		// è·å¾—æ•°æ®åœ¨GPUä¸­çš„é¦–åœ°å€
 		__host__ __device__ __forceinline__ const T* RawPtr() const { return deviceArray; }
-		// »ñµÃÊı¾İÔÚGPUÖĞµÄÊ×µØÖ·
+		// è·å¾—æ•°æ®åœ¨GPUä¸­çš„é¦–åœ°å€
 		__host__ __device__ __forceinline__ T* RawPtr() { return deviceArray; }
-		// ²é¿´GPUÖĞµÄÊı¾İ£¬ËùÓĞ²é¿´Êı¾İ¶¼ÊÇÓÃView²é¿´
+		// æŸ¥çœ‹GPUä¸­çš„æ•°æ®ï¼Œæ‰€æœ‰æŸ¥çœ‹æ•°æ®éƒ½æ˜¯ç”¨ViewæŸ¥çœ‹
 		__host__ __device__ DeviceArrayView<T> ArrayView() const { return DeviceArrayView<T>(deviceArray, deviceArraySize); }
 
-		// ÒşÊ½¹¹Ôì£¬ÖØÔØ*ºÅ
+		// éšå¼æ„é€ ï¼Œé‡è½½*å·
 		operator T* () { return deviceArray; }
 		operator const T* () const { return deviceArray; }
 
-		// ÕâÖÖ·ÃÎÊ·½Ê½Ö»ÄÜÔÚdeviceÖĞ²Ù×÷  ÊÊÓÃ·¶Î§£º¡°device¡±
+		// è¿™ç§è®¿é—®æ–¹å¼åªèƒ½åœ¨deviceä¸­æ“ä½œ  é€‚ç”¨èŒƒå›´ï¼šâ€œdeviceâ€
 		__device__ __forceinline__ const T& operator[](size_t index) const { return deviceArray[index]; }
-		// ÕâÖÖ·ÃÎÊ·½Ê½Ö»ÄÜÔÚdeviceÖĞ²Ù×÷  ÊÊÓÃ·¶Î§£º¡°device¡±
+		// è¿™ç§è®¿é—®æ–¹å¼åªèƒ½åœ¨deviceä¸­æ“ä½œ  é€‚ç”¨èŒƒå›´ï¼šâ€œdeviceâ€
 		__device__ __forceinline__ T& operator[](size_t index) { return deviceArray[index]; }
 
-		// ½«GPUÊı¾İÏÂÔØµ½CPUµÄvectorÖĞ
+		// å°†GPUæ•°æ®ä¸‹è½½åˆ°CPUçš„vectorä¸­
 		void SyncDeviceToHost(std::vector<T>& h_vec, cudaStream_t stream = 0) const {
 			h_vec.resize(deviceArraySize);
 			CHECKCUDA(cudaMemcpyAsync(h_vec.data(), deviceArray, ByteSize(), cudaMemcpyDeviceToHost, stream));
 		}
 
-		// ½«CPUÊı¾İÉÏ´«µ½GPU
+		// å°†CPUæ•°æ®ä¸Šä¼ åˆ°GPU
 		void SyncHostToDevice(const std::vector<T>& h_vec, cudaStream_t stream = 0) {
-			FUNCTION_CHECK_EQ(h_vec.size(), deviceArraySize); //¼ì²é´óĞ¡ÊÇ·ñÏàµÈ
+			FUNCTION_CHECK_EQ(h_vec.size(), deviceArraySize); //æ£€æŸ¥å¤§å°æ˜¯å¦ç›¸ç­‰
 			CHECKCUDA(cudaMemcpyAsync(deviceArray, h_vec.data(), sizeof(T) * h_vec.size(), cudaMemcpyHostToDevice, stream));
 		}
 
-		// DeviceSliceBufferArray±»ÊÚÈ¨ĞŞ¸ÄdeviceArraySize
+		// DeviceSliceBufferArrayè¢«æˆæƒä¿®æ”¹deviceArraySize
 		friend class DeviceSliceBufferArray<T>;
 	};
 
 	/**
-	 * \brief ĞèÒª¶ÁÈ¡GPUÊı×éµÄÄ³Ò»Æ¬¶ÎĞÅÏ¢£¬BufferÊÇÊı¾İµÄÊµ¼ÊÔØÌå(»º³åÇø)£¬ArrayÊÇÓÃÀ´¹ÜÀíBufferµÄ£¬Array´óĞ¡²»¿ÉÒÔ³¬¹ıBuffer.
+	 * \brief éœ€è¦è¯»å–GPUæ•°ç»„çš„æŸä¸€ç‰‡æ®µä¿¡æ¯ï¼ŒBufferæ˜¯æ•°æ®çš„å®é™…è½½ä½“(ç¼“å†²åŒº)ï¼ŒArrayæ˜¯ç”¨æ¥ç®¡ç†Bufferçš„ï¼ŒArrayå¤§å°ä¸å¯ä»¥è¶…è¿‡Buffer.
 	 */
 	template<typename T>
 	class DeviceSliceBufferArray {
 
 	private:
-		DeviceArrayHandle<T> Buffer;	// ÓÃÀ´´æ´¢Êı×éÊı¾İµÄÄÚ´æ»º³åÇø£¬´óĞ¡Ò»µ©¿ª±Ù»ù±¾²»±ä¡£Buffer ÊÇÒ»¸öÖ¸ÏòÊı×éÊı¾İµÄÖ¸Õë£¬ËüÖ¸ÏòÒ»¿éÁ¬ĞøµÄÄÚ´æ¿Õ¼ä£¬ÓÃÓÚ´æ´¢Êı×éµÄÔªËØ¡£Buffer µÄ´óĞ¡ÓÉÊı×éµÄ´óĞ¡¾ö¶¨£¬ËüÊÇ·ÖÅäºÍÊÍ·ÅÄÚ´æµÄÊµ¼ÊÔØÌå
-		DeviceArrayHandle<T> Array;		// ÓÃÀ´¹ÜÀíBuffer£¬ÈİÁ¿´óĞ¡¿É±ä£¬µ«²»¿ÉÒÔ´óÓÚ»º³åÇøBufferµÄÈİÁ¿¡£ËüÌá¹©ÁËÒ»Ğ©½Ó¿Úº¯ÊıÓÃÓÚ²Ù×÷ºÍ¹ÜÀíÊı×éÊı¾İ¡£Í¨¹ı Array Àà£¬¿ÉÒÔ¶ÔÊı×é½øĞĞÇĞÆ¬¡¢·ÃÎÊÔªËØ¡¢ĞŞ¸ÄÔªËØµÈ²Ù×÷¡£
+		DeviceArrayHandle<T> Buffer;	// ç”¨æ¥å­˜å‚¨æ•°ç»„æ•°æ®çš„å†…å­˜ç¼“å†²åŒºï¼Œå¤§å°ä¸€æ—¦å¼€è¾ŸåŸºæœ¬ä¸å˜ã€‚Buffer æ˜¯ä¸€ä¸ªæŒ‡å‘æ•°ç»„æ•°æ®çš„æŒ‡é’ˆï¼Œå®ƒæŒ‡å‘ä¸€å—è¿ç»­çš„å†…å­˜ç©ºé—´ï¼Œç”¨äºå­˜å‚¨æ•°ç»„çš„å…ƒç´ ã€‚Buffer çš„å¤§å°ç”±æ•°ç»„çš„å¤§å°å†³å®šï¼Œå®ƒæ˜¯åˆ†é…å’Œé‡Šæ”¾å†…å­˜çš„å®é™…è½½ä½“
+		DeviceArrayHandle<T> Array;		// ç”¨æ¥ç®¡ç†Bufferï¼Œå®¹é‡å¤§å°å¯å˜ï¼Œä½†ä¸å¯ä»¥å¤§äºç¼“å†²åŒºBufferçš„å®¹é‡ã€‚å®ƒæä¾›äº†ä¸€äº›æ¥å£å‡½æ•°ç”¨äºæ“ä½œå’Œç®¡ç†æ•°ç»„æ•°æ®ã€‚é€šè¿‡ Array ç±»ï¼Œå¯ä»¥å¯¹æ•°ç»„è¿›è¡Œåˆ‡ç‰‡ã€è®¿é—®å…ƒç´ ã€ä¿®æ”¹å…ƒç´ ç­‰æ“ä½œã€‚
 
 	public:
-		// Ä¬ÈÏÒşÊ½¿½±´/¸³Öµ/ÒÆ¶¯/É¾³ı
+		// é»˜è®¤éšå¼æ‹·è´/èµ‹å€¼/ç§»åŠ¨/åˆ é™¤
 		__host__ __device__ DeviceSliceBufferArray() : Buffer(), Array() {}
 		/**
-		 * \brief ´«ÈëÊı¾İÊ×µØÖ·ºÍ»º³åÇøBufferµÄÈİÁ¿£¬¹¹ÔìDeviceSliceBufferArrayÀàĞÍ.
+		 * \brief ä¼ å…¥æ•°æ®é¦–åœ°å€å’Œç¼“å†²åŒºBufferçš„å®¹é‡ï¼Œæ„é€ DeviceSliceBufferArrayç±»å‹.
 		 * 
-		 * \param buffer Êı¾İÊ×µØÖ·
-		 * \param capacity ¹¹ÔìÕâ¸öÊı¾İÀàĞÍBufferµÄÈİÁ¿
+		 * \param buffer æ•°æ®é¦–åœ°å€
+		 * \param capacity æ„é€ è¿™ä¸ªæ•°æ®ç±»å‹Bufferçš„å®¹é‡
 		 */
 		__host__ __device__ DeviceSliceBufferArray(T* buffer, size_t capacity) : Buffer(buffer, capacity), Array(buffer, 0) {}
 
 		// 
 		/**
-		 * \brief ´«ÈëÊı¾İÊ×µØÖ·£¬·ÖÅä¸øDeviceSliceBufferArray»º³åÇøBufferµÄÈİÁ¿£¬·ÖÅä¸ø¹ÜÀíBufferµÄÊı×éArrayµÄ´óĞ¡£¬¹¹ÔìDeviceSliceBufferArrayÀàĞÍ(ÔÚhostµÄ¹¹Ôìº¯Êı»á¼ì²é´óĞ¡).
+		 * \brief ä¼ å…¥æ•°æ®é¦–åœ°å€ï¼Œåˆ†é…ç»™DeviceSliceBufferArrayç¼“å†²åŒºBufferçš„å®¹é‡ï¼Œåˆ†é…ç»™ç®¡ç†Bufferçš„æ•°ç»„Arrayçš„å¤§å°ï¼Œæ„é€ DeviceSliceBufferArrayç±»å‹(åœ¨hostçš„æ„é€ å‡½æ•°ä¼šæ£€æŸ¥å¤§å°).
 		 * 
-		 * \param buffer Êı¾İÊ×µØÖ·
-		 * \param capacity ·ÖÅä¸øDeviceSliceBufferArray»º³åÇøBufferµÄÈİÁ¿
-		 * \param array_size ·ÖÅä¸ø¹ÜÀíBufferµÄÊı×éArrayµÄ´óĞ¡
+		 * \param buffer æ•°æ®é¦–åœ°å€
+		 * \param capacity åˆ†é…ç»™DeviceSliceBufferArrayç¼“å†²åŒºBufferçš„å®¹é‡
+		 * \param array_size åˆ†é…ç»™ç®¡ç†Bufferçš„æ•°ç»„Arrayçš„å¤§å°
 		 */
 		__host__ DeviceSliceBufferArray(T* buffer, size_t capacity, size_t array_size) : Buffer(buffer, capacity), Array(buffer, array_size) {
-			// ¼ì²éÊı×é´óĞ¡
+			// æ£€æŸ¥æ•°ç»„å¤§å°
 			if (array_size > capacity) {
-				LOGGING(FATAL) << "Ìá¹©µÄ»º´æ²»¹»£¡";
+				LOGGING(FATAL) << "æä¾›çš„ç¼“å­˜ä¸å¤Ÿï¼";
 			}
 		}
 
 		/**
-		 * \brief ´«ÈëGPUÊı×éDeviceArray<T>ÀàĞÍ£¬½«GPUÊı¾İ´æÈëBuffer£¬½«Êı¾İÊ×µØÖ·´æÈëArray(Array·ÖÅäÈİÁ¿Îª0).
+		 * \brief ä¼ å…¥GPUæ•°ç»„DeviceArray<T>ç±»å‹ï¼Œå°†GPUæ•°æ®å­˜å…¥Bufferï¼Œå°†æ•°æ®é¦–åœ°å€å­˜å…¥Array(Arrayåˆ†é…å®¹é‡ä¸º0).
 		 * 
-		 * \param arr ´«ÈëGPUÊı×éDeviceArray<T>ÀàĞÍ
+		 * \param arr ä¼ å…¥GPUæ•°ç»„DeviceArray<T>ç±»å‹
 		 */
 		__host__ DeviceSliceBufferArray(const SparseSurfelFusion::DeviceArray<T>& arr) : Buffer(arr), Array((T*)arr.ptr(), 0) {}
 
-		// µ÷ÕûÊı×é´óĞ¡
+		// è°ƒæ•´æ•°ç»„å¤§å°
 		/**
-		 * \brief ¸ù¾İsizeµ÷ÕûArrayµÄ´óĞ¡£¬sizeÈç¹ûµ÷ÕûµÄArray±ÈBuffer´óĞ¡»¹´ó£¬Ôò±¨´í.
+		 * \brief æ ¹æ®sizeè°ƒæ•´Arrayçš„å¤§å°ï¼Œsizeå¦‚æœè°ƒæ•´çš„Arrayæ¯”Bufferå¤§å°è¿˜å¤§ï¼Œåˆ™æŠ¥é”™.
 		 * 
-		 * \param ĞèÒªµ÷ÕûµÄArrayµÄ´óĞ¡
+		 * \param éœ€è¦è°ƒæ•´çš„Arrayçš„å¤§å°
 		 */
 		__host__ void ResizeArrayOrException(size_t size) {
 			if (size > Buffer.Size()) {
-				// Å×³öÒì³£
-				LOGGING(FATAL) << "Ìá¹©µÄ»º´æ²»¹»£¡";
+				// æŠ›å‡ºå¼‚å¸¸
+				LOGGING(FATAL) << "æä¾›çš„ç¼“å­˜ä¸å¤Ÿï¼";
 			}
 
-			// °²È«µØÖØÖÃÊı×éµÄ´óĞ¡
+			// å®‰å…¨åœ°é‡ç½®æ•°ç»„çš„å¤§å°
 			Array.deviceArraySize = size;
 		}
 
-		// ½Ó¿Ú£ºÎŞĞèÔÙ·ÃÎÊGPU²é¿´
+		// æ¥å£ï¼šæ— éœ€å†è®¿é—®GPUæŸ¥çœ‹
 		/**
-		 * \brief »ñµÃµ±Ç°DeviceSliceBufferArray<T>ÀàĞÍBufferµÄÈİÁ¿(BufferÈİÁ¿Ò»°ã¹¹ÔìÖ®ºó¾ÍÈ·¶¨ÁË).
+		 * \brief è·å¾—å½“å‰DeviceSliceBufferArray<T>ç±»å‹Bufferçš„å®¹é‡(Bufferå®¹é‡ä¸€èˆ¬æ„é€ ä¹‹åå°±ç¡®å®šäº†).
 		 * 
-		 * \return µ±Ç°DeviceSliceBufferArray<T>ÀàĞÍBufferµÄÈİÁ¿
+		 * \return å½“å‰DeviceSliceBufferArray<T>ç±»å‹Bufferçš„å®¹é‡
 		 */
 		__host__ __forceinline__ size_t Capacity() const { return Buffer.Size(); }
 		/**
-		 * \brief »ñµÃµ±Ç°DeviceSliceBufferArray<T>ÀàĞÍBufferµÄÈİÁ¿(BufferÈİÁ¿Ò»°ã¹¹ÔìÖ®ºó¾ÍÈ·¶¨ÁË).
+		 * \brief è·å¾—å½“å‰DeviceSliceBufferArray<T>ç±»å‹Bufferçš„å®¹é‡(Bufferå®¹é‡ä¸€èˆ¬æ„é€ ä¹‹åå°±ç¡®å®šäº†).
 		 * 
-		 * \return µ±Ç°DeviceSliceBufferArray<T>ÀàĞÍBufferµÄÈİÁ¿
+		 * \return å½“å‰DeviceSliceBufferArray<T>ç±»å‹Bufferçš„å®¹é‡
 		 */
 		__host__ __forceinline__ size_t BufferSize() const { return Buffer.Size(); }
 		/**
-		 * \brief »ñµÃµ±Ç°DeviceSliceBufferArray<T>ÀàĞÍArrayµÄÈİÁ¿(ArrayµÄÈİÁ¿¿É±ä£¬µ«²»¿ÉÒÔ³¬¹ıBufferÈİÁ¿).
+		 * \brief è·å¾—å½“å‰DeviceSliceBufferArray<T>ç±»å‹Arrayçš„å®¹é‡(Arrayçš„å®¹é‡å¯å˜ï¼Œä½†ä¸å¯ä»¥è¶…è¿‡Bufferå®¹é‡).
 		 * 
-		 * \return µ±Ç°DeviceSliceBufferArray<T>ÀàĞÍArrayµÄÈİÁ¿
+		 * \return å½“å‰DeviceSliceBufferArray<T>ç±»å‹Arrayçš„å®¹é‡
 		 */
 		__host__ __forceinline__ size_t ArraySize() const { return Array.Size(); }
 		/**
-		 * \brief »ñµÃ»º³åÇøÊı¾İBufferµÄÊ×µØÖ·.
+		 * \brief è·å¾—ç¼“å†²åŒºæ•°æ®Bufferçš„é¦–åœ°å€.
 		 * 
-		 * \return »º³åÇøÊı¾İBufferµÄÊ×µØÖ·
+		 * \return ç¼“å†²åŒºæ•°æ®Bufferçš„é¦–åœ°å€
 		 */
 		__host__ __forceinline__ const T* Ptr() const { return Buffer.RawPtr(); }
 		/**
-		 * \brief »ñµÃ»º³åÇøÊı¾İBufferµÄÊ×µØÖ·.
+		 * \brief è·å¾—ç¼“å†²åŒºæ•°æ®Bufferçš„é¦–åœ°å€.
 		 *
-		 * \return »º³åÇøÊı¾İBufferµÄÊ×µØÖ·
+		 * \return ç¼“å†²åŒºæ•°æ®Bufferçš„é¦–åœ°å€
 		 */
 		__host__ __forceinline__ T* Ptr() { return Buffer.RawPtr(); }
 		/**
-		 * \brief »ñµÃÊı×éArray£¬¿ÉÒÔ¶ÔBuffer½øĞĞ¶ÁĞ´ºÍ¹ÜÀí.
+		 * \brief è·å¾—æ•°ç»„Arrayï¼Œå¯ä»¥å¯¹Bufferè¿›è¡Œè¯»å†™å’Œç®¡ç†.
 		 * 
-		 * \return Êı×éArray
+		 * \return æ•°ç»„Array
 		 */
 		__host__ __forceinline__ DeviceArrayHandle<T> ArrayHandle() const { return Array; }
 		/**
-		 * \brief »ñµÃÊı×éArrayµÄÖ»¶ÁÀàĞÍ(´«³öÒÔDeviceArrayView<T>ÀàĞÍ).
+		 * \brief è·å¾—æ•°ç»„Arrayçš„åªè¯»ç±»å‹(ä¼ å‡ºä»¥DeviceArrayView<T>ç±»å‹).
 		 * 
-		 * \return Êı×éArrayµÄÖ»¶ÁÀàĞÍ
+		 * \return æ•°ç»„Arrayçš„åªè¯»ç±»å‹
 		 */
 		__host__ __forceinline__ DeviceArrayView<T> ArrayReadOnly() const { return DeviceArrayView<T>(Ptr(), ArraySize()); }
 		/**
-		 * \brief »ñµÃÊı×éArrayµÄÖ»¶ÁÀàĞÍ(´«³öÒÔDeviceArrayView<T>ÀàĞÍ).
+		 * \brief è·å¾—æ•°ç»„Arrayçš„åªè¯»ç±»å‹(ä¼ å‡ºä»¥DeviceArrayView<T>ç±»å‹).
 		 *
-		 * \return Êı×éArrayµÄÖ»¶ÁÀàĞÍ
+		 * \return æ•°ç»„Arrayçš„åªè¯»ç±»å‹
 		 */
 		__host__ __forceinline__ DeviceArrayView<T> ArrayView() const { return DeviceArrayView<T>(Ptr(), ArraySize()); }
 
 		/**
-		 * \brief ¶ÔÊı×éÖÆ×÷ÇĞÆ¬.
+		 * \brief å¯¹æ•°ç»„åˆ¶ä½œåˆ‡ç‰‡.
 		 * 
-		 * \param start ¿ªÊ¼ÇĞÆ¬µÄÎ»ÖÃ
-		 * \param end ½áÊøÇĞÆ¬µÄÎ»ÖÃ
-		 * \return Êı×éÇĞÆ¬(ÒÔDeviceSliceBufferArray<T>ÀàĞÍ·µ»Ø)
+		 * \param start å¼€å§‹åˆ‡ç‰‡çš„ä½ç½®
+		 * \param end ç»“æŸåˆ‡ç‰‡çš„ä½ç½®
+		 * \return æ•°ç»„åˆ‡ç‰‡(ä»¥DeviceSliceBufferArray<T>ç±»å‹è¿”å›)
 		 */
 		__host__ DeviceSliceBufferArray<T> BufferArraySlice(size_t start, size_t end) const {
 			if (start > end || end > Buffer.Size()) {
-				LOGGING(FATAL) << "ÎŞĞ§µÄÊı×éÆ¬¶Î£¬ÇëÈ·ÈÏstart < end »òÕßÊÇ end < Buffer.Size()£¡";
+				LOGGING(FATAL) << "æ— æ•ˆçš„æ•°ç»„ç‰‡æ®µï¼Œè¯·ç¡®è®¤start < end æˆ–è€…æ˜¯ end < Buffer.Size()ï¼";
 			}
 
-			// ·µ»ØÄÚÔÚÇĞÆ¬
+			// è¿”å›å†…åœ¨åˆ‡ç‰‡
 			return DeviceSliceBufferArray<T>((T*)Buffer.RawPtr() + start, end - start);
 		}
 

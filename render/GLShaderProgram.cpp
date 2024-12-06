@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   GLShaderProgram.h
- * \brief  OpenGLäÖÈ¾Æ÷Àà£¬»ñÈ¡äÖÈ¾Æ÷ÎÄ¼ş
+ * \brief  OpenGLæ¸²æŸ“å™¨ç±»ï¼Œè·å–æ¸²æŸ“å™¨æ–‡ä»¶
  *
  * \author LUO
  * \date   February 23rd 2024
@@ -36,7 +36,7 @@ void SparseSurfelFusion::GLShaderProgram::Compile(const std::string& vertexPath,
 		fragment_code = fragment_stream.str();
 	}
 	catch (std::ifstream::failure e) {
-		LOGGING(FATAL) << "´íÎó£º×ÅÉ«Æ÷ÎÄ¼şÃ»ÓĞÕıÈ·¼ÓÔØ£¡";
+		LOGGING(FATAL) << "é”™è¯¯ï¼šç€è‰²å™¨æ–‡ä»¶æ²¡æœ‰æ­£ç¡®åŠ è½½ï¼";
 	}
 	vertex_code.push_back('\0');
 	fragment_code.push_back('\0');
@@ -45,24 +45,24 @@ void SparseSurfelFusion::GLShaderProgram::Compile(const std::string& vertexPath,
 
 void SparseSurfelFusion::GLShaderProgram::Compile(const char* vertexShaderCode, const char* fragmentShaderCode, const char* geometryShaderCode)
 {
-	// ´´½¨Ò»¸ö×ÅÉ«Æ÷¶ÔÏó£¬½«Æä×¢²áÎª¶¥µã×ÅÉ«Æ÷  -->  GL_VERTEX_SHADER
+	// åˆ›å»ºä¸€ä¸ªç€è‰²å™¨å¯¹è±¡ï¼Œå°†å…¶æ³¨å†Œä¸ºé¡¶ç‚¹ç€è‰²å™¨  -->  GL_VERTEX_SHADER
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	// ²ÎÊı1£º×ÅÉ«Æ÷¶ÔÏó
-	// ²ÎÊı2£ºÖ¸¶¨ÁË´«µİµÄÔ´Âë×Ö·û´®ÊıÁ¿£¬ÕâÀïÖ»ÓĞÒ»¸ö
-	// ²ÎÊı3£º¶¥µã×ÅÉ«Æ÷ÕæÕıµÄÔ´Âë
-	// ²ÎÊı4£ºÏÈÉèÖÃÎªNULL
+	// å‚æ•°1ï¼šç€è‰²å™¨å¯¹è±¡
+	// å‚æ•°2ï¼šæŒ‡å®šäº†ä¼ é€’çš„æºç å­—ç¬¦ä¸²æ•°é‡ï¼Œè¿™é‡Œåªæœ‰ä¸€ä¸ª
+	// å‚æ•°3ï¼šé¡¶ç‚¹ç€è‰²å™¨çœŸæ­£çš„æºç 
+	// å‚æ•°4ï¼šå…ˆè®¾ç½®ä¸ºNULL
 	glShaderSource(vertexShader, 1, &vertexShaderCode, NULL);
-	// ±àÒë×ÅÉ«Æ÷
+	// ç¼–è¯‘ç€è‰²å™¨
 	glCompileShader(vertexShader);
 	checkShaderCompilerError(vertexShader, "VertexShader");
 
-	//¶ÔÓÚÆ¬¶Î×ÅÉ«Æ÷
+	//å¯¹äºç‰‡æ®µç€è‰²å™¨
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentShaderCode, NULL);
 	glCompileShader(fragmentShader);
 	checkShaderCompilerError(fragmentShader, "FragmentShader");
 
-	//¶ÔÓÚ¼¸ºÎ×ÅÉ«Æ÷
+	//å¯¹äºå‡ ä½•ç€è‰²å™¨
 	if (geometryShaderCode != nullptr) {
 		geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
 		glShaderSource(geometryShader, 1, &geometryShaderCode, NULL);
@@ -70,7 +70,7 @@ void SparseSurfelFusion::GLShaderProgram::Compile(const char* vertexShaderCode, 
 		checkShaderCompilerError(geometryShader, "GeometryShader");
 	}
 
-	//Á´½Óµ½×ÅÉ«Æ÷³ÌĞò
+	//é“¾æ¥åˆ°ç€è‰²å™¨ç¨‹åº
 	programID = glCreateProgram();
 	glAttachShader(programID, vertexShader);
 	glAttachShader(programID, fragmentShader);
@@ -78,7 +78,7 @@ void SparseSurfelFusion::GLShaderProgram::Compile(const char* vertexShaderCode, 
 	glLinkProgram(programID);
 	checkShaderCompilerError(programID, "ShaderProgram");
 
-	//ÒòÎªËûÃÇÒÑ¾­ºÍÕâ¸öÏîÄ¿ÁªÏµÔÚÒ»ÆğÁË
+	//å› ä¸ºä»–ä»¬å·²ç»å’Œè¿™ä¸ªé¡¹ç›®è”ç³»åœ¨ä¸€èµ·äº†
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 	if (geometryShader != 0) glDeleteShader(geometryShader);
@@ -94,7 +94,7 @@ void SparseSurfelFusion::GLShaderProgram::checkShaderCompilerError(GLuint shader
 		if (!success)
 		{
 			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-			LOGGING(FATAL) << "Error äÖÈ¾Æ÷ÎÄ¼ş¶ÁÈ¡´íÎó£º " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+			LOGGING(FATAL) << "Error æ¸²æŸ“å™¨æ–‡ä»¶è¯»å–é”™è¯¯ï¼š " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
 		}
 	}
 	else
@@ -103,40 +103,40 @@ void SparseSurfelFusion::GLShaderProgram::checkShaderCompilerError(GLuint shader
 		if (!success)
 		{
 			glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-			LOGGING(FATAL) << "Error ×ÅÉ«Æ÷³ÌĞò±àÒë´íÎó: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+			LOGGING(FATAL) << "Error ç€è‰²å™¨ç¨‹åºç¼–è¯‘é”™è¯¯: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
 		}
 	}
 }
 
 void SparseSurfelFusion::GLShaderProgram::SetUniformMatrix(const std::string& UniformName, const Eigen::Matrix4f& value) const
 {
-	GLint uniformLocation = glGetUniformLocation(getProgramID(), UniformName.c_str());	// »ñµÃ²ÎÊıµÄÎ»ÖÃ
-	// ²ÎÊı1£ºuniformµÄÎ»ÖÃÖµ
-	// ²ÎÊı2£º¸æËßOpenGLÎÒÃÇ½«Òª·¢ËÍ¶àÉÙ¸öUniform²ÎÊı
-	// ²ÎÊı3£ºÑ¯ÎÊÎÒÃÇÊÇ·ñÏ£Íû¶ÔÎÒÃÇµÄ¾ØÕó½øĞĞ×ªÖÃ(Transpose)£¬Ò²¾ÍÊÇËµ½»»»ÎÒÃÇ¾ØÕóµÄĞĞºÍÁĞ
-	// ²ÎÊı4£ºÕæÕıµÄ¾ØÕóÊı¾İ
+	GLint uniformLocation = glGetUniformLocation(getProgramID(), UniformName.c_str());	// è·å¾—å‚æ•°çš„ä½ç½®
+	// å‚æ•°1ï¼šuniformçš„ä½ç½®å€¼
+	// å‚æ•°2ï¼šå‘Šè¯‰OpenGLæˆ‘ä»¬å°†è¦å‘é€å¤šå°‘ä¸ªUniformå‚æ•°
+	// å‚æ•°3ï¼šè¯¢é—®æˆ‘ä»¬æ˜¯å¦å¸Œæœ›å¯¹æˆ‘ä»¬çš„çŸ©é˜µè¿›è¡Œè½¬ç½®(Transpose)ï¼Œä¹Ÿå°±æ˜¯è¯´äº¤æ¢æˆ‘ä»¬çŸ©é˜µçš„è¡Œå’Œåˆ—
+	// å‚æ•°4ï¼šçœŸæ­£çš„çŸ©é˜µæ•°æ®
 	glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, value.data());
 }
 
 void SparseSurfelFusion::GLShaderProgram::SetUniformVector(const std::string& UniformName, const Eigen::Vector4f& vec) const
 {
-	GLint uniformLocation = glGetUniformLocation(getProgramID(), UniformName.c_str());	// »ñµÃ²ÎÊıµÄÎ»ÖÃ
-	// ²ÎÊı1£ºuniformµÄÎ»ÖÃÖµ
-	// ²ÎÊı2£ºÏòÁ¿vecµÄx·ÖÁ¿
-	// ²ÎÊı3£ºÏòÁ¿vecµÄy·ÖÁ¿
-	// ²ÎÊı4£ºÏòÁ¿vecµÄz·ÖÁ¿
-	// ²ÎÊı5£ºÏòÁ¿vecµÄw·ÖÁ¿
+	GLint uniformLocation = glGetUniformLocation(getProgramID(), UniformName.c_str());	// è·å¾—å‚æ•°çš„ä½ç½®
+	// å‚æ•°1ï¼šuniformçš„ä½ç½®å€¼
+	// å‚æ•°2ï¼šå‘é‡vecçš„xåˆ†é‡
+	// å‚æ•°3ï¼šå‘é‡vecçš„yåˆ†é‡
+	// å‚æ•°4ï¼šå‘é‡vecçš„zåˆ†é‡
+	// å‚æ•°5ï¼šå‘é‡vecçš„wåˆ†é‡
 	glUniform4f(uniformLocation, vec[0], vec[1], vec[2], vec[3]);
 }
 
 void SparseSurfelFusion::GLShaderProgram::SetUniformVector(const std::string& UniformName, const float4& vec) const
 {
-	GLint uniformLocation = glGetUniformLocation(getProgramID(), UniformName.c_str());	// »ñµÃ²ÎÊıµÄÎ»ÖÃ
-	// ²ÎÊı1£ºuniformµÄÎ»ÖÃÖµ
-	// ²ÎÊı2£ºÏòÁ¿vecµÄx·ÖÁ¿
-	// ²ÎÊı3£ºÏòÁ¿vecµÄy·ÖÁ¿
-	// ²ÎÊı4£ºÏòÁ¿vecµÄz·ÖÁ¿
-	// ²ÎÊı5£ºÏòÁ¿vecµÄw·ÖÁ¿
+	GLint uniformLocation = glGetUniformLocation(getProgramID(), UniformName.c_str());	// è·å¾—å‚æ•°çš„ä½ç½®
+	// å‚æ•°1ï¼šuniformçš„ä½ç½®å€¼
+	// å‚æ•°2ï¼šå‘é‡vecçš„xåˆ†é‡
+	// å‚æ•°3ï¼šå‘é‡vecçš„yåˆ†é‡
+	// å‚æ•°4ï¼šå‘é‡vecçš„zåˆ†é‡
+	// å‚æ•°5ï¼šå‘é‡vecçš„wåˆ†é‡
 	glUniform4f(uniformLocation, vec.x, vec.y, vec.z, vec.w);
 }
 
@@ -152,11 +152,11 @@ void SparseSurfelFusion::GLShaderProgram::SetUniformVector(const std::string& Un
 
 void SparseSurfelFusion::GLShaderProgram::SetUniformVector(const std::string& UniformName, const float3& vec) const
 {
-	GLint uniformLocation = glGetUniformLocation(getProgramID(), UniformName.c_str());	// »ñµÃ²ÎÊıµÄÎ»ÖÃ
-	// ²ÎÊı1£ºuniformµÄÎ»ÖÃÖµ
-	// ²ÎÊı2£ºÏòÁ¿vecµÄx·ÖÁ¿
-	// ²ÎÊı3£ºÏòÁ¿vecµÄy·ÖÁ¿
-	// ²ÎÊı4£ºÏòÁ¿vecµÄz·ÖÁ¿
+	GLint uniformLocation = glGetUniformLocation(getProgramID(), UniformName.c_str());	// è·å¾—å‚æ•°çš„ä½ç½®
+	// å‚æ•°1ï¼šuniformçš„ä½ç½®å€¼
+	// å‚æ•°2ï¼šå‘é‡vecçš„xåˆ†é‡
+	// å‚æ•°3ï¼šå‘é‡vecçš„yåˆ†é‡
+	// å‚æ•°4ï¼šå‘é‡vecçš„zåˆ†é‡
 	glUniform3f(uniformLocation, vec.x, vec.y, vec.z);
 }
 
@@ -172,10 +172,10 @@ void SparseSurfelFusion::GLShaderProgram::SetUniformVector(const std::string& Un
 
 void SparseSurfelFusion::GLShaderProgram::SetUniformVector(const std::string& UniformName, const float2& vec) const
 {
-	GLint uniformLocation = glGetUniformLocation(getProgramID(), UniformName.c_str());	// »ñµÃ²ÎÊıµÄÎ»ÖÃ
-	// ²ÎÊı1£ºuniformµÄÎ»ÖÃÖµ
-	// ²ÎÊı2£ºÏòÁ¿vecµÄx·ÖÁ¿
-	// ²ÎÊı3£ºÏòÁ¿vecµÄy·ÖÁ¿
+	GLint uniformLocation = glGetUniformLocation(getProgramID(), UniformName.c_str());	// è·å¾—å‚æ•°çš„ä½ç½®
+	// å‚æ•°1ï¼šuniformçš„ä½ç½®å€¼
+	// å‚æ•°2ï¼šå‘é‡vecçš„xåˆ†é‡
+	// å‚æ•°3ï¼šå‘é‡vecçš„yåˆ†é‡
 	glUniform2f(uniformLocation, vec.x, vec.y);
 }
 
@@ -191,19 +191,19 @@ void SparseSurfelFusion::GLShaderProgram::SetUniformVector(const std::string& Un
 
 void SparseSurfelFusion::GLShaderProgram::SetUniformFloat(const std::string& UniformName, const float value) const
 {
-	GLint uniformLocation = glGetUniformLocation(getProgramID(), UniformName.c_str());	// »ñµÃ²ÎÊıµÄÎ»ÖÃ
-	// ²ÎÊı1£ºuniformµÄÎ»ÖÃÖµ
-	// ²ÎÊı2£ºÏòÁ¿vecµÄx·ÖÁ¿
+	GLint uniformLocation = glGetUniformLocation(getProgramID(), UniformName.c_str());	// è·å¾—å‚æ•°çš„ä½ç½®
+	// å‚æ•°1ï¼šuniformçš„ä½ç½®å€¼
+	// å‚æ•°2ï¼šå‘é‡vecçš„xåˆ†é‡
 	glUniform1f(uniformLocation, value);
 }
 
 void SparseSurfelFusion::GLShaderProgram::setUniformMat4(const std::string& UniformName, glm::mat4 value) const
 {
-	//µÚÒ»¸ö²ÎÊıÊÇuniformµÄÎ»ÖÃÖµ
-	//µÚ¶ş¸ö²ÎÊı¸æËßOpenGLÎÒÃÇ½«Òª·¢ËÍ¶àÉÙ¸ö¾ØÕó
-	//µÚÈı¸ö²ÎÊıÑ¯ÎÊÎÒÃÇÊÇ·ñÏ£Íû¶ÔÎÒÃÇµÄ¾ØÕó½øĞĞ×ªÖÃ(Transpose)£¬Ò²¾ÍÊÇËµ½»»»ÎÒÃÇ¾ØÕóµÄĞĞºÍÁĞ
-	//µÚËÄ¸ö²ÎÊıÊÇÕæÕıµÄ¾ØÕóÊı¾İ£¬µ«ÊÇGLM²¢²»ÊÇ°ÑËüÃÇµÄ¾ØÕó´¢´æÎªOpenGLËùÏ£Íû½ÓÊÜµÄÄÇÖÖ
-	//Òò´ËÎÒÃÇÒªÏÈÓÃGLMµÄ×Ô´øµÄº¯Êıvalue_ptrÀ´±ä»»ÕâĞ©Êı¾İ
+	//ç¬¬ä¸€ä¸ªå‚æ•°æ˜¯uniformçš„ä½ç½®å€¼
+	//ç¬¬äºŒä¸ªå‚æ•°å‘Šè¯‰OpenGLæˆ‘ä»¬å°†è¦å‘é€å¤šå°‘ä¸ªçŸ©é˜µ
+	//ç¬¬ä¸‰ä¸ªå‚æ•°è¯¢é—®æˆ‘ä»¬æ˜¯å¦å¸Œæœ›å¯¹æˆ‘ä»¬çš„çŸ©é˜µè¿›è¡Œè½¬ç½®(Transpose)ï¼Œä¹Ÿå°±æ˜¯è¯´äº¤æ¢æˆ‘ä»¬çŸ©é˜µçš„è¡Œå’Œåˆ—
+	//ç¬¬å››ä¸ªå‚æ•°æ˜¯çœŸæ­£çš„çŸ©é˜µæ•°æ®ï¼Œä½†æ˜¯GLMå¹¶ä¸æ˜¯æŠŠå®ƒä»¬çš„çŸ©é˜µå‚¨å­˜ä¸ºOpenGLæ‰€å¸Œæœ›æ¥å—çš„é‚£ç§
+	//å› æ­¤æˆ‘ä»¬è¦å…ˆç”¨GLMçš„è‡ªå¸¦çš„å‡½æ•°value_ptræ¥å˜æ¢è¿™äº›æ•°æ®
 	GLint uniformLocation = glGetUniformLocation(getProgramID(), UniformName.c_str());
 	glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(value));
 }

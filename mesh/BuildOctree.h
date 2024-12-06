@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   BuildOctree.h
- * \brief  ¹¹Ôì°Ë²æÊ÷
+ * \brief  æ„é€ å…«å‰æ ‘
  * 
  * \author LUOJIAXUAN
  * \date   May 5th 2024
@@ -14,7 +14,7 @@
 
 #include <core/AlgorithmTypes.h>
 
-#include <pcl/io/ply_io.h>  // ply ÎÄ¼ş¶ÁÈ¡Í·ÎÄ¼ş
+#include <pcl/io/ply_io.h>  // ply æ–‡ä»¶è¯»å–å¤´æ–‡ä»¶
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
 #include <pcl/kdtree/kdtree_flann.h>
@@ -37,239 +37,239 @@ namespace SparseSurfelFusion {
 		};
 
 		/**
-		 * \brief ¡¾device¡¿OPÏòÁ¿³¤¶È = sqrt(x^2 + y^2 + z^2).
+		 * \brief ã€deviceã€‘OPå‘é‡é•¿åº¦ = sqrt(x^2 + y^2 + z^2).
 		 *
-		 * \param PµãÈıÎ¬×ø±ê
-		 * \return ·µ»ØdoubleÀàĞÍOPÏòÁ¿³¤¶ÈÆ½·½
+		 * \param Pç‚¹ä¸‰ç»´åæ ‡
+		 * \return è¿”å›doubleç±»å‹OPå‘é‡é•¿åº¦å¹³æ–¹
 		 */
 		__device__ float Length(const float3& vec);
 
 
 		/**
-		 * \brief ¹æÔ¼»ñµÃÃ¿¸öblock×î´óºÍ×îĞ¡µÄPoint3D.
+		 * \brief è§„çº¦è·å¾—æ¯ä¸ªblockæœ€å¤§å’Œæœ€å°çš„Point3D.
 		 * 
-		 * \param maxBlockData µ±Ç°blockÖĞµÄ×î´óÖµ
-		 * \param minBlockData µ±Ç°blockÖĞµÄ×îĞ¡Öµ
-		 * \param points ³íÃÜµãÔÆ
-		 * \param pointsCount µãÔÆÊıÁ¿
+		 * \param maxBlockData å½“å‰blockä¸­çš„æœ€å¤§å€¼
+		 * \param minBlockData å½“å‰blockä¸­çš„æœ€å°å€¼
+		 * \param points ç¨ å¯†ç‚¹äº‘
+		 * \param pointsCount ç‚¹äº‘æ•°é‡
 		 */
 		__global__ void reduceMaxMinKernel(Point3D<float>* maxBlockData, Point3D<float>* minBlockData, DeviceArrayView<OrientedPoint3D<float>> points, const unsigned int pointsCount);
 		/**
-		 * \brief ÕÒ¹æÔ¼ºóµÄ×î´óºÍ×îĞ¡µã.
+		 * \brief æ‰¾è§„çº¦åçš„æœ€å¤§å’Œæœ€å°ç‚¹.
 		 * 
-		 * \param MaxPoint Êä³ö×î´óµã
-		 * \param MinPoint Êä³ö×îĞ¡µã
-		 * \param maxArray Ã¿¸öblock×î´óµÄµãArray
-		 * \param minArray Ã¿¸öblock×îĞ¡µãµãArray
-		 * \param GridNum ¹æÔ¼Ê±·ÖÅäµÄÍø¸ñÊıÁ¿
+		 * \param MaxPoint è¾“å‡ºæœ€å¤§ç‚¹
+		 * \param MinPoint è¾“å‡ºæœ€å°ç‚¹
+		 * \param maxArray æ¯ä¸ªblockæœ€å¤§çš„ç‚¹Array
+		 * \param minArray æ¯ä¸ªblockæœ€å°ç‚¹ç‚¹Array
+		 * \param GridNum è§„çº¦æ—¶åˆ†é…çš„ç½‘æ ¼æ•°é‡
 		 */
 		__host__ void findMaxMinPoint(Point3D<float>& MaxPoint, Point3D<float>& MinPoint, Point3D<float>* maxArray, Point3D<float>* minArray, const unsigned int GridNum);
 
 		/**
-		 * \brief ½«³íÃÜÃæÔªÖĞ×ø±êºÍ·¢ÏÖÌáÈ¡³öÀ´.
+		 * \brief å°†ç¨ å¯†é¢å…ƒä¸­åæ ‡å’Œå‘ç°æå–å‡ºæ¥.
 		 * 
-		 * \param coordinate ÃæÔª×ø±ê
-		 * \param normals ÃæÔª·¢ÏÖ
-		 * \param PointCloud ´«ÈëµÄ³íÃÜÃæÔª
-		 * \param pointsCount ´«ÈëÃæÔªµÄ¸öÊı
+		 * \param coordinate é¢å…ƒåæ ‡
+		 * \param normals é¢å…ƒå‘ç°
+		 * \param PointCloud ä¼ å…¥çš„ç¨ å¯†é¢å…ƒ
+		 * \param pointsCount ä¼ å…¥é¢å…ƒçš„ä¸ªæ•°
 		 */
 		__global__ void getCoordinateAndNormalKernel(OrientedPoint3D<float>* point, DeviceArrayView<DepthSurfel> PointCloud, const unsigned int pointsCount);
 		
 		/**
-		 * \brief µ÷Õûµã×ø±êµÄºËº¯Êı.
+		 * \brief è°ƒæ•´ç‚¹åæ ‡çš„æ ¸å‡½æ•°.
 		 * 
-		 * \param coordinate ĞèÒª±ä¸üµÄµãµÄ×ø±ê
-		 * \param normal µãµÄ·¨Ïß
-		 * \param center ÖĞĞÄµãµÄ×ø±ê
-		 * \param scale ×ø±êµã·ÅËõ³ß´ç
+		 * \param coordinate éœ€è¦å˜æ›´çš„ç‚¹çš„åæ ‡
+		 * \param normal ç‚¹çš„æ³•çº¿
+		 * \param center ä¸­å¿ƒç‚¹çš„åæ ‡
+		 * \param scale åæ ‡ç‚¹æ”¾ç¼©å°ºå¯¸
 		 */
 		__global__ void adjustPointsCoordinateAndNormalKernel(OrientedPoint3D<float>* points, const Point3D<float> center, const float scale, const unsigned int pointsCount);
 		
 		/**
-		 * \brief ÎªÃ¿¸ö³íÃÜµãÉú³ÉÒ»¸ö±àÂë£¬ÆäÖĞ°üÀ¨µãÔÚOctreeÖĞµÄNodeÎ»ÖÃ£¬ÁÙ½üµã£¬¸¸½Úµã£¬×Ó½ÚµãµÈ.
+		 * \brief ä¸ºæ¯ä¸ªç¨ å¯†ç‚¹ç”Ÿæˆä¸€ä¸ªç¼–ç ï¼Œå…¶ä¸­åŒ…æ‹¬ç‚¹åœ¨Octreeä¸­çš„Nodeä½ç½®ï¼Œä¸´è¿‘ç‚¹ï¼Œçˆ¶èŠ‚ç‚¹ï¼Œå­èŠ‚ç‚¹ç­‰.
 		 * 
-		 * \param pos ³íÃÜµãÎ»ÖÃ
-		 * \param keys Ã¿¸öµãµÄ±àÂëkey
-		 * \param pointsNum µãÊıÁ¿
+		 * \param pos ç¨ å¯†ç‚¹ä½ç½®
+		 * \param keys æ¯ä¸ªç‚¹çš„ç¼–ç key
+		 * \param pointsNum ç‚¹æ•°é‡
 		 */
 		__global__ void generateCodeKernel(OrientedPoint3D<float>* pos, long long* keys, const unsigned int pointsNum);
 
 		/**
-		 * \brief ¸üĞÂ64Î»±àÂëµÄºó32Î»£¬ÕâÀïĞèÒªÖØÖÃµÍ32Î»µÄindex£¬ÒòÎªDensePointsÊı×éÒÑ¾­ÊÇÓĞĞòµÄÁË£¬Ö®Ç°µÄindexÊÇÎŞĞèµÄDensePointsÊı×é.
+		 * \brief æ›´æ–°64ä½ç¼–ç çš„å32ä½ï¼Œè¿™é‡Œéœ€è¦é‡ç½®ä½32ä½çš„indexï¼Œå› ä¸ºDensePointsæ•°ç»„å·²ç»æ˜¯æœ‰åºçš„äº†ï¼Œä¹‹å‰çš„indexæ˜¯æ— éœ€çš„DensePointsæ•°ç»„.
 		 */
 		__global__ void updataLower32ForSortedDensePoints(const unsigned int sortedKeysCount, long long* sortedVerticesKey);
 
 		/**
-		 * \brief ¡¾Ö»±È½Ï¸ß32bitÇé¿ö¡¿±ê¼ÇÅÅÁĞºÃµÄÌåËØ¼üÖµ(Èç¹ûµ±Ç°Öµ²»µÈÓÚÇ°Ò»¸öÖµÔòlabel = 1£¬ Èç¹ûµ±Ç°ÖµµÈÓÚÇ°Ò»¸öÖµÔòlabel = 0).
+		 * \brief ã€åªæ¯”è¾ƒé«˜32bitæƒ…å†µã€‘æ ‡è®°æ’åˆ—å¥½çš„ä½“ç´ é”®å€¼(å¦‚æœå½“å‰å€¼ä¸ç­‰äºå‰ä¸€ä¸ªå€¼åˆ™label = 1ï¼Œ å¦‚æœå½“å‰å€¼ç­‰äºå‰ä¸€ä¸ªå€¼åˆ™label = 0).
 		 *
-		 * \param sortedVerticesKey ÅÅĞòºÃµÄkey
-		 * \param keyLabel ¸øVoxelLabelµÄm_array£¨GPUÊı×é£©¸³ÖµÁË
+		 * \param sortedVerticesKey æ’åºå¥½çš„key
+		 * \param keyLabel ç»™VoxelLabelçš„m_arrayï¼ˆGPUæ•°ç»„ï¼‰èµ‹å€¼äº†
 		 */
 		__global__ void labelSortedVerticesKeysKernel(const unsigned int sortedKeysCount, DeviceArrayView<long long> sortedVerticesKey, unsigned int* keyLabel);
 
 		/**
-		 * \brief ¸øcompactedKeyºÍcompactedOffset¸³Öµ.
+		 * \brief ç»™compactedKeyå’ŒcompactedOffsetèµ‹å€¼.
 		 *
-		 * \param sortedVoxelKey ÓĞĞ§ÇÒÅÅÁĞºÃµÄ¼üÖµ
-		 * \param voxelKeyLabel keyµÄlabelÊı×é
-		 * \param prefixsumedLabel GPUÖĞÇ°×ººÍµÄµØÖ·
-		 * \param compactedKey »ñµÃ¡°ÓëÇ°Ò»¸ö±àÂë¼üÖµ²»Ò»Ñù¡±µÄ±àÂë£¨ÓëÇ°Ò»¸öÒ»ÑùµÄÉáÈ¥£©
-		 * \param compactedOffset »ñµÃÕâ¸ö¡°ÓëÇ°Ò»¸ö±àÂë¼üÖµ²»Ò»Ñù¡±µÄ±àÂëÔÚpointKeySort.valid_sorted_keyÖĞµÄÎ»ÖÃ£¨idx£©
+		 * \param sortedVoxelKey æœ‰æ•ˆä¸”æ’åˆ—å¥½çš„é”®å€¼
+		 * \param voxelKeyLabel keyçš„labelæ•°ç»„
+		 * \param prefixsumedLabel GPUä¸­å‰ç¼€å’Œçš„åœ°å€
+		 * \param compactedKey è·å¾—â€œä¸å‰ä¸€ä¸ªç¼–ç é”®å€¼ä¸ä¸€æ ·â€çš„ç¼–ç ï¼ˆä¸å‰ä¸€ä¸ªä¸€æ ·çš„èˆå»ï¼‰
+		 * \param compactedOffset è·å¾—è¿™ä¸ªâ€œä¸å‰ä¸€ä¸ªç¼–ç é”®å€¼ä¸ä¸€æ ·â€çš„ç¼–ç åœ¨pointKeySort.valid_sorted_keyä¸­çš„ä½ç½®ï¼ˆidxï¼‰
 		 */
 		__global__ void compactedVoxelKeyKernel(const PtrSize<long long> sortedVoxelKey, const unsigned int* voxelKeyLabel, const unsigned int* prefixsumedLabel, long long* compactedKey, DeviceArrayHandle<int> compactedOffset);
 	
 		/**
-		 * \brief ÊÕ¼¯²¢¹¹½¨OctreeµÄNode.
+		 * \brief æ”¶é›†å¹¶æ„å»ºOctreeçš„Node.
 		 * 
-		 * \param uniqueNode ĞèÒª¹¹½¨µÄOctreeµÄNode.
-		 * \param compactedKey Ñ¹ËõµÄ¼ü
-		 * \param compactedNum Ñ¹ËõµÄ½ÚµãÊıÁ¿
-		 * \param compactedOffset Ñ¹ËõµÄÆ«ÒÆÁ¿£¨ÏàÍ¬keyµÄÊıÁ¿£©
+		 * \param uniqueNode éœ€è¦æ„å»ºçš„Octreeçš„Node.
+		 * \param compactedKey å‹ç¼©çš„é”®
+		 * \param compactedNum å‹ç¼©çš„èŠ‚ç‚¹æ•°é‡
+		 * \param compactedOffset å‹ç¼©çš„åç§»é‡ï¼ˆç›¸åŒkeyçš„æ•°é‡ï¼‰
 		 */
 		__global__ void initUniqueNodeKernel(OctNode* uniqueNode, const DeviceArrayView<long long> compactedKey, const unsigned int compactedNum, const int* compactedOffset);
 	
 		/**
-		 * \brief Éú³ÉnodeNumsµÄºËº¯Êı£ºnodeNums  -> i - 1 ºÍ i ¹²ÏíÍ¬Ò»¸ö¸¸½Úµã£¬Ôò nodeNums = 0£¬Èç¹û·ÇÍ¬Ò»¸ö¸¸½Úµã£¬Ôò nodeNums = 8.
+		 * \brief ç”ŸæˆnodeNumsçš„æ ¸å‡½æ•°ï¼šnodeNums  -> i - 1 å’Œ i å…±äº«åŒä¸€ä¸ªçˆ¶èŠ‚ç‚¹ï¼Œåˆ™ nodeNums = 0ï¼Œå¦‚æœéåŒä¸€ä¸ªçˆ¶èŠ‚ç‚¹ï¼Œåˆ™ nodeNums = 8.
 		 * 
-		 * \param uniqueCode Ñ¹ËõºóµÄ±àÂë
-		 * \param nodesCount Ñ¹ËõºóÎ¨Ò»½ÚµãµÄ×ÜÊı
-		 * \param nodeNums Éú³ÉnodeNums
+		 * \param uniqueCode å‹ç¼©åçš„ç¼–ç 
+		 * \param nodesCount å‹ç¼©åå”¯ä¸€èŠ‚ç‚¹çš„æ€»æ•°
+		 * \param nodeNums ç”ŸæˆnodeNums
 		 */
 		__global__ void generateNodeNumsKernel(const DeviceArrayView<long long> uniqueCode, const unsigned int nodesCount, unsigned int* nodeNums);
 
 		/**
-		 * \brief ¹¹½¨NodeArrayDÒÔ¼°Ô­Ê¼³íÃÜµãÊı×éindexÓëNodeArrayDÖ®¼äµÄÓ³Éä.
+		 * \brief æ„å»ºNodeArrayDä»¥åŠåŸå§‹ç¨ å¯†ç‚¹æ•°ç»„indexä¸NodeArrayDä¹‹é—´çš„æ˜ å°„.
 		 * 
-		 * \param uniqueNode Ñ¹ËõºóµÄ½Úµã
-		 * \param nodeAddress ½ÚµãµÄµØÖ·£¬eg£º0 0 0 0 0 0 0 0 8 8 8 8 8 8 8 8 ...ÎªÁËÇó¶ÔÓ¦½ÚµãÔÚÊ÷µÄÎ»ÖÃ
-		 * \param compactedKey Ñ¹ËõµÄ½Úµã
-		 * \param nodesCount Ñ¹Ëõºó½ÚµãµÄ×ÜÊı
-		 * \param Point2NodeArrayD ³íÃÜÊı×éindexÓëNodeArrayDÖ®¼äµÄÓ³Éä
-		 * \param NodeArrayD ½ÚµãÊı×é
+		 * \param uniqueNode å‹ç¼©åçš„èŠ‚ç‚¹
+		 * \param nodeAddress èŠ‚ç‚¹çš„åœ°å€ï¼Œegï¼š0 0 0 0 0 0 0 0 8 8 8 8 8 8 8 8 ...ä¸ºäº†æ±‚å¯¹åº”èŠ‚ç‚¹åœ¨æ ‘çš„ä½ç½®
+		 * \param compactedKey å‹ç¼©çš„èŠ‚ç‚¹
+		 * \param nodesCount å‹ç¼©åèŠ‚ç‚¹çš„æ€»æ•°
+		 * \param Point2NodeArrayD ç¨ å¯†æ•°ç»„indexä¸NodeArrayDä¹‹é—´çš„æ˜ å°„
+		 * \param NodeArrayD èŠ‚ç‚¹æ•°ç»„
 		 */
 		__global__ void buildNodeArrayDKernel(DeviceArrayView<OctNode> uniqueNode, DeviceArrayView<unsigned int> nodeAddress, DeviceArrayView<long long> compactedKey, const unsigned int nodesCount, int* Point2NodeArrayD, OctNode* NodeArrayD, unsigned int* NodeArrayDAddressFull);
 	
 		/**
-		 * \brief ³õÊ¼»¯½ÚµãÖĞdidxºÍdnumÁ½¸ö²ÎÊı.
+		 * \brief åˆå§‹åŒ–èŠ‚ç‚¹ä¸­didxå’Œdnumä¸¤ä¸ªå‚æ•°.
 		 * 
-		 * \param NodeArrayD ĞèÒª³õÊ¼»¯²ÎÊıµÄ½Úµã
-		 * \param nodesCount ½Úµã×ÜÊı
+		 * \param NodeArrayD éœ€è¦åˆå§‹åŒ–å‚æ•°çš„èŠ‚ç‚¹
+		 * \param nodesCount èŠ‚ç‚¹æ€»æ•°
 		 */
 		__global__ void initNodeArrayDidxDnumKernel(OctNode* NodeArrayD, const unsigned int nodesCount);
 
 		/**
-		 * \brief ´¦Àí³íÃÜµãµ½NodeArrayDµÄÓ³Éä£¬Num³íÃÜµã >> NodeArrayD£¬½«Ã¿¸öÎ´·ÖÅäNodeµÄ³íÃÜµã£¬ÍùÇ°Ñ°ÕÒ·ÖÅäÁËnodeµÄ³íÃÜµã.
+		 * \brief å¤„ç†ç¨ å¯†ç‚¹åˆ°NodeArrayDçš„æ˜ å°„ï¼ŒNumç¨ å¯†ç‚¹ >> NodeArrayDï¼Œå°†æ¯ä¸ªæœªåˆ†é…Nodeçš„ç¨ å¯†ç‚¹ï¼Œå¾€å‰å¯»æ‰¾åˆ†é…äº†nodeçš„ç¨ å¯†ç‚¹.
 		 * 
-		 * \param Point2NodeArrayD ´«ÈëÓ³ÉäÊı×é
-		 * \param verticesCount ³íÃÜ½ÚµãÊıÁ¿
+		 * \param Point2NodeArrayD ä¼ å…¥æ˜ å°„æ•°ç»„
+		 * \param verticesCount ç¨ å¯†èŠ‚ç‚¹æ•°é‡
 		 */
 		__global__ void processPoint2NodeArrayDKernel(int* Point2NodeArrayD, const unsigned int verticesCount);
 
 		/**
-		 * \brief ½«ĞèÒª½øĞĞ×îĞ¡Öµ±È½ÏµÄÁ½¸ö²ÎÊıpidxºÍdidx¸³ÖµÎª0x7fffffff(×î´óÖµ).
+		 * \brief å°†éœ€è¦è¿›è¡Œæœ€å°å€¼æ¯”è¾ƒçš„ä¸¤ä¸ªå‚æ•°pidxå’Œdidxèµ‹å€¼ä¸º0x7fffffff(æœ€å¤§å€¼).
 		 * 
-		 * \param uniqueNodeArrayPreviousLevel ÉÏÒ»²ãµÄuniqueNodeArray
-		 * \param TotalNodeNums ´«Èëµ±Ç°²ã¡¾ÂúÅÅ¡¿½ÚµãÊıÁ¿
+		 * \param uniqueNodeArrayPreviousLevel ä¸Šä¸€å±‚çš„uniqueNodeArray
+		 * \param TotalNodeNums ä¼ å…¥å½“å‰å±‚ã€æ»¡æ’ã€‘èŠ‚ç‚¹æ•°é‡
 		 */
 		__global__ void setPidxDidxInvalidValue(OctNode* uniqueNodeArrayPreviousLevel, const unsigned int TotalNodeNums);
 
 		/**
-		 * \brief Éú³ÉÉÏÒ»²ãµÄuniqueNodeArray.
+		 * \brief ç”Ÿæˆä¸Šä¸€å±‚çš„uniqueNodeArray.
 		 * 
-		 * \param NodeArrayD ´«Èëµ±Ç°²ãµÄOctree½Úµã¡¾ÂúÅÅ¡¿
-		 * \param nodeAddress ´«Èëµ±Ç°²ãµÄNodeAddress¡¾ÂúÅÅ¡¿
-		 * \param TotalNodeNums ´«Èëµ±Ç°²ã¡¾ÂúÅÅ¡¿½ÚµãÊıÁ¿
-		 * \param depth µ±Ç°²ãµÄÉî¶È
-		 * \param uniqueNodeArrayPreviousLevel ÉÏÒ»²ãµÄuniqueNodeArray
+		 * \param NodeArrayD ä¼ å…¥å½“å‰å±‚çš„OctreeèŠ‚ç‚¹ã€æ»¡æ’ã€‘
+		 * \param nodeAddress ä¼ å…¥å½“å‰å±‚çš„NodeAddressã€æ»¡æ’ã€‘
+		 * \param TotalNodeNums ä¼ å…¥å½“å‰å±‚ã€æ»¡æ’ã€‘èŠ‚ç‚¹æ•°é‡
+		 * \param depth å½“å‰å±‚çš„æ·±åº¦
+		 * \param uniqueNodeArrayPreviousLevel ä¸Šä¸€å±‚çš„uniqueNodeArray
 		 */
 		__global__ void generateUniqueNodeArrayPreviousLevelKernel(DeviceArrayView<OctNode> NodeArrayD, DeviceArrayView<unsigned int> nodeAddress, const unsigned int TotalNodeNums, const unsigned int depth, OctNode* uniqueNodeArrayPreviousLevel);
 		
 		/**
-		 * \brief ¹¹½¨ÉÏÒ»²ã¸¸½ÚµãµÄNodeNumsµÄºËº¯Êı.
+		 * \brief æ„å»ºä¸Šä¸€å±‚çˆ¶èŠ‚ç‚¹çš„NodeNumsçš„æ ¸å‡½æ•°.
 		 * 
-		 * \param uniqueNodePreviousLevel ÉÏÒ»²ãµÄuniqueNode£¬ 
-		 * \param uniqueCount ÉÏÒ»²ãuniqueµãµÄÊıÁ¿
-		 * \param depth µ±Ç°Éî¶È¡¾Êµ¼Ê´«²Î´«µÄÊÇdepth - 1¡¿
-		 * \param NodeNumsPreviousLevel ÉÏÒ»²ãµÄNodeNums
+		 * \param uniqueNodePreviousLevel ä¸Šä¸€å±‚çš„uniqueNodeï¼Œ 
+		 * \param uniqueCount ä¸Šä¸€å±‚uniqueç‚¹çš„æ•°é‡
+		 * \param depth å½“å‰æ·±åº¦ã€å®é™…ä¼ å‚ä¼ çš„æ˜¯depth - 1ã€‘
+		 * \param NodeNumsPreviousLevel ä¸Šä¸€å±‚çš„NodeNums
 		 */
 		__global__ void generateNodeNumsPreviousLevelKernel(DeviceArrayView<OctNode> uniqueNodePreviousLevel, const unsigned int uniqueCount, const unsigned int depth, unsigned int* NodeNumsPreviousLevel);
 
 		/**
-		 * \brief ¹¹½¨ÉÏÒ»²ã¸¸½ÚµãµÄnodeArray£¬²¢¸øµ±Ç°²ãµÄnodeArrayÖĞµÄparent¸³Öµ.
+		 * \brief æ„å»ºä¸Šä¸€å±‚çˆ¶èŠ‚ç‚¹çš„nodeArrayï¼Œå¹¶ç»™å½“å‰å±‚çš„nodeArrayä¸­çš„parentèµ‹å€¼.
 		 * 
-		 * \param uniqueNodePreviousLevel ´«Èë¸¸½Úµã
-		 * \param nodeAddressPreviousLevel ´«Èë¸¸½ÚµãµÄnodeAddress
-		 * \param uniqueCount ´«Èë¸¸½ÚµãµÄÊıÁ¿
-		 * \param depth µ±Ç°²ãµÄÉî¶È
-		 * \param nodeArrayPreviousLevel ¡¾Êä³ö¡¿¸¸½Úµã¹¹ÔìµÄnodeArray(ÂúÅÅ)
-		 * \param nodeArrayD ¡¾Êä³ö¡¿ÔÚ¹¹½¨ÉÏÒ»²ã¸¸½ÚµãµÄNodeArrayÊ±£¬ĞèÒª¸øµ±Ç°²ã½ÚµãÖĞµÄparentÊôĞÔ¸³Öµ
-		 * \param NodeAddressFull ¡¾Êä³ö¡¿¹¹Ôì²éÕÒµ±Ç°²ã²éÕÒÉÏÒ»²ãµÄUnique²éÕÒ±í
+		 * \param uniqueNodePreviousLevel ä¼ å…¥çˆ¶èŠ‚ç‚¹
+		 * \param nodeAddressPreviousLevel ä¼ å…¥çˆ¶èŠ‚ç‚¹çš„nodeAddress
+		 * \param uniqueCount ä¼ å…¥çˆ¶èŠ‚ç‚¹çš„æ•°é‡
+		 * \param depth å½“å‰å±‚çš„æ·±åº¦
+		 * \param nodeArrayPreviousLevel ã€è¾“å‡ºã€‘çˆ¶èŠ‚ç‚¹æ„é€ çš„nodeArray(æ»¡æ’)
+		 * \param nodeArrayD ã€è¾“å‡ºã€‘åœ¨æ„å»ºä¸Šä¸€å±‚çˆ¶èŠ‚ç‚¹çš„NodeArrayæ—¶ï¼Œéœ€è¦ç»™å½“å‰å±‚èŠ‚ç‚¹ä¸­çš„parentå±æ€§èµ‹å€¼
+		 * \param NodeAddressFull ã€è¾“å‡ºã€‘æ„é€ æŸ¥æ‰¾å½“å‰å±‚æŸ¥æ‰¾ä¸Šä¸€å±‚çš„UniqueæŸ¥æ‰¾è¡¨
 		 */
 		__global__ void generateNodeArrayPreviousLevelKernel(DeviceArrayView<OctNode> uniqueNodePreviousLevel, DeviceArrayView<unsigned int> nodeAddressPreviousLevel, const unsigned int uniqueCount, const unsigned int depth, OctNode* nodeArrayPreviousLevel, OctNode* nodeArrayD, unsigned int* NodeAddressFull);
 	
 		/**
-		 * \brief ¸üĞÂ½ÚµãNodeArrayµÄ¸¸½ÚµãºÍº¢×Ó½Úµã.
+		 * \brief æ›´æ–°èŠ‚ç‚¹NodeArrayçš„çˆ¶èŠ‚ç‚¹å’Œå­©å­èŠ‚ç‚¹.
 		 * 
-		 * \param BaseAddressArray_Device Ã¿Ò»²ã½ÚµãÔÚNodeArrayÖĞµÄÆ«ÒÆ
-		 * \param totalNodeArrayLength Õû¸öNodeArrayÒ»¹²¶àÉÙ¸ö½Úµã
-		 * \param NodeArray ¸üĞÂºóµÄNodeArray
+		 * \param BaseAddressArray_Device æ¯ä¸€å±‚èŠ‚ç‚¹åœ¨NodeArrayä¸­çš„åç§»
+		 * \param totalNodeArrayLength æ•´ä¸ªNodeArrayä¸€å…±å¤šå°‘ä¸ªèŠ‚ç‚¹
+		 * \param NodeArray æ›´æ–°åçš„NodeArray
 		 */
 		__global__ void updateNodeArrayParentAndChildrenKernel(const unsigned int totalNodeArrayLength, OctNode* NodeArray);
 
 		/**
-		 * \brief ½«ÎŞĞ§½ÚµãÒ²¸³ÉÏÏàÓ¦µÄÖµ.
+		 * \brief å°†æ— æ•ˆèŠ‚ç‚¹ä¹Ÿèµ‹ä¸Šç›¸åº”çš„å€¼.
 		 * 
-		 * \param totalNodeArrayLength Õû¸öNodeArrayÒ»¹²¶àÉÙ¸ö½Úµã
-		 * \param NodeArray ¸üĞÂºóµÄNodeArray
+		 * \param totalNodeArrayLength æ•´ä¸ªNodeArrayä¸€å…±å¤šå°‘ä¸ªèŠ‚ç‚¹
+		 * \param NodeArray æ›´æ–°åçš„NodeArray
 		 */
 		__global__ void updateEmptyNodeInfo(const unsigned int totalNodeArrayLength, OctNode* NodeArray);
 
 		/**
-		 * \brief ¼ÆËã½ÚµãµÄÁÚ¾Ó£¬´ËÊ±ĞèÒª×¢Òâ±ØĞëË³Ğò¼ÆËãÃ¿Ò»²ã½Úµã£¬²»ÄÜËùÓĞ²ã²¢ĞĞ¡¾Ô­ÎÄ£ºÔÚ¼ÆËã½ÚµãµÄÁÚ¾ÓÊ±£¬ĞèÒª¼ÆËãÆä¸¸½ÚµãµÄÁÚ¾Ó¡£³öÓÚÕâ¸öÔ­Òò£¬ÎÒÃÇÊ¹ÓÃË³Ğò±éÀú°Ë²æÊ÷Ã¿¸ö²ã£¬¶ÔÃ¿Ò»²ãÖ´ĞĞÇåµ¥2¡¿
-		 *        (Ô­ÎÄ£ºWhen computing a node¡¯s neighbors, its parent¡¯s neighbors are required. For this reason, we perform Listing 2 for all depths using a (forward) level-order traversal of the octree).
+		 * \brief è®¡ç®—èŠ‚ç‚¹çš„é‚»å±…ï¼Œæ­¤æ—¶éœ€è¦æ³¨æ„å¿…é¡»é¡ºåºè®¡ç®—æ¯ä¸€å±‚èŠ‚ç‚¹ï¼Œä¸èƒ½æ‰€æœ‰å±‚å¹¶è¡Œã€åŸæ–‡ï¼šåœ¨è®¡ç®—èŠ‚ç‚¹çš„é‚»å±…æ—¶ï¼Œéœ€è¦è®¡ç®—å…¶çˆ¶èŠ‚ç‚¹çš„é‚»å±…ã€‚å‡ºäºè¿™ä¸ªåŸå› ï¼Œæˆ‘ä»¬ä½¿ç”¨é¡ºåºéå†å…«å‰æ ‘æ¯ä¸ªå±‚ï¼Œå¯¹æ¯ä¸€å±‚æ‰§è¡Œæ¸…å•2ã€‘
+		 *        (åŸæ–‡ï¼šWhen computing a nodeâ€™s neighbors, its parentâ€™s neighbors are required. For this reason, we perform Listing 2 for all depths using a (forward) level-order traversal of the octree).
 		 * 
-		 * \param left µ±Ç°²ãµÄÊ×½ÚµãÔÚNodeArrayÖĞµÄindex
-		 * \param thisLevelNodeCount µ±Ç°²ãµÄ½ÚµãÊıÁ¿
-		 * \param depth µ±Ç°²ãÉî¶È
-		 * \param NodeArray °Ë²æÊ÷½ÚµãÊı×é
+		 * \param left å½“å‰å±‚çš„é¦–èŠ‚ç‚¹åœ¨NodeArrayä¸­çš„index
+		 * \param thisLevelNodeCount å½“å‰å±‚çš„èŠ‚ç‚¹æ•°é‡
+		 * \param depth å½“å‰å±‚æ·±åº¦
+		 * \param NodeArray å…«å‰æ ‘èŠ‚ç‚¹æ•°ç»„
 		 */
 		__global__ void computeNodeNeighborKernel(const unsigned int left, const unsigned int thisLevelNodeCount, const unsigned int depth, OctNode* NodeArray);
 	
 		/**
 		 * \brief .
 		 * 
-		 * \param NodeArray °Ë²æÊ÷½ÚµãÊı×é
-		 * \param totalNodeCount °Ë²æÊ÷½ÚµãÊı×éNodeArrayµÄ½ÚµãÊıÁ¿
+		 * \param NodeArray å…«å‰æ ‘èŠ‚ç‚¹æ•°ç»„
+		 * \param totalNodeCount å…«å‰æ ‘èŠ‚ç‚¹æ•°ç»„NodeArrayçš„èŠ‚ç‚¹æ•°é‡
 		 * \param NodeIndexInFunction 
 		 */
 		__global__ void computeEncodedFunctionNodeIndexKernel(DeviceArrayView<unsigned int> depthBuffer, DeviceArrayView<OctNode> NodeArray, const unsigned int totalNodeCount, int* NodeIndexInFunction);
 
 		/**
-		 * \brief ½«key±àÂëµ½int32µÄÈı¸öÇø¼ä[0, 11], [12, 21], [22, 31].
+		 * \brief å°†keyç¼–ç åˆ°int32çš„ä¸‰ä¸ªåŒºé—´[0, 11], [12, 21], [22, 31].
 		 * 
-		 * \param key ´«ÈëµÄx,y,z¼üÖµ
-		 * \param CurrentDepth µ±Ç°½ÚµãµÄÔÚµÚ¼¸²ã
-		 * \param ¼ÆËãµÃµ½µÄindex
+		 * \param key ä¼ å…¥çš„x,y,zé”®å€¼
+		 * \param CurrentDepth å½“å‰èŠ‚ç‚¹çš„åœ¨ç¬¬å‡ å±‚
+		 * \param è®¡ç®—å¾—åˆ°çš„index
 		 */
 		__device__ void getEncodedFunctionNodeIndex(const int& key, const int& CurrentDepth, int& index);
 
 		/**
-		 * \brief ¼ÆËãNodeArrayÖĞÃ¿¸ö½ÚµãÔÚ°Ë²æÊ÷ÖĞµÄÉî¶ÈÒÔ¼°Êµ¼ÊÖĞĞÄµã.
+		 * \brief è®¡ç®—NodeArrayä¸­æ¯ä¸ªèŠ‚ç‚¹åœ¨å…«å‰æ ‘ä¸­çš„æ·±åº¦ä»¥åŠå®é™…ä¸­å¿ƒç‚¹.
 		 * 
-		 * \param NodeArray °Ë²æÊ÷½ÚµãÊı×é
-		 * \param NodeArraySize °Ë²æÊ÷½ÚµãÊı×é´óĞ¡
-		 * \param DepthBuffer ½ÚµãÊı×éNodeArrrayÖĞ½Úµã¶ÔÓ¦µÄÉî¶È(ºóĞøÖ±½Ó²é±í)
-		 * \param CenterBuffer ½ÚµãÊı×éNodeArrrayÖĞ½Úµã¶ÔÓ¦ÖĞĞÄµã×ø±ê(ºóĞøÖ±½Ó²é±í)
+		 * \param NodeArray å…«å‰æ ‘èŠ‚ç‚¹æ•°ç»„
+		 * \param NodeArraySize å…«å‰æ ‘èŠ‚ç‚¹æ•°ç»„å¤§å°
+		 * \param DepthBuffer èŠ‚ç‚¹æ•°ç»„NodeArrrayä¸­èŠ‚ç‚¹å¯¹åº”çš„æ·±åº¦(åç»­ç›´æ¥æŸ¥è¡¨)
+		 * \param CenterBuffer èŠ‚ç‚¹æ•°ç»„NodeArrrayä¸­èŠ‚ç‚¹å¯¹åº”ä¸­å¿ƒç‚¹åæ ‡(åç»­ç›´æ¥æŸ¥è¡¨)
 		 */
 		__global__ void ComputeDepthAndCenterKernel(DeviceArrayView<OctNode> NodeArray, const unsigned int NodeArraySize, unsigned int* DepthBuffer, Point3D<float>* CenterBuffer);
 	
 
 		/**
-		 * \brief »ñµÃ½ÚµãµÄÖĞĞÄÎ»ÖÃ.
+		 * \brief è·å¾—èŠ‚ç‚¹çš„ä¸­å¿ƒä½ç½®.
 		 *
-		 * \param key ´«ÈëµÄ½ÚµãµÄkey
-		 * \param currentDepth µ±Ç°½ÚµãµÄÉî¶È
-		 * \param Center ¼ÆËã»ñµÃµ±Ç°½ÚµãµÄKeyµÄÊµ¼ÊÖĞĞÄµã
+		 * \param key ä¼ å…¥çš„èŠ‚ç‚¹çš„key
+		 * \param currentDepth å½“å‰èŠ‚ç‚¹çš„æ·±åº¦
+		 * \param Center è®¡ç®—è·å¾—å½“å‰èŠ‚ç‚¹çš„Keyçš„å®é™…ä¸­å¿ƒç‚¹
 		 */
 		__device__ void getNodeCenterAllDepth(const int& key, int currentDepth, Point3D<float>& Center);
 
@@ -283,99 +283,99 @@ namespace SparseSurfelFusion {
 		using Ptr = std::shared_ptr<BuildOctree>;
 
 		/**
-		 * \brief ´«ÈëĞèÒªÖØ½¨µÄµãÔÆ.
+		 * \brief ä¼ å…¥éœ€è¦é‡å»ºçš„ç‚¹äº‘.
 		 * 
 		 * \param PointCloud
 		 */
 		BuildOctree();
 
 		/**
-		 * \brief Îö¹¹º¯Êı.
+		 * \brief ææ„å‡½æ•°.
 		 * 
 		 */
 		~BuildOctree();
 		/**
-		 * \brief ¹¹½¨°Ë²æÊ÷½ÚµãArray¡¾º¯ÊıÄÚÓĞ×èÈû¡¿.
+		 * \brief æ„å»ºå…«å‰æ ‘èŠ‚ç‚¹Arrayã€å‡½æ•°å†…æœ‰é˜»å¡ã€‘.
 		 * 
-		 * \param depthSurfel ´«ÈëĞèÒªÖØ½¨µÄ³íÃÜÃæÔª
-		 * \param cloud µãÔÆxyz
-		 * \param normals µãÔÆ·¨Ïß
-		 * \param stream cudaÁ÷
+		 * \param depthSurfel ä¼ å…¥éœ€è¦é‡å»ºçš„ç¨ å¯†é¢å…ƒ
+		 * \param cloud ç‚¹äº‘xyz
+		 * \param normals ç‚¹äº‘æ³•çº¿
+		 * \param stream cudaæµ
 		 */
 		void BuildNodesArray(DeviceArrayView<DepthSurfel> depthSurfel, pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, pcl::PointCloud<pcl::Normal>::Ptr normals, cudaStream_t stream = 0);
 
 		/**
-		 * \brief Ô¤¼ÆËã½ÚµãµÄ»ùº¯ÊıË÷Òı¡¾º¯ÊıÄÚÎŞ×èÈû¡¿.
+		 * \brief é¢„è®¡ç®—èŠ‚ç‚¹çš„åŸºå‡½æ•°ç´¢å¼•ã€å‡½æ•°å†…æ— é˜»å¡ã€‘.
 		 * 
 		 * \param stream
 		 */
 		void ComputeEncodedFunctionNodeIndex(cudaStream_t stream);
 
 		/**
-		 * \brief »ñµÃ¹¹½¨ºÃµÄOctreeÊ÷µÄÊı×é.
+		 * \brief è·å¾—æ„å»ºå¥½çš„Octreeæ ‘çš„æ•°ç»„.
 		 * 
-		 * \return ¹¹½¨ºÃµÄOctreeÊ÷µÄÒ»Î¬Êı×éÊı×é
+		 * \return æ„å»ºå¥½çš„Octreeæ ‘çš„ä¸€ç»´æ•°ç»„æ•°ç»„
 		 */
 		DeviceArrayView<OctNode> GetOctreeNodeArray() { return NodeArray.ArrayView(); }		
 
 		/**
-		 * \brief ¡¾¿ÉĞŞ¸Ä¡¿»ñµÃ¹¹½¨ºÃµÄOctreeÊ÷µÄÊı×é.
+		 * \brief ã€å¯ä¿®æ”¹ã€‘è·å¾—æ„å»ºå¥½çš„Octreeæ ‘çš„æ•°ç»„.
 		 *
-		 * \return ¹¹½¨ºÃµÄOctreeÊ÷µÄÒ»Î¬Êı×éÊı×é
+		 * \return æ„å»ºå¥½çš„Octreeæ ‘çš„ä¸€ç»´æ•°ç»„æ•°ç»„
 		 */
 		DeviceBufferArray<OctNode>& GetOctreeNodeArrayHandle() { return NodeArray; }
 
 		/**
-		 * \brief »ñµÃNodeArray£¬Ã¿Ò»²ã½ÚµãµÄÊıÁ¿.
+		 * \brief è·å¾—NodeArrayï¼Œæ¯ä¸€å±‚èŠ‚ç‚¹çš„æ•°é‡.
 		 * 
-		 * \return Ã¿Ò»²ã½ÚµãÊıÁ¿µÄÊı×é
+		 * \return æ¯ä¸€å±‚èŠ‚ç‚¹æ•°é‡çš„æ•°ç»„
 		 */
 		int* GetNodeArrayCount() { return NodeArrayCount_Host; }
 			
 		/**
-		 * \brief ·µ»ØÃ¿Ò»²ã½ÚµãÔÚÒ»Î¬Êı×éÖĞµÄÆ«ÒÆ£¬¼´Ã¿Ò»²ãµÚÒ»¸öµãÔÚÒ»Î¬Êı×éÖĞµÄÎ»ÖÃ.
+		 * \brief è¿”å›æ¯ä¸€å±‚èŠ‚ç‚¹åœ¨ä¸€ç»´æ•°ç»„ä¸­çš„åç§»ï¼Œå³æ¯ä¸€å±‚ç¬¬ä¸€ä¸ªç‚¹åœ¨ä¸€ç»´æ•°ç»„ä¸­çš„ä½ç½®.
 		 * 
-		 * \return Ã¿Ò»²ãµÚÒ»¸öµãÔÚÒ»Î¬Êı×éÖĞµÄÎ»ÖÃ
+		 * \return æ¯ä¸€å±‚ç¬¬ä¸€ä¸ªç‚¹åœ¨ä¸€ç»´æ•°ç»„ä¸­çš„ä½ç½®
 		 */
 		int* GetBaseAddressArray() { return BaseAddressArray_Host; }
 			
 		/**
-		 * \brief »ñµÃÔ­Ê¼³íÃÜsampleOrientedPointsÊı×éÖĞµã¶ÔÓ¦NodeArrayDÖĞnodeµÄÎ»ÖÃ£¬Ã»ÓĞ¶ÔÓ¦µÄÒ»ÂÉĞ´Îª-1.
+		 * \brief è·å¾—åŸå§‹ç¨ å¯†sampleOrientedPointsæ•°ç»„ä¸­ç‚¹å¯¹åº”NodeArrayDä¸­nodeçš„ä½ç½®ï¼Œæ²¡æœ‰å¯¹åº”çš„ä¸€å¾‹å†™ä¸º-1.
 		 * 
-		 * \return Ô­Ê¼³íÃÜsampleOrientedPointsÊı×éÖĞµã¶ÔÓ¦NodeArrayDÖĞnodeµÄÎ»ÖÃ
+		 * \return åŸå§‹ç¨ å¯†sampleOrientedPointsæ•°ç»„ä¸­ç‚¹å¯¹åº”NodeArrayDä¸­nodeçš„ä½ç½®
 		 */
 		DeviceArrayView<int> GetPoint2NodeArray() { return Point2NodeArray.ArrayView(); }		
 
 		/**
-		 * \brief »ñµÃ³íÃÜµã×ª³ÉµÄÓĞÏòRGB²ÉÑùµã.
+		 * \brief è·å¾—ç¨ å¯†ç‚¹è½¬æˆçš„æœ‰å‘RGBé‡‡æ ·ç‚¹.
 		 * 
-		 * \return ³íÃÜµã×ª³ÉµÄÓĞÏò²ÉÑùµã.
+		 * \return ç¨ å¯†ç‚¹è½¬æˆçš„æœ‰å‘é‡‡æ ·ç‚¹.
 		 */
 		DeviceArrayView<OrientedPoint3D<float>> GetOrientedPoints() { return sampleOrientedPoints.ArrayView(); }		
 
 		/**
-		 * \brief »ñµÃÔ¤¼ÆËã½ÚµãµÄº¯ÊıË÷Òı.
+		 * \brief è·å¾—é¢„è®¡ç®—èŠ‚ç‚¹çš„å‡½æ•°ç´¢å¼•.
 		 * 
-		 * \return Ô¤¼ÆËã½ÚµãµÄº¯ÊıË÷Òı
+		 * \return é¢„è®¡ç®—èŠ‚ç‚¹çš„å‡½æ•°ç´¢å¼•
 		 */
 		DeviceArrayView<int> GetEncodedFunctionNodeIndex() { return EncodedFunctionNodeIndex.ArrayView(); }
 		
 		/**
-		 * \brief »ñµÃBaseAddressArray_Device.
+		 * \brief è·å¾—BaseAddressArray_Device.
 		 * 
 		 * \return BaseAddressArray_Device
 		 */
 		DeviceArrayView<int> GetBaseAddressArrayDevice() { return BaseAddressArray_Device.ArrayView(); }
 
 		/**
-		 * \brief »ñµÃNodeArrayÖĞÃ¿¸ö½ÚµãÔÚµÚ¼¸²ã²éÑ¯Êı×é.
+		 * \brief è·å¾—NodeArrayä¸­æ¯ä¸ªèŠ‚ç‚¹åœ¨ç¬¬å‡ å±‚æŸ¥è¯¢æ•°ç»„.
 		 * 
 		 * \return NodeArrayDepthIndex
 		 */
 		DeviceArrayView<unsigned int> GetNodeArrayDepthIndex() { return NodeArrayDepthIndex.ArrayView(); }
 
 		/**
-		 * \brief »ñµÃNodeArrayÖĞ½ÚµãµÄÊµ¼ÊÖĞĞÄ×ø±ê²éÑ¯Êı×é.
+		 * \brief è·å¾—NodeArrayä¸­èŠ‚ç‚¹çš„å®é™…ä¸­å¿ƒåæ ‡æŸ¥è¯¢æ•°ç»„.
 		 * 
 		 * \return NodeArrayNodeCenter
 		 */
@@ -383,149 +383,149 @@ namespace SparseSurfelFusion {
 
 	private:
 
-		DeviceBufferArray<OrientedPoint3D<float>> sampleOrientedPoints;			// ¼ÇÂ¼ÎŞË³Ğò³íÃÜµã£¬ºóĞøÅÅĞò
-		SynchronizeArray<Point3D<float>> perBlockMaxPoint;						// ¼ÇÂ¼Ã¿¸öÏß³Ì¿éµÄ×î´óµã
-		SynchronizeArray<Point3D<float>> perBlockMinPoint;						// ¼ÇÂ¼Ã¿¸öÏß³Ì¿éµÄ×îĞ¡µã
-		DeviceBufferArray<long long> sortCode;									// <ÂÛÎÄ²ÎÊı>¼ÇÂ¼³íÃÜµã¶ÔÓ¦µÄOctree±àÂëKey
+		DeviceBufferArray<OrientedPoint3D<float>> sampleOrientedPoints;			// è®°å½•æ— é¡ºåºç¨ å¯†ç‚¹ï¼Œåç»­æ’åº
+		SynchronizeArray<Point3D<float>> perBlockMaxPoint;						// è®°å½•æ¯ä¸ªçº¿ç¨‹å—çš„æœ€å¤§ç‚¹
+		SynchronizeArray<Point3D<float>> perBlockMinPoint;						// è®°å½•æ¯ä¸ªçº¿ç¨‹å—çš„æœ€å°ç‚¹
+		DeviceBufferArray<long long> sortCode;									// <è®ºæ–‡å‚æ•°>è®°å½•ç¨ å¯†ç‚¹å¯¹åº”çš„Octreeç¼–ç Key
 
-		KeyValueSort<long long, OrientedPoint3D<float>> pointKeySort;			// ¡¾½«ÈıÎ¬×ø±êÓ³Éäµ½ÌåËØ£¬²¢½«ÌåËØ±àÂë£¬ÔÙ½«±àÂëÅÅĞò¡¿¶ÔÌåËØ¼üÖ´ĞĞÅÅĞòºÍÑ¹Ëõ
-		DeviceBufferArray<unsigned int> keyLabel;								// ¡¾ÔÚÅÅĞòºóµÄ±àÂëÖĞÕÒµ½£¬ÓëÇ°Ò»¸ö±àÂë²»Í¬µÄÔÚÊı×éÖĞµÄindex¡¿¼ÇÂ¼×ÅÅÅĞòºóµÄÌåËØ±àÂë£¬Èç¹ûm_voxel_label[idx] != m_voxel_label[idx-1]£¬Ôòlabel = 1£¬ ·ñÔòlabel = 0
-		PrefixSum nodeNumsPrefixsum;											// ¡¾nodeNumsµÄÇ°×ººÍ¡¿ÌåËØlabelµÄÇ°×ººÍ£¬Ö÷Òª×÷ÓÃÊÇÏÔÊ¾Ç°ÃæÓĞ¼¸¸ö¡°ÓëÇ°Ò»¸ö±àÂë²»Ò»Ñù¡±µÄ±àÂë
-		DeviceBufferArray<long long> uniqueCode;								// <ÂÛÎÄ²ÎÊı>¡¾¶ÀÒ»ÎŞ¶şµÄÌåËØ±àÂë·ÅÈëÊı×é¡¿¡°ÓëÇ°Ò»¸ö±àÂë¼üÖµ²»Ò»Ñù¡±µÄ±àÂë£¨ÓëÇ°Ò»¸öÒ»ÑùµÄÉáÈ¥£©
-		DeviceBufferArray<int> compactedVerticesOffset;							// ¡¾Õâ¸ö¶ÀÒ»ÎŞ¶şµÄÌåËØ±àÂëÔÚpointKeySortµÄÄÄ¸öÎ»ÖÃ¡¿Õâ¸ö¡°ÓëÇ°Ò»¸ö±àÂë¼üÖµ²»Ò»Ñù¡±µÄ±àÂëÔÚm_point_key_sort.valid_sorted_keyÖĞµÄÎ»ÖÃ£¨idx£©
+		KeyValueSort<long long, OrientedPoint3D<float>> pointKeySort;			// ã€å°†ä¸‰ç»´åæ ‡æ˜ å°„åˆ°ä½“ç´ ï¼Œå¹¶å°†ä½“ç´ ç¼–ç ï¼Œå†å°†ç¼–ç æ’åºã€‘å¯¹ä½“ç´ é”®æ‰§è¡Œæ’åºå’Œå‹ç¼©
+		DeviceBufferArray<unsigned int> keyLabel;								// ã€åœ¨æ’åºåçš„ç¼–ç ä¸­æ‰¾åˆ°ï¼Œä¸å‰ä¸€ä¸ªç¼–ç ä¸åŒçš„åœ¨æ•°ç»„ä¸­çš„indexã€‘è®°å½•ç€æ’åºåçš„ä½“ç´ ç¼–ç ï¼Œå¦‚æœm_voxel_label[idx] != m_voxel_label[idx-1]ï¼Œåˆ™label = 1ï¼Œ å¦åˆ™label = 0
+		PrefixSum nodeNumsPrefixsum;											// ã€nodeNumsçš„å‰ç¼€å’Œã€‘ä½“ç´ labelçš„å‰ç¼€å’Œï¼Œä¸»è¦ä½œç”¨æ˜¯æ˜¾ç¤ºå‰é¢æœ‰å‡ ä¸ªâ€œä¸å‰ä¸€ä¸ªç¼–ç ä¸ä¸€æ ·â€çš„ç¼–ç 
+		DeviceBufferArray<long long> uniqueCode;								// <è®ºæ–‡å‚æ•°>ã€ç‹¬ä¸€æ— äºŒçš„ä½“ç´ ç¼–ç æ”¾å…¥æ•°ç»„ã€‘â€œä¸å‰ä¸€ä¸ªç¼–ç é”®å€¼ä¸ä¸€æ ·â€çš„ç¼–ç ï¼ˆä¸å‰ä¸€ä¸ªä¸€æ ·çš„èˆå»ï¼‰
+		DeviceBufferArray<int> compactedVerticesOffset;							// ã€è¿™ä¸ªç‹¬ä¸€æ— äºŒçš„ä½“ç´ ç¼–ç åœ¨pointKeySortçš„å“ªä¸ªä½ç½®ã€‘è¿™ä¸ªâ€œä¸å‰ä¸€ä¸ªç¼–ç é”®å€¼ä¸ä¸€æ ·â€çš„ç¼–ç åœ¨m_point_key_sort.valid_sorted_keyä¸­çš„ä½ç½®ï¼ˆidxï¼‰
 
-		DeviceBufferArray<unsigned int> nodeNums;								// <ÂÛÎÄ²ÎÊı>¼ÇÂ¼ÏàÍ¬¸¸½ÚµãµÄ½ÚµãÊıÁ¿
+		DeviceBufferArray<unsigned int> nodeNums;								// <è®ºæ–‡å‚æ•°>è®°å½•ç›¸åŒçˆ¶èŠ‚ç‚¹çš„èŠ‚ç‚¹æ•°é‡
 
-		DeviceBufferArray<int> Point2NodeArray;						// ´ÓÔ­Ê¼³íÃÜsampleOrientedPointsÊı×éÖĞµã¶ÔÓ¦NodeArrayDÖĞnodeµÄÎ»ÖÃ£¬Ã»ÓĞ¶ÔÓ¦µÄÒ»ÂÉĞ´Îª-1
+		DeviceBufferArray<int> Point2NodeArray;						// ä»åŸå§‹ç¨ å¯†sampleOrientedPointsæ•°ç»„ä¸­ç‚¹å¯¹åº”NodeArrayDä¸­nodeçš„ä½ç½®ï¼Œæ²¡æœ‰å¯¹åº”çš„ä¸€å¾‹å†™ä¸º-1
 		
-		int BaseAddressArray_Host[Constants::maxDepth_Host + 1] = { 0 };		// <ÂÛÎÄ²ÎÊı>ÆäÖĞÊı×éµÄÃ¿¸öÔªËØ¼ÇÂ¼NodeArrayÖĞÃ¿¸öÉî¶È´¦µÄµÚÒ»¸ö½ÚµãµÄË÷Òı
-		int NodeArrayCount_Host[Constants::maxDepth_Host + 1] = { 0 };			// ¼ÇÂ¼Ã¿Ò»²ã½ÚµãÂúÅÅÊıÁ¿
+		int BaseAddressArray_Host[Constants::maxDepth_Host + 1] = { 0 };		// <è®ºæ–‡å‚æ•°>å…¶ä¸­æ•°ç»„çš„æ¯ä¸ªå…ƒç´ è®°å½•NodeArrayä¸­æ¯ä¸ªæ·±åº¦å¤„çš„ç¬¬ä¸€ä¸ªèŠ‚ç‚¹çš„ç´¢å¼•
+		int NodeArrayCount_Host[Constants::maxDepth_Host + 1] = { 0 };			// è®°å½•æ¯ä¸€å±‚èŠ‚ç‚¹æ»¡æ’æ•°é‡
 
 		DeviceBufferArray<int> BaseAddressArray_Device;
 
-		DeviceBufferArray<OctNode> NodeArrays[Constants::maxDepth_Host + 1];	// Ã¿²ãµÄNodeArrayµÄÊ×µØÖ·´æÔÚNodeArrays¶ÔÓ¦µÄÊı×éÖĞ
-		DeviceBufferArray<OctNode> NodeArray;									// <ÂÛÎÄ²ÎÊı>½«Ã¿Ò»²ãNodeArrayÊı×é(Ê×µØÖ·)Á¬½ÓÆğÀ´
-		DeviceBufferArray<unsigned int> NodeAddressFull;						// ÁÙÊ±¼ÇÂ¼µ±Ç°½ÚµãµÄAddressµÄÖµ,ÓëÃ¿Ò»²ãµÄNodeArray±ØĞëÒ»Ñù´ó£¬×öµ½²é±íÓ³Éä
+		DeviceBufferArray<OctNode> NodeArrays[Constants::maxDepth_Host + 1];	// æ¯å±‚çš„NodeArrayçš„é¦–åœ°å€å­˜åœ¨NodeArrayså¯¹åº”çš„æ•°ç»„ä¸­
+		DeviceBufferArray<OctNode> NodeArray;									// <è®ºæ–‡å‚æ•°>å°†æ¯ä¸€å±‚NodeArrayæ•°ç»„(é¦–åœ°å€)è¿æ¥èµ·æ¥
+		DeviceBufferArray<unsigned int> NodeAddressFull;						// ä¸´æ—¶è®°å½•å½“å‰èŠ‚ç‚¹çš„Addressçš„å€¼,ä¸æ¯ä¸€å±‚çš„NodeArrayå¿…é¡»ä¸€æ ·å¤§ï¼Œåšåˆ°æŸ¥è¡¨æ˜ å°„
 
-		DeviceBufferArray<OctNode> uniqueNodeD;									// ¡¾ÖĞ¼ä±äÁ¿¡¿¼ÇÂ¼µÚ D ²ãµÄUniqueNode
-		DeviceBufferArray<OctNode> uniqueNodePrevious;							// ¡¾ÖĞ¼ä±äÁ¿¡¿¼ÇÂ¼ÉÏÒ»²ãµÄUniqueNode
+		DeviceBufferArray<OctNode> uniqueNodeD;									// ã€ä¸­é—´å˜é‡ã€‘è®°å½•ç¬¬ D å±‚çš„UniqueNode
+		DeviceBufferArray<OctNode> uniqueNodePrevious;							// ã€ä¸­é—´å˜é‡ã€‘è®°å½•ä¸Šä¸€å±‚çš„UniqueNode
 
-		DeviceBufferArray<unsigned int> nodeAddressD;							// ¡¾ÖĞ¼ä±äÁ¿¡¿¼ÇÂ¼µÚ D ²ãµÄNodeAddress
-		DeviceBufferArray<unsigned int> nodeAddressPrevious;					// ¡¾ÖĞ¼ä±äÁ¿¡¿¼ÇÂ¼ÉÏÒ»²ãµÄNodeAddress
+		DeviceBufferArray<unsigned int> nodeAddressD;							// ã€ä¸­é—´å˜é‡ã€‘è®°å½•ç¬¬ D å±‚çš„NodeAddress
+		DeviceBufferArray<unsigned int> nodeAddressPrevious;					// ã€ä¸­é—´å˜é‡ã€‘è®°å½•ä¸Šä¸€å±‚çš„NodeAddress
 
-		DeviceBufferArray<int> EncodedFunctionNodeIndex;						// Ô¤¼ÆËã½ÚµãµÄº¯ÊıË÷Òı
+		DeviceBufferArray<int> EncodedFunctionNodeIndex;						// é¢„è®¡ç®—èŠ‚ç‚¹çš„å‡½æ•°ç´¢å¼•
 
-		DeviceBufferArray<unsigned int> NodeArrayDepthIndex;					// ¼ÇÂ¼NodeArrayÖĞÃ¿¸ö¶¥µãÀ´×ÔÓÚÄÄÒ»²ã
-		DeviceBufferArray<Point3D<float>> NodeArrayNodeCenter;					// ¼ÇÂ¼NodeArrayÖĞÃ¿¸ö¶¥µãµÄÖĞĞÄµã
+		DeviceBufferArray<unsigned int> NodeArrayDepthIndex;					// è®°å½•NodeArrayä¸­æ¯ä¸ªé¡¶ç‚¹æ¥è‡ªäºå“ªä¸€å±‚
+		DeviceBufferArray<Point3D<float>> NodeArrayNodeCenter;					// è®°å½•NodeArrayä¸­æ¯ä¸ªé¡¶ç‚¹çš„ä¸­å¿ƒç‚¹
 
 		/**
-		 * \brief ´ÓdepthsurfelÖĞ»ñµÃÃæÔª×ø±êºÍ·¨Ïß.
+		 * \brief ä»depthsurfelä¸­è·å¾—é¢å…ƒåæ ‡å’Œæ³•çº¿.
 		 *
-		 * \param PointCloud ³íÃÜÃæÔª
-		 * \param stream cudaÁ÷
+		 * \param PointCloud ç¨ å¯†é¢å…ƒ
+		 * \param stream cudaæµ
 		 */
 		void getCoordinateAndNormal(DeviceArrayView<DepthSurfel> denseSurfel, cudaStream_t stream = 0);
 
 		/**
-		 * \brief ÕÒµ½µãÔÆ·¶Î§.
+		 * \brief æ‰¾åˆ°ç‚¹äº‘èŒƒå›´.
 		 * 
-		 * \param points ´«ÈëµãÔÆ
-		 * \param MaxPoint ¼ÆËãµÃµ½µÄ°üÎ§ºĞ×î´ópoint
-		 * \param MinPoint ¼ÆËãµÃµ½µÄ°üÎ§ºĞ×îĞ¡point
-		 * \param stream cudaÁ÷
+		 * \param points ä¼ å…¥ç‚¹äº‘
+		 * \param MaxPoint è®¡ç®—å¾—åˆ°çš„åŒ…å›´ç›’æœ€å¤§point
+		 * \param MinPoint è®¡ç®—å¾—åˆ°çš„åŒ…å›´ç›’æœ€å°point
+		 * \param stream cudaæµ
 		 */
 		void getBoundingBox(DeviceArrayView<OrientedPoint3D<float>> points, Point3D<float>& MaxPoint, Point3D<float>& MinPoint, cudaStream_t stream = 0);
 
 		/**
-		 * \brief °üÎ§ºĞ¿ÉÊÓ»¯.
+		 * \brief åŒ…å›´ç›’å¯è§†åŒ–.
 		 * 
-		 * \param cloud ´«ÈëµãÔÆ
-		 * \param MaxPoint ´«Èë×î´ó×ø±ê
-		 * \param MinPoint ´«Èë×îĞ¡×ø±ê
+		 * \param cloud ä¼ å…¥ç‚¹äº‘
+		 * \param MaxPoint ä¼ å…¥æœ€å¤§åæ ‡
+		 * \param MinPoint ä¼ å…¥æœ€å°åæ ‡
 		 */
 		void BoundBoxVisualization(const pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, Point3D<float> MaxPoint, Point3D<float> MinPoint);
 
 		/**
-		 * \brief µ÷ÕûµãµÄ×ø±ê·¶Î§.
+		 * \brief è°ƒæ•´ç‚¹çš„åæ ‡èŒƒå›´.
 		 *
-		 * \param points ĞèÒªĞŞ¸ÄµÄ×ø±êµã
-		 * \param normals ĞèÒªĞŞ¸ÄµÄ·¨Ïß
-		 * \param MxPoint ×î´ó×ø±ê
-		 * \param MnPoint ×îĞ¡×ø±ê
-		 * \param Scale BoundingBox×î´óµÄ±ß
-		 * \param Center BoundingBoxµÄÖĞĞÄµã
-		 * \param stream cudaÁ÷
+		 * \param points éœ€è¦ä¿®æ”¹çš„åæ ‡ç‚¹
+		 * \param normals éœ€è¦ä¿®æ”¹çš„æ³•çº¿
+		 * \param MxPoint æœ€å¤§åæ ‡
+		 * \param MnPoint æœ€å°åæ ‡
+		 * \param Scale BoundingBoxæœ€å¤§çš„è¾¹
+		 * \param Center BoundingBoxçš„ä¸­å¿ƒç‚¹
+		 * \param stream cudaæµ
 		 */
 		void adjustPointsCoordinateAndNormal(DeviceBufferArray<OrientedPoint3D<float>>& points, const Point3D<float> MxPoint, const Point3D<float> MnPoint, float& MaxEdge, float ScaleFactor, Point3D<float>& Center, cudaStream_t stream = 0);
 		/**
-		 * \brief ÎªÃ¿¸öµãÉú³É±àÂë.
+		 * \brief ä¸ºæ¯ä¸ªç‚¹ç”Ÿæˆç¼–ç .
 		 * 
-		 * \param points ´«Èë³íÃÜµã
-		 * \param key ±àÂëArray
-		 * \param count ³íÃÜµãµÄ¸öÊı
-		 * \param stream cudaÁ÷
+		 * \param points ä¼ å…¥ç¨ å¯†ç‚¹
+		 * \param key ç¼–ç Array
+		 * \param count ç¨ å¯†ç‚¹çš„ä¸ªæ•°
+		 * \param stream cudaæµ
 		 */
 		void generateCode(DeviceBufferArray<OrientedPoint3D<float>>& points, DeviceBufferArray<long long>& keys, size_t count, cudaStream_t stream = 0);
 	
 		/**
-		 * \brief ÅÅÁĞµãµÄ¼ü.
+		 * \brief æ’åˆ—ç‚¹çš„é”®.
 		 * 
-		 * \param points ÅÅÁĞ²¢Ñ¹Ëõµã
-		 * \param stream cudaÁ÷
+		 * \param points æ’åˆ—å¹¶å‹ç¼©ç‚¹
+		 * \param stream cudaæµ
 		 */
 		void sortAndCompactVerticesKeys(DeviceArray<OrientedPoint3D<float>>& points, cudaStream_t stream = 0);
 		/**
-		 * \brief ¹¹ÔìÎ¨Ò»µÄNode.
+		 * \brief æ„é€ å”¯ä¸€çš„Node.
 		 * 
-		 * \param uniqueNode Vertex¹¹ÔìNode
-		 * \param stream cudaÁ÷Stream
+		 * \param uniqueNode Vertexæ„é€ Node
+		 * \param stream cudaæµStream
 		 */
 		void initUniqueNode(DeviceBufferArray<OctNode>& uniqueNode, DeviceBufferArray<long long>& uniqueCode, cudaStream_t stream = 0);
 
 		/**
-		 * \brief Éú³É½ÚµãµÄNodeNum£¬i Óë i - 1 ·ÇÍ¬Ò»¸¸Ç×ÔòÎª8£¬Í¬Ò»¸¸Ç×ÔòÎª0.
+		 * \brief ç”ŸæˆèŠ‚ç‚¹çš„NodeNumï¼Œi ä¸ i - 1 éåŒä¸€çˆ¶äº²åˆ™ä¸º8ï¼ŒåŒä¸€çˆ¶äº²åˆ™ä¸º0.
 		 * 
-		 * \param uniqueKey Ñ¹ËõºóµÄverticesKeys
-		 * \param NodeNums ¼ÇÂ¼½ÚµãµÄNodeNum
-		 * \param stream cudaÁ÷Stream
+		 * \param uniqueKey å‹ç¼©åçš„verticesKeys
+		 * \param NodeNums è®°å½•èŠ‚ç‚¹çš„NodeNum
+		 * \param stream cudaæµStream
 		 */
 		void generateNodeNumsAndNodeAddress(DeviceBufferArray<long long>& uniqueCode, DeviceBufferArray<unsigned int>& NodeNums, DeviceBufferArray<unsigned int>& NodeAddress, cudaStream_t stream = 0);
 	
 		/**
-		 * \brief ¹¹½¨µÚD²ãµÄ½ÚµãArray£ºNodeArrayD.
+		 * \brief æ„å»ºç¬¬Då±‚çš„èŠ‚ç‚¹Arrayï¼šNodeArrayD.
 		 * 
-		 * \param denseVertices ³íÃÜÓĞÏò¶¥µã
-		 * \param uniqueNode Ñ¹ËõµÄ½Úµã
-		 * \param compactedKey Ñ¹ËõµÄ¼ü
-		 * \param NodeAddress ¼ÇÂ¼8¸ö×Ó½ÚµãµÄÎ»ÖÃ
-		 * \param Point2NodeArray ³íÃÜµãÔÚNodeArrayÖĞµÄÎ»ÖÃ
-		 * \param NodeArrayD ¹¹½¨µÚD²ãµÄ½ÚµãÊı×é
-		 * \param stream cudaÁ÷
+		 * \param denseVertices ç¨ å¯†æœ‰å‘é¡¶ç‚¹
+		 * \param uniqueNode å‹ç¼©çš„èŠ‚ç‚¹
+		 * \param compactedKey å‹ç¼©çš„é”®
+		 * \param NodeAddress è®°å½•8ä¸ªå­èŠ‚ç‚¹çš„ä½ç½®
+		 * \param Point2NodeArray ç¨ å¯†ç‚¹åœ¨NodeArrayä¸­çš„ä½ç½®
+		 * \param NodeArrayD æ„å»ºç¬¬Då±‚çš„èŠ‚ç‚¹æ•°ç»„
+		 * \param stream cudaæµ
 		 */
 		void buildNodeArrayD(DeviceArrayView<OrientedPoint3D<float>> denseVertices, DeviceArrayView<OctNode> uniqueNode, DeviceArrayView<long long> compactedKey, DeviceBufferArray<unsigned int>& NodeAddress, DeviceBufferArray<unsigned int>& NodeAddressFull, DeviceBufferArray<int>& Point2NodeArray, DeviceBufferArray<OctNode>& NodeArrayD, cudaStream_t stream = 0);
 		
 		/**
-		 * \brief ¹¹½¨ËùÓĞ²ã½ÚµãµÄÆ´½ÓNodeArrayÒÔ¼°Ã¿Ò»²ãµÄÊ×½ÚµãBaseAddressArray.
+		 * \brief æ„å»ºæ‰€æœ‰å±‚èŠ‚ç‚¹çš„æ‹¼æ¥NodeArrayä»¥åŠæ¯ä¸€å±‚çš„é¦–èŠ‚ç‚¹BaseAddressArray.
 		 * 
-		 * \param BaseAddressArray Ã¿Ò»²ãµÄÊ×½ÚµãBaseAddressArray
-		 * \param stream cudaÁ÷
+		 * \param BaseAddressArray æ¯ä¸€å±‚çš„é¦–èŠ‚ç‚¹BaseAddressArray
+		 * \param stream cudaæµ
 		 */
 		void buildOtherDepthNodeArray(int* BaseAddressArray_Host, cudaStream_t stream = 0);
 
 		/**
-		 * \brief Ìî²¹Ç°Ãæ¹¹½¨½ÚµãµÄ²»ÍêÕûÏî£¬²¢ÇÒ¼ÆËã½ÚµãDepth²éÕÒ±í£¬½ÚµãÖĞĞÄµãCenter²éÕÒ±í.
+		 * \brief å¡«è¡¥å‰é¢æ„å»ºèŠ‚ç‚¹çš„ä¸å®Œæ•´é¡¹ï¼Œå¹¶ä¸”è®¡ç®—èŠ‚ç‚¹DepthæŸ¥æ‰¾è¡¨ï¼ŒèŠ‚ç‚¹ä¸­å¿ƒç‚¹CenteræŸ¥æ‰¾è¡¨.
 		 * 
-		 * \param BaseAddressArray_Host Ã¿²ãÆ«ÒÆ
-		 * \param NodeArray ½ÚµãÊı×é
-		 * \param stream cudaÁ÷
+		 * \param BaseAddressArray_Host æ¯å±‚åç§»
+		 * \param NodeArray èŠ‚ç‚¹æ•°ç»„
+		 * \param stream cudaæµ
 		 */
 		void updateNodeInfo(int* BaseAddressArray_Host, DeviceBufferArray<OctNode>& NodeArray, cudaStream_t stream = 0);
 		
 		/**
-		 * \brief ¹¹½¨½ÚµãµÄÁÚ¾Ó.
+		 * \brief æ„å»ºèŠ‚ç‚¹çš„é‚»å±….
 		 * 
-		 * \param NodeArray ½ÚµãÊı×é
-		 * \param stream cudaÁ÷
+		 * \param NodeArray èŠ‚ç‚¹æ•°ç»„
+		 * \param stream cudaæµ
 		 */
 		void computeNodeNeighbor(DeviceBufferArray<OctNode>& NodeArray, cudaStream_t stream = 0);
 	};

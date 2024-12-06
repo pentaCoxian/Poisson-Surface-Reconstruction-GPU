@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   BuildOctree.cu
- * \brief  ¹¹Ôì°Ë²æÊ÷cuda·½·¨ÊµÏÖ
+ * \brief  æ„é€ å…«å‰æ ‘cudaæ–¹æ³•å®ç°
  * 
  * \author LUOJIAXUAN
  * \date   May 5th 2024
@@ -9,13 +9,13 @@
 
 namespace SparseSurfelFusion {
 	namespace device {
-		__device__ __constant__ int BaseAddressArray_Device[Constants::maxDepth_Host + 1] = { 0 };	// ¼ÇÂ¼Ã¿²ã½ÚµãÊ×µØÖ·µÄÎ»ÖÃ
+		__device__ __constant__ int BaseAddressArray_Device[Constants::maxDepth_Host + 1] = { 0 };	// è®°å½•æ¯å±‚èŠ‚ç‚¹é¦–åœ°å€çš„ä½ç½®
 
 		__device__ __constant__ double eps = EPSILON;
 
 		__device__ __constant__ int maxDepth = MAX_DEPTH_OCTREE;
 
-		__device__ __constant__ int maxIntValue = 0x7fffffff;		// ×î´óintÖµ
+		__device__ __constant__ int maxIntValue = 0x7fffffff;		// æœ€å¤§intå€¼
 
 		__device__ __constant__ int LUTparent[8][27] =
 		{
@@ -57,7 +57,7 @@ __global__ void SparseSurfelFusion::device::reduceMaxMinKernel(Point3D<float>* m
 	__shared__ float MinPointX[MaxCudaThreadsPerBlock];
 	__shared__ float MinPointY[MaxCudaThreadsPerBlock];
 	__shared__ float MinPointZ[MaxCudaThreadsPerBlock];
-	if (idx < pointsCount) {	// ÏÂ·½reduceµÄÊ±ºò¿ÉÄÜ»á·Ã´æ³ö½ç(threadIdx.x + stride >= pointsCount)£¬Èç¹ûÉÏÃæÖ±½Ó·µ»ØµÄ»°£¬__shared__Êı×éÔÚÄ³¸öÏß³ÌÉÏ±ØÈ»ÓĞÃ»¸³ÖµµÄÇé¿ö
+	if (idx < pointsCount) {	// ä¸‹æ–¹reduceçš„æ—¶å€™å¯èƒ½ä¼šè®¿å­˜å‡ºç•Œ(threadIdx.x + stride >= pointsCount)ï¼Œå¦‚æœä¸Šé¢ç›´æ¥è¿”å›çš„è¯ï¼Œ__shared__æ•°ç»„åœ¨æŸä¸ªçº¿ç¨‹ä¸Šå¿…ç„¶æœ‰æ²¡èµ‹å€¼çš„æƒ…å†µ
 		MaxPointX[threadIdx.x] = points[idx].point.coords[0];
 		MaxPointY[threadIdx.x] = points[idx].point.coords[1];
 		MaxPointZ[threadIdx.x] = points[idx].point.coords[2];
@@ -75,11 +75,11 @@ __global__ void SparseSurfelFusion::device::reduceMaxMinKernel(Point3D<float>* m
 	}
 
 	__syncthreads();
-	// Ë³ĞòÑ°Ö·
+	// é¡ºåºå¯»å€
 	for (int stride = blockDim.x / 2; stride > 0; stride /= 2) {
 		if (threadIdx.x < stride) {
 			float lhs, rhs;
-			/** ×î´óÖµ **/
+			/** æœ€å¤§å€¼ **/
 			lhs = MaxPointX[threadIdx.x];
 			rhs = MaxPointX[threadIdx.x + stride];
 			MaxPointX[threadIdx.x] = lhs < rhs ? rhs : lhs;
@@ -92,7 +92,7 @@ __global__ void SparseSurfelFusion::device::reduceMaxMinKernel(Point3D<float>* m
 			rhs = MaxPointZ[threadIdx.x + stride];
 			MaxPointZ[threadIdx.x] = lhs < rhs ? rhs : lhs;
 
-			/** ×îĞ¡Öµ **/
+			/** æœ€å°å€¼ **/
 			lhs = MinPointX[threadIdx.x];
 			rhs = MinPointX[threadIdx.x + stride];
 			MinPointX[threadIdx.x] = lhs > rhs ? rhs : lhs;
@@ -107,7 +107,7 @@ __global__ void SparseSurfelFusion::device::reduceMaxMinKernel(Point3D<float>* m
 		}
 		__syncthreads();
 	}
-	if (threadIdx.x == 0) {	// ¸ÃblockµÄµÚÒ»¸öÏß³Ì
+	if (threadIdx.x == 0) {	// è¯¥blockçš„ç¬¬ä¸€ä¸ªçº¿ç¨‹
 		maxBlockData[blockIdx.x].coords[0] = MaxPointX[threadIdx.x];
 		maxBlockData[blockIdx.x].coords[1] = MaxPointY[threadIdx.x];
 		maxBlockData[blockIdx.x].coords[2] = MaxPointZ[threadIdx.x];
@@ -120,7 +120,7 @@ __global__ void SparseSurfelFusion::device::reduceMaxMinKernel(Point3D<float>* m
 
 __host__ void SparseSurfelFusion::device::findMaxMinPoint(Point3D<float>& MaxPoint, Point3D<float>& MinPoint, Point3D<float>* maxArray, Point3D<float>* minArray, const unsigned int GridNum)
 {
-	// Í¨³£²»³¬¹ı1000
+	// é€šå¸¸ä¸è¶…è¿‡1000
 	for (unsigned int i = 0; i < GridNum; i++) {
 		MaxPoint.coords[0] = MaxPoint.coords[0] < maxArray[i].coords[0] ? maxArray[i].coords[0] : MaxPoint.coords[0];
 		MaxPoint.coords[1] = MaxPoint.coords[1] < maxArray[i].coords[1] ? maxArray[i].coords[1] : MaxPoint.coords[1];
@@ -149,7 +149,7 @@ __global__ void SparseSurfelFusion::device::adjustPointsCoordinateAndNormalKerne
 		points[idx].point.coords[i] = (points[idx].point.coords[i] - center.coords[i]) * 1.0f / maxEdge;
 	}
 
-	// ½«·¨Ïß·ÅËõµ½[-2^(maxDepth + 1), 2^(maxDepth + 1)]Õâ¸öÇø¼ä£¬¶ø·Ç[-1, 1]
+	// å°†æ³•çº¿æ”¾ç¼©åˆ°[-2^(maxDepth + 1), 2^(maxDepth + 1)]è¿™ä¸ªåŒºé—´ï¼Œè€Œé[-1, 1]
 	float3 PointNormal;
 	PointNormal.x = points[idx].normal.coords[0];
 	PointNormal.y = points[idx].normal.coords[1];
@@ -166,18 +166,18 @@ __global__ void SparseSurfelFusion::device::adjustPointsCoordinateAndNormalKerne
 
 __global__ void SparseSurfelFusion::device::generateCodeKernel(OrientedPoint3D<float>* pos, long long* keys, const unsigned int pointsNum)
 {
-	unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;	// unsigned int µ½ 2 * (2^31 - 1) = 42.95ÒÚ 
+	unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;	// unsigned int åˆ° 2 * (2^31 - 1) = 42.95äº¿ 
 	if (idx >= pointsNum)	return;
-	long long key = 0ll;	// µ±Ç°³íÃÜµãµÄkey
+	long long key = 0ll;	// å½“å‰ç¨ å¯†ç‚¹çš„key
 	Point3D<float> myCenter = Point3D<float>(0.5f, 0.5f, 0.5f);
 	float myWidth = 0.25f;
-	// node±àÂë¹æÔò£¬KeyÇ°32Î»£ºx0y0z0 x1y1z1 ... xD-1 yD-1 zD-1  ->  D×î¶à10²ã
-	for (int i = device::maxDepth - 1; i >= 0; i--) {	// ´Ó0²ã¿ªÊ¼¹¹½¨
-		if (pos[idx].point.coords[0] > myCenter.coords[0]) {	// xÔÚÖĞĞÄµãÓÒ±ß£¬±àÂëÎª1
-			key |= 1ll << (3 * i + 34);		// °´ÕÕ±àÂëË³Ğò½«1ÒÆµ½¶ÔÓ¦Î»ÖÃ
+	// nodeç¼–ç è§„åˆ™ï¼ŒKeyå‰32ä½ï¼šx0y0z0 x1y1z1 ... xD-1 yD-1 zD-1  ->  Dæœ€å¤š10å±‚
+	for (int i = device::maxDepth - 1; i >= 0; i--) {	// ä»0å±‚å¼€å§‹æ„å»º
+		if (pos[idx].point.coords[0] > myCenter.coords[0]) {	// xåœ¨ä¸­å¿ƒç‚¹å³è¾¹ï¼Œç¼–ç ä¸º1
+			key |= 1ll << (3 * i + 34);		// æŒ‰ç…§ç¼–ç é¡ºåºå°†1ç§»åˆ°å¯¹åº”ä½ç½®
 			myCenter.coords[0] += myWidth;
 		}
-		else {								// keyÄ¬ÈÏÎª0£¬ÔÚ×ó±ßÔòÎŞĞè½«±àÂëÎªÖÃÎª0
+		else {								// keyé»˜è®¤ä¸º0ï¼Œåœ¨å·¦è¾¹åˆ™æ— éœ€å°†ç¼–ç ä¸ºç½®ä¸º0
 			myCenter.coords[0] -= myWidth;	
 		}
 
@@ -198,11 +198,11 @@ __global__ void SparseSurfelFusion::device::generateCodeKernel(OrientedPoint3D<f
 		}
 		myWidth /= 2.0f;
 	}
-	// ¼È¼ÇÂ¼ÁËnodeµÄÎ»ÖÃ£¬ÓÖ¼ÇÂ¼ÁËÕâ¸ö³íÃÜµãÔÚverticeArrayÖĞµÄÎ»ÖÃ, ¶øÇÒnode±àÂëÔÚ¸ßÎ»£¬ÅÅĞòµÄÊ±ºòidxÍêÈ«²»»áÓ°ÏìnodeµÄË³Ğò£¬ÈÔÈ»»¹ÊÇoctreeµÄË³Ğò
+	// æ—¢è®°å½•äº†nodeçš„ä½ç½®ï¼Œåˆè®°å½•äº†è¿™ä¸ªç¨ å¯†ç‚¹åœ¨verticeArrayä¸­çš„ä½ç½®, è€Œä¸”nodeç¼–ç åœ¨é«˜ä½ï¼Œæ’åºçš„æ—¶å€™idxå®Œå…¨ä¸ä¼šå½±å“nodeçš„é¡ºåºï¼Œä»ç„¶è¿˜æ˜¯octreeçš„é¡ºåº
 	keys[idx] = key + idx;	
 	//if (idx % 1000 == 0) {
-	//	const int keyHigher32bits = int(keys[idx] >> 32);					// Octree±àÂë
-	//	const int keyLower32bits = int(keys[idx] & ((1ll << 31) - 1));	// ÔÚÔ­Ê¼Êı×éÖĞµÄidx
+	//	const int keyHigher32bits = int(keys[idx] >> 32);					// Octreeç¼–ç 
+	//	const int keyLower32bits = int(keys[idx] & ((1ll << 31) - 1));	// åœ¨åŸå§‹æ•°ç»„ä¸­çš„idx
 	//	printf("idx = %d  High = %d  Low = %d\n", idx, keyHigher32bits, keyLower32bits);
 	//}
 }
@@ -212,11 +212,11 @@ __global__ void SparseSurfelFusion::device::updataLower32ForSortedDensePoints(co
 	const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
 	if (idx >= sortedKeysCount)	return;
 	if (idx == 0) {
-		sortedVerticesKey[idx] &= ~((1ll << 32) - 1);	// È¡¸ß32Î»µÄÊı¾İ£¬µÍ32Î»ÖÃÎª0£¬ÒòÎª´ËÊ±DensePointÊı×éÒÑ¾­±»ÅÅĞò£¬Ö®Ç°µÍ32Î»µÄÊı¾İĞèÒªÖØÖÃ³Éµ±ÏÂµÄidx
+		sortedVerticesKey[idx] &= ~((1ll << 32) - 1);	// å–é«˜32ä½çš„æ•°æ®ï¼Œä½32ä½ç½®ä¸º0ï¼Œå› ä¸ºæ­¤æ—¶DensePointæ•°ç»„å·²ç»è¢«æ’åºï¼Œä¹‹å‰ä½32ä½çš„æ•°æ®éœ€è¦é‡ç½®æˆå½“ä¸‹çš„idx
 	}
 	else {
 		sortedVerticesKey[idx] &= ~((1ll << 32) - 1);
-		sortedVerticesKey[idx] += idx;						// ÕâÀï±ØĞëÖØÖÃµÍ32Î»µÄidx£¬Ö®Ç°µÄidxÊÇDensePointsÊı×éÃ»ÓĞÅÅĞòµÄidx£¬ÏÖÔÚDensePointsÒÑ¾­±»ÅÅĞò£¬±ØĞë¸üĞÂ
+		sortedVerticesKey[idx] += idx;						// è¿™é‡Œå¿…é¡»é‡ç½®ä½32ä½çš„idxï¼Œä¹‹å‰çš„idxæ˜¯DensePointsæ•°ç»„æ²¡æœ‰æ’åºçš„idxï¼Œç°åœ¨DensePointså·²ç»è¢«æ’åºï¼Œå¿…é¡»æ›´æ–°
 	}
 }
 
@@ -227,8 +227,8 @@ __global__ void SparseSurfelFusion::device::labelSortedVerticesKeysKernel(const 
 	if (idx == 0) { 
 		keyLabel[0] = 1; 
 	}
-	else {	// ÒòÎª´Ë´¦ĞèÒª·ÃÎÊÇ°Ò»¸öµÄidx£¬ËùÒÔÈç¹ûÔÚÍ¬Ò»¸öºËº¯Êı¸üĞÂÒ»¶¨´æÔÚ·Ã´æ³åÍ»
-		// Ö»±È½ÏOctree±àÂë²¿·Ö£¬ÒòÎªD²ã½Úµã£¬Í¬¸¸½ÚµãµÄ²¿·ÖÖ»ÔÊĞíÓĞ8¸öÒ¶×Ó½Úµã
+	else {	// å› ä¸ºæ­¤å¤„éœ€è¦è®¿é—®å‰ä¸€ä¸ªçš„idxï¼Œæ‰€ä»¥å¦‚æœåœ¨åŒä¸€ä¸ªæ ¸å‡½æ•°æ›´æ–°ä¸€å®šå­˜åœ¨è®¿å­˜å†²çª
+		// åªæ¯”è¾ƒOctreeç¼–ç éƒ¨åˆ†ï¼Œå› ä¸ºDå±‚èŠ‚ç‚¹ï¼ŒåŒçˆ¶èŠ‚ç‚¹çš„éƒ¨åˆ†åªå…è®¸æœ‰8ä¸ªå¶å­èŠ‚ç‚¹
 		const unsigned int Higher32Bits_Current = int(sortedVerticesKey[idx] >> 32);
 		const unsigned int Higher32Bits_Previous = int(sortedVerticesKey[idx - 1] >> 32);
 		if (Higher32Bits_Current != Higher32Bits_Previous) { keyLabel[idx] = 1; }
@@ -240,38 +240,38 @@ __global__ void SparseSurfelFusion::device::compactedVoxelKeyKernel(const PtrSiz
 {
 	const auto idx = threadIdx.x + blockDim.x * blockIdx.x;
 	if (idx >= sortedVoxelKey.size) return;
-	if (voxelKeyLabel[idx] == 1) {										//µ±±àÂë¼üÖµÓëÇ°Ò»¸ö²»Í¬Ê±£¬´ËÊ±Ò²ÊÇµÚÒ»¸ö²»Í¬
-		compactedKey[prefixsumedLabel[idx] - 1] = sortedVoxelKey[idx];	//½«´ËÊ±µÄ¼üÖµ¸øcompactedKey
-		compactedOffset[prefixsumedLabel[idx] - 1] = idx;				//½«Õâ¸öÊ±ºòµÄÆ«ÒÆµÄidx¸øcompactedOffset´æ´¢
-		//ÉÏÊö±£Ö¤ÁËcompactedKeyÓëcompactedOffset¶ÔÓ¦£ºcompactedKey[i]´¢´æÓëÇ°Ò»¸ö²»Ò»ÑùµÄ±àÂë¼üÖµ£¬compactedOffset[i]´¢´æÕâ¸ö±àÂë¼üÖµÔÚvoxelKeyLabelÖĞµÄµÚ¼¸¸ö
+	if (voxelKeyLabel[idx] == 1) {										//å½“ç¼–ç é”®å€¼ä¸å‰ä¸€ä¸ªä¸åŒæ—¶ï¼Œæ­¤æ—¶ä¹Ÿæ˜¯ç¬¬ä¸€ä¸ªä¸åŒ
+		compactedKey[prefixsumedLabel[idx] - 1] = sortedVoxelKey[idx];	//å°†æ­¤æ—¶çš„é”®å€¼ç»™compactedKey
+		compactedOffset[prefixsumedLabel[idx] - 1] = idx;				//å°†è¿™ä¸ªæ—¶å€™çš„åç§»çš„idxç»™compactedOffsetå­˜å‚¨
+		//ä¸Šè¿°ä¿è¯äº†compactedKeyä¸compactedOffsetå¯¹åº”ï¼šcompactedKey[i]å‚¨å­˜ä¸å‰ä¸€ä¸ªä¸ä¸€æ ·çš„ç¼–ç é”®å€¼ï¼ŒcompactedOffset[i]å‚¨å­˜è¿™ä¸ªç¼–ç é”®å€¼åœ¨voxelKeyLabelä¸­çš„ç¬¬å‡ ä¸ª
 	}
 	if (idx == 0) {
 		//printf("denseNodeNum = %d\n", sortedVoxelKey.size);
-		// compactedVoxelKey ÊıÁ¿ÊÇ£ºvoxelsNum
-		// compactedOffset   ÊıÁ¿ÊÇ£ºvoxelsNum + 1
-		compactedOffset[compactedOffset.Size() - 1] = sortedVoxelKey.size;	// ×îºóÒ»¸öÖµ¼ÇÂ¼Ò»¹²ÓĞ¶àÉÙ¸öÓĞĞ§µÄÌåËØµã(°üÀ¨ÖØ¸´µÄÌåËØ)£¬
+		// compactedVoxelKey æ•°é‡æ˜¯ï¼švoxelsNum
+		// compactedOffset   æ•°é‡æ˜¯ï¼švoxelsNum + 1
+		compactedOffset[compactedOffset.Size() - 1] = sortedVoxelKey.size;	// æœ€åä¸€ä¸ªå€¼è®°å½•ä¸€å…±æœ‰å¤šå°‘ä¸ªæœ‰æ•ˆçš„ä½“ç´ ç‚¹(åŒ…æ‹¬é‡å¤çš„ä½“ç´ )ï¼Œ
 	}
 }
 
 __global__ void SparseSurfelFusion::device::initUniqueNodeKernel(OctNode* uniqueNode, const DeviceArrayView<long long> compactedKey, const unsigned int compactedNum, const int* compactedOffset)
 {
 	const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
-	if (idx >= compactedNum) return;	// Ñ¹ËõºóµÄ¸öÊı
-	const int keyHigher32bits = int(compactedKey[idx] >> 32);					// Octree±àÂë
-	const int keyLower32bits = int(compactedKey[idx] & ((1ll << 31) - 1));		// ÔÚÔ­Ê¼Êı×éÖĞµÄidx
-	uniqueNode[idx].key = keyHigher32bits;										// ¼ÇÂ¼½ÚµãµÄkey
-	uniqueNode[idx].pidx = compactedOffset[idx];								// ±ê¼ÇµÚÒ»¸ö½ÚµãµÄÎ»ÖÃ
-	uniqueNode[idx].pnum = compactedOffset[idx + 1] - compactedOffset[idx];		// ±ê¼ÇÏàÍ¬keyÖµ½ÚµãµÄÊıÁ¿
+	if (idx >= compactedNum) return;	// å‹ç¼©åçš„ä¸ªæ•°
+	const int keyHigher32bits = int(compactedKey[idx] >> 32);					// Octreeç¼–ç 
+	const int keyLower32bits = int(compactedKey[idx] & ((1ll << 31) - 1));		// åœ¨åŸå§‹æ•°ç»„ä¸­çš„idx
+	uniqueNode[idx].key = keyHigher32bits;										// è®°å½•èŠ‚ç‚¹çš„key
+	uniqueNode[idx].pidx = compactedOffset[idx];								// æ ‡è®°ç¬¬ä¸€ä¸ªèŠ‚ç‚¹çš„ä½ç½®
+	uniqueNode[idx].pnum = compactedOffset[idx + 1] - compactedOffset[idx];		// æ ‡è®°ç›¸åŒkeyå€¼èŠ‚ç‚¹çš„æ•°é‡
 }
 
 __global__ void SparseSurfelFusion::device::generateNodeNumsKernel(const DeviceArrayView<long long> uniqueCode, const unsigned int nodesCount, unsigned int* nodeNums)
 {
 	const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
 	if (idx >= nodesCount)	return;
-	if (idx == 0) {	// Ê×½ÚµãÉèÖÃÎª0£¬·½±ãºóÃæ½Úµã¶¨Î»
+	if (idx == 0) {	// é¦–èŠ‚ç‚¹è®¾ç½®ä¸º0ï¼Œæ–¹ä¾¿åé¢èŠ‚ç‚¹å®šä½
 		nodeNums[idx] = 0;
 	}
-	else if ((uniqueCode[idx - 1] >> 35) != (uniqueCode[idx] >> 35)) {		// 32 + 3 = 35  ->  Ä©¶Ë½ÚµãµÄÉÏÒ»²ã½Úµã  ->  ¸¸½ÚµãÏàÍ¬
+	else if ((uniqueCode[idx - 1] >> 35) != (uniqueCode[idx] >> 35)) {		// 32 + 3 = 35  ->  æœ«ç«¯èŠ‚ç‚¹çš„ä¸Šä¸€å±‚èŠ‚ç‚¹  ->  çˆ¶èŠ‚ç‚¹ç›¸åŒ
 		nodeNums[idx] = 8;
 	}
 	else {
@@ -283,11 +283,11 @@ __global__ void SparseSurfelFusion::device::buildNodeArrayDKernel(DeviceArrayVie
 {
 	const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
 	if (idx >= nodesCount)	return;
-	int DLevelNodeIndex = nodeAddress[idx] + (uniqueNode[idx].key & 7);	// D²ã½ÚµãµÄÎ»ÖÃ
+	int DLevelNodeIndex = nodeAddress[idx] + (uniqueNode[idx].key & 7);	// Då±‚èŠ‚ç‚¹çš„ä½ç½®
 	NodeArrayD[DLevelNodeIndex] = uniqueNode[idx];
 	NodeArrayDAddressFull[DLevelNodeIndex] = nodeAddress[idx];
-	const int keyLower32bits = int(compactedKey[idx] & ((1ll << 31) - 1));				// ÔÚÔ­Ê¼Êı×éÖĞµÄidx
-	Point2NodeArrayD[keyLower32bits] = DLevelNodeIndex;									// ½¨Á¢³íÃÜµãµ½½ÚµãµÄÓ³Éä
+	const int keyLower32bits = int(compactedKey[idx] & ((1ll << 31) - 1));				// åœ¨åŸå§‹æ•°ç»„ä¸­çš„idx
+	Point2NodeArrayD[keyLower32bits] = DLevelNodeIndex;									// å»ºç«‹ç¨ å¯†ç‚¹åˆ°èŠ‚ç‚¹çš„æ˜ å°„
 	//if (idx % 1000 == 0)	printf("nodeIndex = %d   keyLower32bits = %d\n", idx, keyLower32bits);
 }
 
@@ -304,8 +304,8 @@ __global__ void SparseSurfelFusion::device::processPoint2NodeArrayDKernel(int* P
 	const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
 	unsigned int nowIdx = idx;
 	if (idx >= verticesCount)	return;
-	int val = Point2NodeArrayD[idx];	// ¸Ã³íÃÜµã¶ÔÓ¦µÄNodeArraysµÄÎ»ÖÃ£¬Èç¹ûPoint2NodeArrayD = -1ÄÇÃ´ËµÃ÷¸ÃµãÃ»ÓĞÔÚNodeArraysÖĞ
-	while (val == -1) {					// Èç¹û¸Ãµã²¢²»³öÏÖÔÚNodeArraysÖĞ£¬ÄÇÃ´¾ÍÍùÇ°ÕÒ×î½üµÄ³öÏÖÔÚNodeArraysÖĞµÄµã
+	int val = Point2NodeArrayD[idx];	// è¯¥ç¨ å¯†ç‚¹å¯¹åº”çš„NodeArraysçš„ä½ç½®ï¼Œå¦‚æœPoint2NodeArrayD = -1é‚£ä¹ˆè¯´æ˜è¯¥ç‚¹æ²¡æœ‰åœ¨NodeArraysä¸­
+	while (val == -1) {					// å¦‚æœè¯¥ç‚¹å¹¶ä¸å‡ºç°åœ¨NodeArraysä¸­ï¼Œé‚£ä¹ˆå°±å¾€å‰æ‰¾æœ€è¿‘çš„å‡ºç°åœ¨NodeArraysä¸­çš„ç‚¹
 		nowIdx--;
 		val = Point2NodeArrayD[nowIdx];
 	}
@@ -324,32 +324,32 @@ __global__ void SparseSurfelFusion::device::generateUniqueNodeArrayPreviousLevel
 {
 	const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
 	if (idx >= TotalNodeNums)	return;
-	if (NodeArrayD[idx].pnum == 0) {							// µ±Ç°½ÚµãÊÇ¿ÕµÄ£¬µ±Ç°½ÚµãÊÇÎŞĞ§½Úµã¡¾ÂúÅÅ£¬ÓĞĞ©ÊÇÓĞĞ§½ÚµãÓĞĞ©ÊÇÎŞĞ§½Úµã¡¿
-		unsigned int AFatherFirstSonNode = idx - idx % 8;		// ÕÒµ½µ±Ç°¸¸½ÚµãµÄµÚÒ»¸ö×Ó½Úµã
-		unsigned int AFatherValidNodeIdx = -1;					// µ±Ç°¸¸½ÚµãµÄµÚÒ»¸öÓĞĞ§µÄ½Úµã
-		for (int i = 0; i < 8; i++) {							// ±éÀúÕâ¸ö¸¸½ÚµãËùÓĞ×Ó½Úµã£¬Ö±µ½ÕÒµ½ÓĞĞ§µÄ×Ó½Úµã
-			AFatherValidNodeIdx = AFatherFirstSonNode + i;		// ¸¸½ÚµãµÄµÚi¸ö×Ó½Úµãidx
-			if (NodeArrayD[AFatherValidNodeIdx].pnum != 0) {	// ÕÒÁËÁËÓĞĞ§µÄ½Úµã¾ÍÌø³öÑ­»·
+	if (NodeArrayD[idx].pnum == 0) {							// å½“å‰èŠ‚ç‚¹æ˜¯ç©ºçš„ï¼Œå½“å‰èŠ‚ç‚¹æ˜¯æ— æ•ˆèŠ‚ç‚¹ã€æ»¡æ’ï¼Œæœ‰äº›æ˜¯æœ‰æ•ˆèŠ‚ç‚¹æœ‰äº›æ˜¯æ— æ•ˆèŠ‚ç‚¹ã€‘
+		unsigned int AFatherFirstSonNode = idx - idx % 8;		// æ‰¾åˆ°å½“å‰çˆ¶èŠ‚ç‚¹çš„ç¬¬ä¸€ä¸ªå­èŠ‚ç‚¹
+		unsigned int AFatherValidNodeIdx = -1;					// å½“å‰çˆ¶èŠ‚ç‚¹çš„ç¬¬ä¸€ä¸ªæœ‰æ•ˆçš„èŠ‚ç‚¹
+		for (int i = 0; i < 8; i++) {							// éå†è¿™ä¸ªçˆ¶èŠ‚ç‚¹æ‰€æœ‰å­èŠ‚ç‚¹ï¼Œç›´åˆ°æ‰¾åˆ°æœ‰æ•ˆçš„å­èŠ‚ç‚¹
+			AFatherValidNodeIdx = AFatherFirstSonNode + i;		// çˆ¶èŠ‚ç‚¹çš„ç¬¬iä¸ªå­èŠ‚ç‚¹idx
+			if (NodeArrayD[AFatherValidNodeIdx].pnum != 0) {	// æ‰¾äº†äº†æœ‰æ•ˆçš„èŠ‚ç‚¹å°±è·³å‡ºå¾ªç¯
 				break;
 			}
 		}
-		const unsigned int fatherIdx = NodeAddressFull[AFatherValidNodeIdx] / 8;				// ÉÏÒ»²ã(¼´¸¸½Úµã)µÄÅÅĞò£º0  0   0 8   8    ....  -->  00000000 11111111
+		const unsigned int fatherIdx = NodeAddressFull[AFatherValidNodeIdx] / 8;				// ä¸Šä¸€å±‚(å³çˆ¶èŠ‚ç‚¹)çš„æ’åºï¼š0  0   0 8   8    ....  -->  00000000 11111111
 		if (NodeArrayD[idx].dnum != 0) {	
-			atomicAdd(&uniqueNodeArrayPreviousLevel[fatherIdx].dnum, NodeArrayD[idx].dnum);		// Ô­×Ó²Ù×÷£¬¼ÆËãµ±Ç°½ÚµãÏÂÃæÓĞ¶àÉÙ¸öµã
-			atomicMin(&uniqueNodeArrayPreviousLevel[fatherIdx].didx, NodeArrayD[idx].didx);		// Ô­×Ó²Ù×÷£¬ÕÒ³öµ±Ç°½ÚµãÏÂÃæidx×îĞ¡µÄµã£¬¼´µ±Ç°½ÚµãµÄÊ×¸öµã
+			atomicAdd(&uniqueNodeArrayPreviousLevel[fatherIdx].dnum, NodeArrayD[idx].dnum);		// åŸå­æ“ä½œï¼Œè®¡ç®—å½“å‰èŠ‚ç‚¹ä¸‹é¢æœ‰å¤šå°‘ä¸ªç‚¹
+			atomicMin(&uniqueNodeArrayPreviousLevel[fatherIdx].didx, NodeArrayD[idx].didx);		// åŸå­æ“ä½œï¼Œæ‰¾å‡ºå½“å‰èŠ‚ç‚¹ä¸‹é¢idxæœ€å°çš„ç‚¹ï¼Œå³å½“å‰èŠ‚ç‚¹çš„é¦–ä¸ªç‚¹
 		}
 	}
-	else {	// Èç¹ûÊÇÓĞĞ§µã
-		const int fatherKey = NodeArrayD[idx].key & (~(7 << (3 * (device::maxDepth - depth))));	// µ±Ç°µãµÄ¸¸½ÚµãKey£¬²»¹ÜÊÇ·ñÊÇÓĞĞ§µã
-		const int fatherIdx = NodeAddressFull[idx] / 8;											// µ±Ç°µãµÄ¸¸½Úµã
-		const int sonKey = (NodeArrayD[idx].key >> (3 * (device::maxDepth - depth))) & 7;		// ¶ù×Ó½ÚµãµÄ¼ü£¬ÆäÊµ¾ÍÊÇµ±Ç°²ãµÄÄÇÈı¸öbitÖµ
-		uniqueNodeArrayPreviousLevel[fatherIdx].key = fatherKey;								// uniqueNodeArrayPreviousLevelÉÏÒ»²ãµÄNodeArrays¿ªÊ¼¼ÇÂ¼¸¸½Úµã
+	else {	// å¦‚æœæ˜¯æœ‰æ•ˆç‚¹
+		const int fatherKey = NodeArrayD[idx].key & (~(7 << (3 * (device::maxDepth - depth))));	// å½“å‰ç‚¹çš„çˆ¶èŠ‚ç‚¹Keyï¼Œä¸ç®¡æ˜¯å¦æ˜¯æœ‰æ•ˆç‚¹
+		const int fatherIdx = NodeAddressFull[idx] / 8;											// å½“å‰ç‚¹çš„çˆ¶èŠ‚ç‚¹
+		const int sonKey = (NodeArrayD[idx].key >> (3 * (device::maxDepth - depth))) & 7;		// å„¿å­èŠ‚ç‚¹çš„é”®ï¼Œå…¶å®å°±æ˜¯å½“å‰å±‚çš„é‚£ä¸‰ä¸ªbitå€¼
+		uniqueNodeArrayPreviousLevel[fatherIdx].key = fatherKey;								// uniqueNodeArrayPreviousLevelä¸Šä¸€å±‚çš„NodeArrayså¼€å§‹è®°å½•çˆ¶èŠ‚ç‚¹
 		//if (depth == device::maxDepth) printf("index = %d  fatherIdx = %d  NA_pnum = %d   Prev_pnum = %d\n", idx, fatherIdx, NodeArrayD[idx].pnum, uniqueNodeArrayPreviousLevel[fatherIdx].pnum);
-		atomicAdd(&uniqueNodeArrayPreviousLevel[fatherIdx].pnum, NodeArrayD[idx].pnum);			// ÉÏÒ»²ã¸¸½Úµã°üº¬µ±Ç°½ÚµãµÄËùÓĞpnumµÄºÍ£¬¼´Óëµ±Ç°²ã¸¸½ÚµãÊÇÍ¬Ò»¸öKeyµÄ³íÃÜµã¸öÊı(Ö»ÓĞÓĞĞ§µã²ÅÓĞpnumÖµ£¬ÎŞĞ§µãÊÇ0)
-		atomicMin(&uniqueNodeArrayPreviousLevel[fatherIdx].pidx, NodeArrayD[idx].pidx);			// ÉÏÒ»²ã¸¸½ÚµãµÄpidxÊÇÆäËùÓĞ×Ó½ÚµãÖĞidx×îĞ¡µÄ£¬¼´Óëµ±Ç°¸¸½ÚµãÊÇÍ¬Ò»¸öKeyµÄ³íÃÜµãÖĞ×îÇ°ÃæµÄÄÇ¸öµãidx
-		atomicAdd(&uniqueNodeArrayPreviousLevel[fatherIdx].dnum, NodeArrayD[idx].dnum);			// ÉÏÒ»²ã¸¸½ÚµãµÄdnumÊÇ°üº¬ÏÂÃæËùÓĞ×Ó½ÚµãµÄÊıÁ¿£¬°üÀ¨ÓĞĞ§µãºÍÎŞĞ§µã
-		atomicMin(&uniqueNodeArrayPreviousLevel[fatherIdx].didx, NodeArrayD[idx].didx);			// ÉÏÒ»²ã¸¸½ÚµãÖĞdidxÊÇ×Ó½ÚµãÖĞ£¬ÔÚNodeArrayDÖĞ×î¿¿Ç°µÄÄÇÒ»¸ö½ÚµãµÄidx£¬°üÀ¨ÓĞĞ§ºÍÎŞĞ§
-		uniqueNodeArrayPreviousLevel[fatherIdx].children[sonKey] = idx;							// ÔÚÓĞĞ§µãµÄÊ±ºòÉèÖÃÆäÓĞĞ§µÄº¢×Ó½Úµã£¬¾ÍÊÇµ±Ç°²ãµÄÓĞĞ§Öµ²ÅÄÜÊÇÉÏÒ»²ã¸¸Ç×µÄ¶ù×Ó£¬ÎŞĞ§µã²»ÄÜ×÷Îª¶ù×Ó
+		atomicAdd(&uniqueNodeArrayPreviousLevel[fatherIdx].pnum, NodeArrayD[idx].pnum);			// ä¸Šä¸€å±‚çˆ¶èŠ‚ç‚¹åŒ…å«å½“å‰èŠ‚ç‚¹çš„æ‰€æœ‰pnumçš„å’Œï¼Œå³ä¸å½“å‰å±‚çˆ¶èŠ‚ç‚¹æ˜¯åŒä¸€ä¸ªKeyçš„ç¨ å¯†ç‚¹ä¸ªæ•°(åªæœ‰æœ‰æ•ˆç‚¹æ‰æœ‰pnumå€¼ï¼Œæ— æ•ˆç‚¹æ˜¯0)
+		atomicMin(&uniqueNodeArrayPreviousLevel[fatherIdx].pidx, NodeArrayD[idx].pidx);			// ä¸Šä¸€å±‚çˆ¶èŠ‚ç‚¹çš„pidxæ˜¯å…¶æ‰€æœ‰å­èŠ‚ç‚¹ä¸­idxæœ€å°çš„ï¼Œå³ä¸å½“å‰çˆ¶èŠ‚ç‚¹æ˜¯åŒä¸€ä¸ªKeyçš„ç¨ å¯†ç‚¹ä¸­æœ€å‰é¢çš„é‚£ä¸ªç‚¹idx
+		atomicAdd(&uniqueNodeArrayPreviousLevel[fatherIdx].dnum, NodeArrayD[idx].dnum);			// ä¸Šä¸€å±‚çˆ¶èŠ‚ç‚¹çš„dnumæ˜¯åŒ…å«ä¸‹é¢æ‰€æœ‰å­èŠ‚ç‚¹çš„æ•°é‡ï¼ŒåŒ…æ‹¬æœ‰æ•ˆç‚¹å’Œæ— æ•ˆç‚¹
+		atomicMin(&uniqueNodeArrayPreviousLevel[fatherIdx].didx, NodeArrayD[idx].didx);			// ä¸Šä¸€å±‚çˆ¶èŠ‚ç‚¹ä¸­didxæ˜¯å­èŠ‚ç‚¹ä¸­ï¼Œåœ¨NodeArrayDä¸­æœ€é å‰çš„é‚£ä¸€ä¸ªèŠ‚ç‚¹çš„idxï¼ŒåŒ…æ‹¬æœ‰æ•ˆå’Œæ— æ•ˆ
+		uniqueNodeArrayPreviousLevel[fatherIdx].children[sonKey] = idx;							// åœ¨æœ‰æ•ˆç‚¹çš„æ—¶å€™è®¾ç½®å…¶æœ‰æ•ˆçš„å­©å­èŠ‚ç‚¹ï¼Œå°±æ˜¯å½“å‰å±‚çš„æœ‰æ•ˆå€¼æ‰èƒ½æ˜¯ä¸Šä¸€å±‚çˆ¶äº²çš„å„¿å­ï¼Œæ— æ•ˆç‚¹ä¸èƒ½ä½œä¸ºå„¿å­
 		//if (fatherIdx == 0) {
 		//	printf("sonKey = %d   idx = %d\n", sonKey, idx);
 		//}
@@ -360,15 +360,15 @@ __global__ void SparseSurfelFusion::device::generateNodeNumsPreviousLevelKernel(
 {
 	const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
 	if (idx >= uniqueCount)	return;
-	if (idx == 0) {	// µÚÒ»¸ö½Úµã¸¸½ÚµãÓëÇ°Ò»¸öÎŞ·¨±È½Ï£¬Ä¬ÈÏÎª0
+	if (idx == 0) {	// ç¬¬ä¸€ä¸ªèŠ‚ç‚¹çˆ¶èŠ‚ç‚¹ä¸å‰ä¸€ä¸ªæ— æ³•æ¯”è¾ƒï¼Œé»˜è®¤ä¸º0
 		NodeNumsPreviousLevel[idx] = 0;
 	}
 	else {
-		// ²é¿´¸¸½ÚµãÊÇ·ñÓëÇ°Ò»¸öÏàÍ¬£¬²»Í¬Îª8
+		// æŸ¥çœ‹çˆ¶èŠ‚ç‚¹æ˜¯å¦ä¸å‰ä¸€ä¸ªç›¸åŒï¼Œä¸åŒä¸º8
 		if ((uniqueNodePreviousLevel[idx - 1].key >> (3 * (device::maxDepth - depth + 1))) != (uniqueNodePreviousLevel[idx].key >> (3 * (device::maxDepth - depth + 1)))) {
 			NodeNumsPreviousLevel[idx] = 8;
 		}
-		else {	// ÏàÍ¬Îª0
+		else {	// ç›¸åŒä¸º0
 			NodeNumsPreviousLevel[idx] = 0;
 		}
 	}
@@ -378,13 +378,13 @@ __global__ void SparseSurfelFusion::device::generateNodeArrayPreviousLevelKernel
 {
 	const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
 	if (idx >= uniqueCount)	return;
-	int index = nodeAddressPreviousLevel[idx] + ((uniqueNodePreviousLevel[idx].key >> (3 * (device::maxDepth - depth + 1))) & 7);	// ÉÏÒ»²ã¸¸½ÚµãµÄidx
+	int index = nodeAddressPreviousLevel[idx] + ((uniqueNodePreviousLevel[idx].key >> (3 * (device::maxDepth - depth + 1))) & 7);	// ä¸Šä¸€å±‚çˆ¶èŠ‚ç‚¹çš„idx
 	nodeArrayPreviousLevel[index] = uniqueNodePreviousLevel[idx];
 	NodeAddressFull[index] = nodeAddressPreviousLevel[idx];
-	for (int i = 0; i < 8; i++) {	// children½Úµã×î¶à8¸ö£¬²¢ÇÒÈ«²¿¸³³õÖµ0ÁË£¬¶ÔÃ¿¸ö¸¸½Úµã±éÀúÈ«²¿µÄº¢×Ó½Úµã£¬Ñ¡ÔñÓĞĞ§µÄº¢×Ó½Úµã£¬½«×Ô¼ºµÄindex¸³Öµ¸øº¢×Ó
-		int nodeArrayDIndex = uniqueNodePreviousLevel[idx].children[i];	// ¼ÇÂ¼ÉÏÒ»²ã½ÚµãµÄº¢×Ó½Úµã£¬¼´nodeArrayDµÄ½Úµã
-		if (nodeArrayDIndex != 0) {	// ÓĞĞ§µÄº¢×Ó½Úµã£¬´æÔÚÒ»¸öbug£ºÈç¹ûº¢×Ó½ÚµãÔÚnodeArrayDÖĞµÄindex±¾Éí¾ÍÊÇ0£¬Ò²»á±»µ±³¡ÎŞĞ§µã´¦Àí£¿
-			nodeArrayD[nodeArrayDIndex].parent = index;	// ½«µ±Ç°½ÚµãµÄ×÷ÎªÓĞĞ§º¢×Ó½ÚµãµÄ¸¸½Úµã
+	for (int i = 0; i < 8; i++) {	// childrenèŠ‚ç‚¹æœ€å¤š8ä¸ªï¼Œå¹¶ä¸”å…¨éƒ¨èµ‹åˆå€¼0äº†ï¼Œå¯¹æ¯ä¸ªçˆ¶èŠ‚ç‚¹éå†å…¨éƒ¨çš„å­©å­èŠ‚ç‚¹ï¼Œé€‰æ‹©æœ‰æ•ˆçš„å­©å­èŠ‚ç‚¹ï¼Œå°†è‡ªå·±çš„indexèµ‹å€¼ç»™å­©å­
+		int nodeArrayDIndex = uniqueNodePreviousLevel[idx].children[i];	// è®°å½•ä¸Šä¸€å±‚èŠ‚ç‚¹çš„å­©å­èŠ‚ç‚¹ï¼Œå³nodeArrayDçš„èŠ‚ç‚¹
+		if (nodeArrayDIndex != 0) {	// æœ‰æ•ˆçš„å­©å­èŠ‚ç‚¹ï¼Œå­˜åœ¨ä¸€ä¸ªbugï¼šå¦‚æœå­©å­èŠ‚ç‚¹åœ¨nodeArrayDä¸­çš„indexæœ¬èº«å°±æ˜¯0ï¼Œä¹Ÿä¼šè¢«å½“åœºæ— æ•ˆç‚¹å¤„ç†ï¼Ÿ
+			nodeArrayD[nodeArrayDIndex].parent = index;	// å°†å½“å‰èŠ‚ç‚¹çš„ä½œä¸ºæœ‰æ•ˆå­©å­èŠ‚ç‚¹çš„çˆ¶èŠ‚ç‚¹
 		}
 	}
 }
@@ -393,28 +393,28 @@ __global__ void SparseSurfelFusion::device::updateNodeArrayParentAndChildrenKern
 {
 	const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
 	if (idx >= totalNodeArrayLength)	return;
-	if (NodeArray[idx].pnum == 0)	return;		// Èç¹ûÊÇÎŞĞ§µãÔòÎŞĞè¸üĞÂº¢×ÓºÍ¸¸Ç×½Úµã
+	if (NodeArray[idx].pnum == 0)	return;		// å¦‚æœæ˜¯æ— æ•ˆç‚¹åˆ™æ— éœ€æ›´æ–°å­©å­å’Œçˆ¶äº²èŠ‚ç‚¹
 	int depth = 0;
-	for (depth = 0; depth < device::maxDepth; depth++) {				// Ñ°ÕÒidxÔÚÄÄÒ»²ã
+	for (depth = 0; depth < device::maxDepth; depth++) {				// å¯»æ‰¾idxåœ¨å“ªä¸€å±‚
 		if (device::BaseAddressArray_Device[depth] <= idx && idx < device::BaseAddressArray_Device[depth + 1]) {
 			break;
 		}
 	}
 	if (idx == 0) {
-		NodeArray[idx].parent = -1;										// Èç¹ûÊÇµÚ0²ã½Úµã
-#pragma unroll	// Õ¹¿ªÑ­»·£¬¼ÓËÙÔËËã
-		for (int child = 0; child < 8; child++) {						// ¼ÆËãChildrenÔÚNodeArrayµÄÎ»ÖÃ
+		NodeArray[idx].parent = -1;										// å¦‚æœæ˜¯ç¬¬0å±‚èŠ‚ç‚¹
+#pragma unroll	// å±•å¼€å¾ªç¯ï¼ŒåŠ é€Ÿè¿ç®—
+		for (int child = 0; child < 8; child++) {						// è®¡ç®—Childrenåœ¨NodeArrayçš„ä½ç½®
 			//NodeArray[idx].children[child] += BaseAddressArray_Device[depth + 1];
-			NodeArray[idx].children[child] = child + 1;		// µÚÒ»²ã½Úµã¿ÉÒÔÓĞÄ³Ğ©½ÚµãÍêÈ«ÊÇ¿ÕµÄ£¬µ«ÊÇ×÷ÎªµÚÒ»²ã½Úµã±ØĞëÂúÅÅ£¬²»ÄÜÓĞindex´íÎóµÄ
+			NodeArray[idx].children[child] = child + 1;		// ç¬¬ä¸€å±‚èŠ‚ç‚¹å¯ä»¥æœ‰æŸäº›èŠ‚ç‚¹å®Œå…¨æ˜¯ç©ºçš„ï¼Œä½†æ˜¯ä½œä¸ºç¬¬ä¸€å±‚èŠ‚ç‚¹å¿…é¡»æ»¡æ’ï¼Œä¸èƒ½æœ‰indexé”™è¯¯çš„
 		}
 	}
 	else {
-		NodeArray[idx].parent += BaseAddressArray_Device[depth - 1];	// ¼ÆËãParentÔÚNodeArrayÖĞµÄÎ»ÖÃ
+		NodeArray[idx].parent += BaseAddressArray_Device[depth - 1];	// è®¡ç®—Parentåœ¨NodeArrayä¸­çš„ä½ç½®
 
-		if (depth < device::maxDepth) {										// ×îºóÒ»²ãÃ»ÓĞchild½Úµã
-#pragma unroll	// Õ¹¿ªÑ­»·£¬¼ÓËÙÔËËã
-			for (int child = 0; child < 8; child++) {						// ¼ÆËãChildrenÔÚNodeArrayµÄÎ»ÖÃ
-				if (NodeArray[idx].children[child] != 0) {					// º¢×Ó½ÚµãÎªÓĞĞ§½Úµã
+		if (depth < device::maxDepth) {										// æœ€åä¸€å±‚æ²¡æœ‰childèŠ‚ç‚¹
+#pragma unroll	// å±•å¼€å¾ªç¯ï¼ŒåŠ é€Ÿè¿ç®—
+			for (int child = 0; child < 8; child++) {						// è®¡ç®—Childrenåœ¨NodeArrayçš„ä½ç½®
+				if (NodeArray[idx].children[child] != 0) {					// å­©å­èŠ‚ç‚¹ä¸ºæœ‰æ•ˆèŠ‚ç‚¹
 					NodeArray[idx].children[child] += BaseAddressArray_Device[depth + 1];
 				}
 			} 
@@ -427,13 +427,13 @@ __global__ void SparseSurfelFusion::device::updateEmptyNodeInfo(const unsigned i
 {
 	const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
 	if (idx >= totalNodeArrayLength || idx == 0)	return;
-	if ((idx - 1) % 8 == 0) {	// ÅÅ³ı0²ãµÄÒ»¸ö½Úµã£¬Ã¿Ò»²ã½Úµã¶¼ÊÇ8µÄ±¶Êı£¬Ê×½Úµã
-		int nowPIdx;			// »ñµÃÓĞĞ§µãµÄpidx
-		int nowDIdx;			// »ñµÃÓĞĞ§µãµÄdidx
-		int validIdx;			// »ñµÃÓĞĞ§µãµÄNodeArrayµÄÎ»ÖÃ
-		int commonParent;		// »ñµÃÓĞĞ§µãµÄparent
-		for (validIdx = 0; validIdx < 8; validIdx++) {				// ±éÀúÃ¿¸ö½Úµã£¬Èç¹û¸Ã½Úµãpnum == 0£¬ÔòËµÃ÷ÊÇÎŞĞ§½Úµã£¬pnum != 0ÔòËµÃ÷ÓĞĞ§
-			if (NodeArray[idx + validIdx].pnum != 0) {				// ÕÒµ½Ê×¸öÓĞĞ§½Úµã
+	if ((idx - 1) % 8 == 0) {	// æ’é™¤0å±‚çš„ä¸€ä¸ªèŠ‚ç‚¹ï¼Œæ¯ä¸€å±‚èŠ‚ç‚¹éƒ½æ˜¯8çš„å€æ•°ï¼Œé¦–èŠ‚ç‚¹
+		int nowPIdx;			// è·å¾—æœ‰æ•ˆç‚¹çš„pidx
+		int nowDIdx;			// è·å¾—æœ‰æ•ˆç‚¹çš„didx
+		int validIdx;			// è·å¾—æœ‰æ•ˆç‚¹çš„NodeArrayçš„ä½ç½®
+		int commonParent;		// è·å¾—æœ‰æ•ˆç‚¹çš„parent
+		for (validIdx = 0; validIdx < 8; validIdx++) {				// éå†æ¯ä¸ªèŠ‚ç‚¹ï¼Œå¦‚æœè¯¥èŠ‚ç‚¹pnum == 0ï¼Œåˆ™è¯´æ˜æ˜¯æ— æ•ˆèŠ‚ç‚¹ï¼Œpnum != 0åˆ™è¯´æ˜æœ‰æ•ˆ
+			if (NodeArray[idx + validIdx].pnum != 0) {				// æ‰¾åˆ°é¦–ä¸ªæœ‰æ•ˆèŠ‚ç‚¹
 				nowPIdx = NodeArray[idx + validIdx].pidx;
 				nowDIdx = NodeArray[idx + validIdx].didx;
 				commonParent = NodeArray[idx + validIdx].parent;
@@ -441,48 +441,48 @@ __global__ void SparseSurfelFusion::device::updateEmptyNodeInfo(const unsigned i
 			}
 		}
 		int depth = 0;
-		for (depth = 0; depth < device::maxDepth; depth++) {				// Ñ°ÕÒidxÔÚÄÄÒ»²ã
+		for (depth = 0; depth < device::maxDepth; depth++) {				// å¯»æ‰¾idxåœ¨å“ªä¸€å±‚
 			if (device::BaseAddressArray_Device[depth] <= idx && idx < device::BaseAddressArray_Device[depth + 1]) {
 				break;
 			}
 		}
 		
-		// Í¨¹ı²ãÊıÈ¥µ±Ç°²ãµÄ»ù±¾±àÂë£¬¼´µ±Ç°²ãµÄÍ¬¸¸Ç×±àÂë
+		// é€šè¿‡å±‚æ•°å»å½“å‰å±‚çš„åŸºæœ¬ç¼–ç ï¼Œå³å½“å‰å±‚çš„åŒçˆ¶äº²ç¼–ç 
 		int baseKey = NodeArray[idx + validIdx].key - ((NodeArray[idx + validIdx].key) & (7 << (3 * (device::maxDepth - depth))));
 
-		for (int j = 0; j < 8; j++) {									// ÔÙ´Î±éÀúÕâ8¸öµã
-			int index = idx + j;										// µãÔÚNodeArrayÎ»ÖÃ
-			if (NodeArray[index].pnum == 0) {							// ÎŞĞ§µã	
-				for (int k = 0; k < 8; k++) {							// ÎŞĞ§½ÚµãµÄº¢×Ó½Úµã¾ùÎŞĞ§
+		for (int j = 0; j < 8; j++) {									// å†æ¬¡éå†è¿™8ä¸ªç‚¹
+			int index = idx + j;										// ç‚¹åœ¨NodeArrayä½ç½®
+			if (NodeArray[index].pnum == 0) {							// æ— æ•ˆç‚¹	
+				for (int k = 0; k < 8; k++) {							// æ— æ•ˆèŠ‚ç‚¹çš„å­©å­èŠ‚ç‚¹å‡æ— æ•ˆ
 					NodeArray[index].children[k] = -1;
 				}
 			}
-			else {														// ÓĞĞ§µã
-				int basePos;											// ÓĞĞ§µãµÄº¢×Ó½ÚµãÖĞµÚÒ»¸ö½ÚµãÔÚNodeArrayÖĞµÄindex
-				for (int k = 0; k < 8; k++) {							// ±éÀúÕâ¸öÓĞĞ§µãµÄËùÓĞº¢×Ó½Úµã
-					if (NodeArray[index].children[k] > 0) {				// Èç¹ûÕâ¸öµãµÄº¢×ÓÊÇÓĞĞ§µã
-						basePos = NodeArray[index].children[k] - k;		// ÕÒµ½Õâ¸öº¢×Ó½ÚµãËùÔÚ×ÓÊ÷µÄµÚÒ»¸ö½ÚµãÔÚNodeArrayÖĞµÄindex
+			else {														// æœ‰æ•ˆç‚¹
+				int basePos;											// æœ‰æ•ˆç‚¹çš„å­©å­èŠ‚ç‚¹ä¸­ç¬¬ä¸€ä¸ªèŠ‚ç‚¹åœ¨NodeArrayä¸­çš„index
+				for (int k = 0; k < 8; k++) {							// éå†è¿™ä¸ªæœ‰æ•ˆç‚¹çš„æ‰€æœ‰å­©å­èŠ‚ç‚¹
+					if (NodeArray[index].children[k] > 0) {				// å¦‚æœè¿™ä¸ªç‚¹çš„å­©å­æ˜¯æœ‰æ•ˆç‚¹
+						basePos = NodeArray[index].children[k] - k;		// æ‰¾åˆ°è¿™ä¸ªå­©å­èŠ‚ç‚¹æ‰€åœ¨å­æ ‘çš„ç¬¬ä¸€ä¸ªèŠ‚ç‚¹åœ¨NodeArrayä¸­çš„index
 						break;
 					}
 				}
-				for (int k = 0; k < 8; k++) {							// ÓĞĞ§µãµÄº¢×Ó¾ùÓ¦¸ÃÄÜÕÒµ½ÔÚNodeArrayÖĞµÄÎ»ÖÃ
-					if (depth != device::maxDepth) {					// ²»ÊÇ×îºóÒ»²ã
-						NodeArray[index].children[k] = basePos + k;		// Ã¿Ò»¸öº¢×Ó½Úµã¶¼ÕÒµ½ÔÚNodeArrayÖĞµÄÎ»ÖÃ
+				for (int k = 0; k < 8; k++) {							// æœ‰æ•ˆç‚¹çš„å­©å­å‡åº”è¯¥èƒ½æ‰¾åˆ°åœ¨NodeArrayä¸­çš„ä½ç½®
+					if (depth != device::maxDepth) {					// ä¸æ˜¯æœ€åä¸€å±‚
+						NodeArray[index].children[k] = basePos + k;		// æ¯ä¸€ä¸ªå­©å­èŠ‚ç‚¹éƒ½æ‰¾åˆ°åœ¨NodeArrayä¸­çš„ä½ç½®
 					}
 					else {
-						NodeArray[index].children[k] = -1;				// ×îºóÒ»²ãÃ»ÓĞº¢×Ó½Úµã
+						NodeArray[index].children[k] = -1;				// æœ€åä¸€å±‚æ²¡æœ‰å­©å­èŠ‚ç‚¹
 					}
 				}
 			}
-			NodeArray[index].key = baseKey + (j << (3 * (device::maxDepth - depth)));	// ¸üĞÂµ±Ç°µãµÄkey
-			NodeArray[index].pidx = nowPIdx;		// Ê×¸ökey²»Í¬µÄÊ×¸ö³íÃÜµãÔÚ³íÃÜµãÊı×éµÄindex
-			nowPIdx += NodeArray[index].pnum;		// ¿ç¹ıkeyÏàÍ¬µÄ³íÃÜµã
+			NodeArray[index].key = baseKey + (j << (3 * (device::maxDepth - depth)));	// æ›´æ–°å½“å‰ç‚¹çš„key
+			NodeArray[index].pidx = nowPIdx;		// é¦–ä¸ªkeyä¸åŒçš„é¦–ä¸ªç¨ å¯†ç‚¹åœ¨ç¨ å¯†ç‚¹æ•°ç»„çš„index
+			nowPIdx += NodeArray[index].pnum;		// è·¨è¿‡keyç›¸åŒçš„ç¨ å¯†ç‚¹
 
-			if (depth != device::maxDepth) {		// Èç¹û²»ÊÇ×îºóÒ»²ãD²ã
-				NodeArray[index].didx = nowDIdx;	// Éî¶ÈDµÄÊ×¸öµã
-				nowDIdx += NodeArray[index].dnum;	// ¼ÌĞøÆ«ÒÆ
+			if (depth != device::maxDepth) {		// å¦‚æœä¸æ˜¯æœ€åä¸€å±‚Då±‚
+				NodeArray[index].didx = nowDIdx;	// æ·±åº¦Dçš„é¦–ä¸ªç‚¹
+				nowDIdx += NodeArray[index].dnum;	// ç»§ç»­åç§»
 			}
-			NodeArray[index].parent = commonParent;	// ²»¹ÜÓĞĞ§ÎŞĞ§¾ù¹²ÏíÍ¬Ò»¸öparent
+			NodeArray[index].parent = commonParent;	// ä¸ç®¡æœ‰æ•ˆæ— æ•ˆå‡å…±äº«åŒä¸€ä¸ªparent
 		}
 	}
 }
@@ -490,15 +490,15 @@ __global__ void SparseSurfelFusion::device::updateEmptyNodeInfo(const unsigned i
 __global__ void SparseSurfelFusion::device::computeNodeNeighborKernel(const unsigned int left, const unsigned int thisLevelNodeCount, const unsigned int depth, OctNode* NodeArray)
 {
 	const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
-	if (idx >= thisLevelNodeCount)	return;	// 0²ãÁÚ¾ÓÒÑ¾­³õÊ¼»¯
-	const unsigned int offset = idx + left;	// µ±Ç°²ãµÄ½ÚµãÔÚNodeArrayÖĞµÄÎ»ÖÃ
+	if (idx >= thisLevelNodeCount)	return;	// 0å±‚é‚»å±…å·²ç»åˆå§‹åŒ–
+	const unsigned int offset = idx + left;	// å½“å‰å±‚çš„èŠ‚ç‚¹åœ¨NodeArrayä¸­çš„ä½ç½®
 	for (int i = 0; i < 27; i++) {
 		int sonKey = (NodeArray[offset].key >> (3 * (device::maxDepth - depth))) & 7;
 		//if (depth == 1) {
 		//	if (idx == 7)	printf("idx = %d   offset = %d   neighborIdx = %d   sonKey = %d\n", idx, offset, i, sonKey);
 		//}
-		int parentIdx = NodeArray[offset].parent;	// ÕÒµ½½ÚµãµÄ¸¸Ç×
-		int neighParent = NodeArray[parentIdx].neighs[device::LUTparent[sonKey][i]];	// Í¨¹ı²é±íÈ·¶¨¸¸Ç×µÄÁÚ¾Ó
+		int parentIdx = NodeArray[offset].parent;	// æ‰¾åˆ°èŠ‚ç‚¹çš„çˆ¶äº²
+		int neighParent = NodeArray[parentIdx].neighs[device::LUTparent[sonKey][i]];	// é€šè¿‡æŸ¥è¡¨ç¡®å®šçˆ¶äº²çš„é‚»å±…
 		if (neighParent != -1) {
 			NodeArray[offset].neighs[i] = NodeArray[neighParent].children[LUTchild[sonKey][i]];
 			//if (depth == 1) {
@@ -515,7 +515,7 @@ __global__ void SparseSurfelFusion::device::computeEncodedFunctionNodeIndexKerne
 {
 	const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
 	if (idx >= totalNodeCount)	return;
-	int depth = depthBuffer[idx];	// µ±Ç°idxÊÇÔÚÄÄÒ»²ã
+	int depth = depthBuffer[idx];	// å½“å‰idxæ˜¯åœ¨å“ªä¸€å±‚
 	getEncodedFunctionNodeIndex(NodeArray[idx].key, depth, NodeIndexInFunction[idx]);
 }
 
@@ -523,19 +523,19 @@ __device__ void SparseSurfelFusion::device::getEncodedFunctionNodeIndex(const in
 {
 	/*
 	 * Part_1 = (1 + (1 << (device::maxDepth + 1)) + (1 << (2 * (device::maxDepth + 1))))
-	 * Code_1 = 00000000001 00000000001 00000000001	(device::maxDepth + 1ÎªÒ»¶Î£¬·ÖÎª3¶Î)
-	 * Part_2 = ((1 << CurrentDepth) - 1);		¡¾¼ÙÉèCurrentDepth = 8¡¿
+	 * Code_1 = 00000000001 00000000001 00000000001	(device::maxDepth + 1ä¸ºä¸€æ®µï¼Œåˆ†ä¸º3æ®µ)
+	 * Part_2 = ((1 << CurrentDepth) - 1);		ã€å‡è®¾CurrentDepth = 8ã€‘
 	 * Code_2 = 00011111111
-	 * Part_1 * Part2 <=> ½«Code_2·Ö±ğĞ´µ½codeµÄÈı¸öÇø¼ä[0, 11], [12, 21], [22, 31]
+	 * Part_1 * Part2 <=> å°†Code_2åˆ†åˆ«å†™åˆ°codeçš„ä¸‰ä¸ªåŒºé—´[0, 11], [12, 21], [22, 31]
 	 * index  = 00011111111 00011111111 00011111111
 	*/ 
 	index = ((1 << CurrentDepth) - 1) * (1 + (1 << (device::maxDepth + 1)) + (1 << (2 * (device::maxDepth + 1))));
 
 	/*
-	 * ¡¾¼ÙÉè£ºsonKey = 111, CurrentDepth = 8¡¿
+	 * ã€å‡è®¾ï¼šsonKey = 111, CurrentDepth = 8ã€‘
 	 * Part_3 = 00011111111 00011111111 00011111111
 	 * idx+P3 = 00100000000 00100000000 00100000000
-	 * ¡¾¼ÙÉè£ºsonKey = 101, CurrentDepth = 8¡¿
+	 * ã€å‡è®¾ï¼šsonKey = 101, CurrentDepth = 8ã€‘
 	 * Part_3 = 00011111111 00000000000 00011111111
 	 * idx+P3 = 00100000000 00011111111 00100000000
 	*/
@@ -554,7 +554,7 @@ __global__ void SparseSurfelFusion::device::ComputeDepthAndCenterKernel(DeviceAr
 	const unsigned int idx = threadIdx.x + blockDim.x * blockIdx.x;
 	if (idx >= NodeArraySize)	return;
 	int depth = 0;
-	for (depth = 0; depth < device::maxDepth; depth++) {				// Ñ°ÕÒidxÔÚÄÄÒ»²ã
+	for (depth = 0; depth < device::maxDepth; depth++) {				// å¯»æ‰¾idxåœ¨å“ªä¸€å±‚
 		if (device::BaseAddressArray_Device[depth] <= idx && idx < device::BaseAddressArray_Device[depth + 1]) {
 			break;
 		}
@@ -595,7 +595,7 @@ void SparseSurfelFusion::BuildOctree::getCoordinateAndNormal(DeviceArrayView<Dep
 
 void SparseSurfelFusion::BuildOctree::getBoundingBox(DeviceArrayView<OrientedPoint3D<float>> points, Point3D<float>& MaxPoint, Point3D<float>& MinPoint, cudaStream_t stream)
 {
-	/********************* ¹éÔ¼Çó½âÃ¿¸öBlock×î´ó×îĞ¡Point3D *********************/
+	/********************* å½’çº¦æ±‚è§£æ¯ä¸ªBlockæœ€å¤§æœ€å°Point3D *********************/
 	const unsigned int num = points.Size();
 	//printf("pointsCount = %d\n", num);
 	const unsigned int gridNum = divUp(num, device::MaxCudaThreadsPerBlock);
@@ -606,7 +606,7 @@ void SparseSurfelFusion::BuildOctree::getBoundingBox(DeviceArrayView<OrientedPoi
 	Point3D<float>* maxArray = perBlockMaxPoint.DeviceArray().ptr();
 	Point3D<float>* minArray = perBlockMinPoint.DeviceArray().ptr();
 	device::reduceMaxMinKernel << <gridReduce, blockReduce, 0, stream >> > (maxArray, minArray, points, num);
-	/********************* ½«Ã¿¸öBlockÖµÏÂÔØµ½Host¶ËÇó½âËùÓĞµãµÄ×îÖµ *********************/
+	/********************* å°†æ¯ä¸ªBlockå€¼ä¸‹è½½åˆ°Hostç«¯æ±‚è§£æ‰€æœ‰ç‚¹çš„æœ€å€¼ *********************/
 	perBlockMaxPoint.SynchronizeToHost(stream, true);
 	perBlockMinPoint.SynchronizeToHost(stream, true);
 	Point3D<float>* maxArrayHost = perBlockMaxPoint.HostArray().data();
@@ -619,15 +619,15 @@ void SparseSurfelFusion::BuildOctree::getBoundingBox(DeviceArrayView<OrientedPoi
 void SparseSurfelFusion::BuildOctree::adjustPointsCoordinateAndNormal(DeviceBufferArray<OrientedPoint3D<float>>& points, const Point3D<float> MxPoint, const Point3D<float> MnPoint, float& MaxEdge, float ScaleFactor, Point3D<float>& Center, cudaStream_t stream)
 {
 	for (int i = 0; i < DIMENSION; i++) {
-		// µ±ÏÂÊÇÒª»ñÈ¡BoundingBox×î³¤µÄÒ»Ìõ±ß¸³Öµ¸øMaxEdge
+		// å½“ä¸‹æ˜¯è¦è·å–BoundingBoxæœ€é•¿çš„ä¸€æ¡è¾¹èµ‹å€¼ç»™MaxEdge
 		if (i == 0 || MaxEdge < (MxPoint[i] - MnPoint[i])) {
 			MaxEdge = float(MxPoint[i] - MnPoint[i]);
 		}
-		Center.coords[i] = float(MxPoint[i] + MnPoint[i]) / 2.0f;	// ÖĞµãÎ»ÖÃ
+		Center.coords[i] = float(MxPoint[i] + MnPoint[i]) / 2.0f;	// ä¸­ç‚¹ä½ç½®
 	}
-	MaxEdge *= ScaleFactor * 1.0f;	// µ÷ÕûBoundingBoxµÄ³ß´ç
+	MaxEdge *= ScaleFactor * 1.0f;	// è°ƒæ•´BoundingBoxçš„å°ºå¯¸
 	for (int i = 0; i < DIMENSION; i++) {
-		Center.coords[i] -= MaxEdge / 2.0f;	// µ÷ÕûÖĞĞÄµãµÄÎ»ÖÃ
+		Center.coords[i] -= MaxEdge / 2.0f;	// è°ƒæ•´ä¸­å¿ƒç‚¹çš„ä½ç½®
 	}
 	dim3 block(128);
 	dim3 grid(divUp(points.ArraySize(), block.x));
@@ -644,10 +644,10 @@ void SparseSurfelFusion::BuildOctree::adjustPointsCoordinateAndNormal(DeviceBuff
 
 void SparseSurfelFusion::BuildOctree::generateCode(DeviceBufferArray<OrientedPoint3D<float>>& points, DeviceBufferArray<long long>& keys, size_t count, cudaStream_t stream)
 {
-	sortCode.ResizeArrayOrException(count);		// ·ÖÅäArray
-	// Ïß³ÌÊıÓ¦¸Ã¹»ÓÃ
-	dim3 block(128);					// block ¡Ê [0, 1024]
-	dim3 grid(divUp(count, block.x));	// grid  ¡Ê [0, 2^31 - 1]
+	sortCode.ResizeArrayOrException(count);		// åˆ†é…Array
+	// çº¿ç¨‹æ•°åº”è¯¥å¤Ÿç”¨
+	dim3 block(128);					// block âˆˆ [0, 1024]
+	dim3 grid(divUp(count, block.x));	// grid  âˆˆ [0, 2^31 - 1]
 	device::generateCodeKernel << <grid, block, 0, stream >> > (points.Array().ptr(), keys.Array().ptr(), count);
 }
 
@@ -655,7 +655,7 @@ void SparseSurfelFusion::BuildOctree::sortAndCompactVerticesKeys(DeviceArray<Ori
 {
 	const unsigned int VerticesKeysNum = sortCode.ArrayView().Size();
 	pointKeySort.Sort(sortCode.Array(), points, stream);
-	// ½«point³¹µ×¸ü»»ÎªÅÅÁĞºÃµÄ³íÃÜµã
+	// å°†pointå½»åº•æ›´æ¢ä¸ºæ’åˆ—å¥½çš„ç¨ å¯†ç‚¹
 	CHECKCUDA(cudaMemcpyAsync(points.ptr(), pointKeySort.valid_sorted_value.ptr(), sizeof(OrientedPoint3D<float>) * VerticesKeysNum, cudaMemcpyDeviceToDevice, stream));
 	CHECKCUDA(cudaMemcpyAsync(sortCode.Array().ptr(), pointKeySort.valid_sorted_key.ptr(), sizeof(long long) * VerticesKeysNum, cudaMemcpyDeviceToDevice, stream));
 
@@ -667,7 +667,7 @@ void SparseSurfelFusion::BuildOctree::sortAndCompactVerticesKeys(DeviceArray<Ori
 
 	//printf("TotalSurfelCount = %d\n", VerticesKeysNum);
 
-	/** ÅÅĞòºÃµÄSortCodeÃ»ÓĞÎÊÌâ **/
+	/** æ’åºå¥½çš„SortCodeæ²¡æœ‰é—®é¢˜ **/
 
 	keyLabel.ResizeArrayOrException(VerticesKeysNum);
 	dim3 block(128);
@@ -676,21 +676,21 @@ void SparseSurfelFusion::BuildOctree::sortAndCompactVerticesKeys(DeviceArray<Ori
 	device::labelSortedVerticesKeysKernel << <grid, block, 0, stream >> > (VerticesKeysNum, sortCode.ArrayView(), keyLabel.ArrayHandle());
 	nodeNumsPrefixsum.InclusiveSum(keyLabel.ArrayView(), stream);
 
-	//²éÑ¯ÌåËØÊı(CPUÖĞÉùÃ÷µÄÊı)
-	unsigned int ValidKeysNum;	// ÓĞĞ§µÄ¼üÊıÁ¿£¬Octree×Ó½ÚµãÎªÍ¬Ò»¸öµÄµãÓ¦¸ÃÊÇÎŞĞ§µÄ
-	//Ç°×ººÍµÄGPUµØÖ·¸øprefixsum_label
+	//æŸ¥è¯¢ä½“ç´ æ•°(CPUä¸­å£°æ˜çš„æ•°)
+	unsigned int ValidKeysNum;	// æœ‰æ•ˆçš„é”®æ•°é‡ï¼ŒOctreeå­èŠ‚ç‚¹ä¸ºåŒä¸€ä¸ªçš„ç‚¹åº”è¯¥æ˜¯æ— æ•ˆçš„
+	//å‰ç¼€å’Œçš„GPUåœ°å€ç»™prefixsum_label
 	const DeviceArray<unsigned int>& prefixsumLabel = nodeNumsPrefixsum.valid_prefixsum_array;
 
-	//½«Ç°×ººÍ´ÓGPUÖĞ¿½±´µ½ValidKeysNumÖĞ£¬±ê¼Çµ½×îºóÒ»¸ö¾ÍÊÇÓĞĞ§µÄKeyµÄ×ÜÊıÁ¿
+	//å°†å‰ç¼€å’Œä»GPUä¸­æ‹·è´åˆ°ValidKeysNumä¸­ï¼Œæ ‡è®°åˆ°æœ€åä¸€ä¸ªå°±æ˜¯æœ‰æ•ˆçš„Keyçš„æ€»æ•°é‡
 	CHECKCUDA(cudaMemcpyAsync(&ValidKeysNum, prefixsumLabel.ptr() + prefixsumLabel.size() - 1, sizeof(unsigned int), cudaMemcpyDeviceToHost, stream));
 	CHECKCUDA(cudaStreamSynchronize(stream));
-	//printf("³íÃÜµãÊıÁ¿£º%d   UniqueµãÊıÁ¿ = %d\n", VerticesKeysNum, ValidKeysNum);
-	//¹¹ÔìÑ¹ËõÊı×é
-	uniqueCode.ResizeArrayOrException(ValidKeysNum);						//¸øcompactedVoxelKey¿ª±Ù¿Õ¼ä
-	compactedVerticesOffset.ResizeArrayOrException(ValidKeysNum + 1);		//¸øcompactedVoxelOffset¿ª±Ù¿Õ¼ä
+	//printf("ç¨ å¯†ç‚¹æ•°é‡ï¼š%d   Uniqueç‚¹æ•°é‡ = %d\n", VerticesKeysNum, ValidKeysNum);
+	//æ„é€ å‹ç¼©æ•°ç»„
+	uniqueCode.ResizeArrayOrException(ValidKeysNum);						//ç»™compactedVoxelKeyå¼€è¾Ÿç©ºé—´
+	compactedVerticesOffset.ResizeArrayOrException(ValidKeysNum + 1);		//ç»™compactedVoxelOffsetå¼€è¾Ÿç©ºé—´
 	device::compactedVoxelKeyKernel << <grid, block, 0, stream >> > (sortCode.Array(), keyLabel, prefixsumLabel, uniqueCode, compactedVerticesOffset.ArrayHandle());
 
-	/** µÍ32Î»ÓĞÎÊÌâ **/
+	/** ä½32ä½æœ‰é—®é¢˜ **/
 	
 	//CHECKCUDA(cudaStreamSynchronize(stream));
 	//std::vector<long long> uniqueCodeHost;
@@ -705,7 +705,7 @@ void SparseSurfelFusion::BuildOctree::initUniqueNode(DeviceBufferArray<OctNode>&
 	const unsigned int nodesCount = uniqueCode.ArraySize();
 	//printf("nodesCount = %u\n", nodesCount);
 
-	//printf("Ñ¹ËõºóµÄµã = %d\n", nodesCount);
+	//printf("å‹ç¼©åçš„ç‚¹ = %d\n", nodesCount);
 	uniqueNode.ResizeArrayOrException(nodesCount);
 	dim3 block(128);
 	dim3 grid(divUp(nodesCount, block.x));
@@ -724,31 +724,31 @@ void SparseSurfelFusion::BuildOctree::generateNodeNumsAndNodeAddress(DeviceBuffe
 
 	//printf("nodesCount = %u\n", nodesCount);
 
-	NodeAddress.ResizeArrayOrException(nodesCount);	// ¿ª±Ù¿Õ¼ä
+	NodeAddress.ResizeArrayOrException(nodesCount);	// å¼€è¾Ÿç©ºé—´
 
-	unsigned int* NodeAddressPtr = NodeAddress.Array().ptr();		// ±©Â¶Ö¸Õë
-	unsigned int* prefixsumNodeNumsPtr = nodeNumsPrefixsum.valid_prefixsum_array.ptr();	// ±©Â¶Ö¸Õë
-	// ½«Ç°×ººÍÊı¾İ¿½±´µ½nodeAddressÖĞ
+	unsigned int* NodeAddressPtr = NodeAddress.Array().ptr();		// æš´éœ²æŒ‡é’ˆ
+	unsigned int* prefixsumNodeNumsPtr = nodeNumsPrefixsum.valid_prefixsum_array.ptr();	// æš´éœ²æŒ‡é’ˆ
+	// å°†å‰ç¼€å’Œæ•°æ®æ‹·è´åˆ°nodeAddressä¸­
 	CHECKCUDA(cudaMemcpyAsync(NodeAddressPtr, prefixsumNodeNumsPtr, sizeof(unsigned int) * nodesCount, cudaMemcpyDeviceToDevice, stream));
 }
 
 void SparseSurfelFusion::BuildOctree::buildNodeArrayD(DeviceArrayView<OrientedPoint3D<float>> denseVertices, DeviceArrayView<OctNode> uniqueNode, DeviceArrayView<long long> compactedKey, DeviceBufferArray<unsigned int>& NodeAddress, DeviceBufferArray<unsigned int>& NodeAddressFull, DeviceBufferArray<int>& Point2NodeArray, DeviceBufferArray<OctNode>& NodeArrayD, cudaStream_t stream)
 {
-	const unsigned int nodesCount = NodeAddress.ArrayView().Size();		// UniqueµÄÊıÁ¿£¬Ñ¹ËõºóµÄ
+	const unsigned int nodesCount = NodeAddress.ArrayView().Size();		// Uniqueçš„æ•°é‡ï¼Œå‹ç¼©åçš„
 	//printf("nodesCount = %u\n", nodesCount);
 	const unsigned int verticesCount = denseVertices.Size();
-	unsigned int TotalNodeNums;		// ×Ü¹²D²ã×Ó½ÚµãµÄ¸öÊı
+	unsigned int TotalNodeNums;		// æ€»å…±Då±‚å­èŠ‚ç‚¹çš„ä¸ªæ•°
 	const unsigned int* nodeAddressPtr = NodeAddress.Array().ptr();
 	CHECKCUDA(cudaMemcpyAsync(&TotalNodeNums, nodeAddressPtr + nodesCount - 1, sizeof(unsigned int), cudaMemcpyDeviceToHost, stream));
-	CHECKCUDA(cudaStreamSynchronize(stream));	// Á÷Í¬²½
-	TotalNodeNums += 8;	// Ê×½ÚµãÄÇ¶ÔÓ¦µÄ8¸öÃ»ËãÉÏ£¬ÕâÀïÓ¦¸Ã±íÊ¾µÄÊÇ×îºóÒ»²ã(D²ã)µÄ½Úµã
-	//printf("D²ã×Ü½ÚµãÊıÄ¿ = %u\n", TotalNodeNums);
+	CHECKCUDA(cudaStreamSynchronize(stream));	// æµåŒæ­¥
+	TotalNodeNums += 8;	// é¦–èŠ‚ç‚¹é‚£å¯¹åº”çš„8ä¸ªæ²¡ç®—ä¸Šï¼Œè¿™é‡Œåº”è¯¥è¡¨ç¤ºçš„æ˜¯æœ€åä¸€å±‚(Då±‚)çš„èŠ‚ç‚¹
+	//printf("Då±‚æ€»èŠ‚ç‚¹æ•°ç›® = %u\n", TotalNodeNums);
 	NodeArrayD.AllocateBuffer(TotalNodeNums);
 	NodeArrayD.ResizeArrayOrException(TotalNodeNums);
 	NodeAddressFull.ResizeArrayOrException(TotalNodeNums);
 	Point2NodeArray.ResizeArrayOrException(verticesCount);
-	CHECKCUDA(cudaMemsetAsync(NodeArrayD.Array().ptr(), 0, sizeof(OctNode) * TotalNodeNums, stream));			// NodeArrayDÄ¬ÈÏ¶¼Îª0
-	CHECKCUDA(cudaMemsetAsync(Point2NodeArray.Array().ptr(), -1, sizeof(int) * verticesCount, stream));			// Point2NodeArrayÄ¬ÈÏ¶¼Îª-1
+	CHECKCUDA(cudaMemsetAsync(NodeArrayD.Array().ptr(), 0, sizeof(OctNode) * TotalNodeNums, stream));			// NodeArrayDé»˜è®¤éƒ½ä¸º0
+	CHECKCUDA(cudaMemsetAsync(Point2NodeArray.Array().ptr(), -1, sizeof(int) * verticesCount, stream));			// Point2NodeArrayé»˜è®¤éƒ½ä¸º-1
 	dim3 block1(128);
 	dim3 grid1(divUp(nodesCount, block1.x));
 	device::buildNodeArrayDKernel << <grid1, block1, 0, stream >> > (uniqueNode, NodeAddress.ArrayView(), compactedKey, nodesCount, Point2NodeArray.Array().ptr(), NodeArrayD.Array().ptr(), NodeAddressFull.Array().ptr());
@@ -762,18 +762,18 @@ void SparseSurfelFusion::BuildOctree::buildNodeArrayD(DeviceArrayView<OrientedPo
 
 void SparseSurfelFusion::BuildOctree::buildOtherDepthNodeArray(int* BaseAddressArray_Host, cudaStream_t stream)
 {
-	unsigned int allNodeNums_D = NodeArrays[Constants::maxDepth_Host].ArrayView().Size();		// ¼ÇÂ¼D²ã½Úµã8¸öÂúÅÅµÄ½ÚµãÊıÁ¿
-	//printf("µÚ D ²ãOctree½ÚµãµÄ×ÜÊı = %d\n", allNodeNums_D);
-	unsigned int TotalNodeNumsPreviousLevel;													// ÉÏÒ»²ã¸¸½ÚµãµÄ¸öÊı
+	unsigned int allNodeNums_D = NodeArrays[Constants::maxDepth_Host].ArrayView().Size();		// è®°å½•Då±‚èŠ‚ç‚¹8ä¸ªæ»¡æ’çš„èŠ‚ç‚¹æ•°é‡
+	//printf("ç¬¬ D å±‚OctreeèŠ‚ç‚¹çš„æ€»æ•° = %d\n", allNodeNums_D);
+	unsigned int TotalNodeNumsPreviousLevel;													// ä¸Šä¸€å±‚çˆ¶èŠ‚ç‚¹çš„ä¸ªæ•°
 	for (int depth = Constants::maxDepth_Host; depth >= 1; depth--) {
 		NodeArrayCount_Host[depth] = allNodeNums_D;
-		int UniqueCountPrevious = allNodeNums_D / 8;	// ÉÏÒ»²ãOctree½ÚµãµÄÊıÁ¿¡¾ÂúÅÅ¡¿,Êµ¼ÊÉÏÊÇUnique
-		OctNode* previousLevelUniqueNodePtr = uniqueNodePrevious.Array().ptr();	// »ñµÃÖ¸ÕëÒÔ±ã¸³³õÖµ
-		unsigned int* previousLevelnodeAddress = nodeAddressPrevious.Array().ptr();	// »ñµÃÖ¸ÕëÒÔ±ã¸³³õÖµ
-		// ¸øuniqueNodePreviousLevel¿ª±Ù¿Õ¼ä²¢¸³³õÖµ
+		int UniqueCountPrevious = allNodeNums_D / 8;	// ä¸Šä¸€å±‚OctreeèŠ‚ç‚¹çš„æ•°é‡ã€æ»¡æ’ã€‘,å®é™…ä¸Šæ˜¯Unique
+		OctNode* previousLevelUniqueNodePtr = uniqueNodePrevious.Array().ptr();	// è·å¾—æŒ‡é’ˆä»¥ä¾¿èµ‹åˆå€¼
+		unsigned int* previousLevelnodeAddress = nodeAddressPrevious.Array().ptr();	// è·å¾—æŒ‡é’ˆä»¥ä¾¿èµ‹åˆå€¼
+		// ç»™uniqueNodePreviousLevelå¼€è¾Ÿç©ºé—´å¹¶èµ‹åˆå€¼
 		uniqueNodePrevious.ResizeArrayOrException(UniqueCountPrevious);
 		CHECKCUDA(cudaMemsetAsync(previousLevelUniqueNodePtr, 0, sizeof(OctNode) * UniqueCountPrevious, stream));
-		// ¸ønodeAddressPreciousLevel¿ª±Ù¿Õ¼ä²¢¸³³õÖµ
+		// ç»™nodeAddressPreciousLevelå¼€è¾Ÿç©ºé—´å¹¶èµ‹åˆå€¼
 		nodeAddressPrevious.ResizeArrayOrException(UniqueCountPrevious);
 		CHECKCUDA(cudaMemsetAsync(previousLevelnodeAddress, 0, sizeof(unsigned int) * UniqueCountPrevious, stream));
 
@@ -785,32 +785,32 @@ void SparseSurfelFusion::BuildOctree::buildOtherDepthNodeArray(int* BaseAddressA
 		dim3 grid_D(divUp(allNodeNums_D, block_D.x));
 		device::generateUniqueNodeArrayPreviousLevelKernel << <grid_D, block_D, 0, stream >> > (NodeArrays[depth].ArrayView(), NodeAddressFull.ArrayView(), allNodeNums_D, depth, uniqueNodePrevious.Array().ptr());
 		
-		// Ã¿Ò»²ãµÄUniqueNodePrevµÄpidx£¬pnum£¬didx£¬dnum¶¼Ã»ÎÊÌâ
-		nodeNums.ResizeArrayOrException(UniqueCountPrevious);	// µ÷ÕûnodeNumsÎªÉÏÒ»²ãµÄUnique´óĞ¡
+		// æ¯ä¸€å±‚çš„UniqueNodePrevçš„pidxï¼Œpnumï¼Œdidxï¼Œdnuméƒ½æ²¡é—®é¢˜
+		nodeNums.ResizeArrayOrException(UniqueCountPrevious);	// è°ƒæ•´nodeNumsä¸ºä¸Šä¸€å±‚çš„Uniqueå¤§å°
 		device::generateNodeNumsPreviousLevelKernel << <grid_PreLevel, block_PreLevel, 0, stream >> > (uniqueNodePrevious.ArrayView(), UniqueCountPrevious, depth - 1, nodeNums.Array().ptr());
 			
-		CHECKCUDA(cudaStreamSynchronize(stream));	// Á÷Í¬²½
+		CHECKCUDA(cudaStreamSynchronize(stream));	// æµåŒæ­¥
 		//printf("UniqueCountPrevious = %d\n", UniqueCountPrevious);
 
-		// ÉÏÒ»²ã¸¸½ÚµãµÄÊıÁ¿Ò»¶¨ÉÙÓÚµ±Ç°²ã½Úµã£¬Òò´ËÖ±½Ó·şÓÃnodeNumsPrefixsum£¬ÎŞĞèÔÙ·ÖÅä»º´æ
+		// ä¸Šä¸€å±‚çˆ¶èŠ‚ç‚¹çš„æ•°é‡ä¸€å®šå°‘äºå½“å‰å±‚èŠ‚ç‚¹ï¼Œå› æ­¤ç›´æ¥æœç”¨nodeNumsPrefixsumï¼Œæ— éœ€å†åˆ†é…ç¼“å­˜
 		nodeNumsPrefixsum.InclusiveSum(nodeNums.ArrayView(), stream);
-		void* prefixsumNodeNumsPtr = nodeNumsPrefixsum.valid_prefixsum_array.ptr();	// ±©Â¶Ö¸Õë
-		// ½«Ç°×ººÍÊı¾İ¿½±´µ½nodeAddressÖĞ
+		void* prefixsumNodeNumsPtr = nodeNumsPrefixsum.valid_prefixsum_array.ptr();	// æš´éœ²æŒ‡é’ˆ
+		// å°†å‰ç¼€å’Œæ•°æ®æ‹·è´åˆ°nodeAddressä¸­
 		CHECKCUDA(cudaMemcpyAsync(previousLevelnodeAddress, prefixsumNodeNumsPtr, sizeof(unsigned int) * UniqueCountPrevious, cudaMemcpyDeviceToDevice, stream));
 		
-		if (depth > 1) {	// ·ÇµÚÒ»²ã
+		if (depth > 1) {	// éç¬¬ä¸€å±‚
 			CHECKCUDA(cudaMemcpyAsync(&TotalNodeNumsPreviousLevel, previousLevelnodeAddress + UniqueCountPrevious - 1, sizeof(unsigned int), cudaMemcpyDeviceToHost, stream));
-			TotalNodeNumsPreviousLevel += 8;			// ÉÏÒ»²ã¸¸½ÚµãµÄÊıÁ¿£¬Ê×¸ö¸¸½ÚµãÎª0£¬Òò´ËÀÛºÍºóÓ¦¸Ã+8
+			TotalNodeNumsPreviousLevel += 8;			// ä¸Šä¸€å±‚çˆ¶èŠ‚ç‚¹çš„æ•°é‡ï¼Œé¦–ä¸ªçˆ¶èŠ‚ç‚¹ä¸º0ï¼Œå› æ­¤ç´¯å’Œååº”è¯¥+8
 			NodeArrays[depth - 1].AllocateBuffer(TotalNodeNumsPreviousLevel);
 			NodeArrays[depth - 1].ResizeArrayOrException(TotalNodeNumsPreviousLevel);
-			NodeAddressFull.ResizeArrayOrException(TotalNodeNumsPreviousLevel);			// (depth - 1)²ãÂúÅÅ½ÚµãNodeAddress±í£¬È·¶¨ÉÏÒ»²ãUniqueµÄindex
-			void* previousLevelNodeArrayPtr = NodeArrays[depth - 1].Array().ptr();		// »ñµÃÖ¸ÕëÒÔ±ã¸³³õÖµ
+			NodeAddressFull.ResizeArrayOrException(TotalNodeNumsPreviousLevel);			// (depth - 1)å±‚æ»¡æ’èŠ‚ç‚¹NodeAddressè¡¨ï¼Œç¡®å®šä¸Šä¸€å±‚Uniqueçš„index
+			void* previousLevelNodeArrayPtr = NodeArrays[depth - 1].Array().ptr();		// è·å¾—æŒ‡é’ˆä»¥ä¾¿èµ‹åˆå€¼
 			CHECKCUDA(cudaMemsetAsync(previousLevelNodeArrayPtr, 0, sizeof(OctNode) * TotalNodeNumsPreviousLevel, stream));
 
-			// ¹¹½¨ÉÏÒ»²ã¸¸½ÚµãµÄnodeArray£¬²¢¸øµ±Ç°²ãµÄnodeArrayÖĞµÄparent¸³Öµ
+			// æ„å»ºä¸Šä¸€å±‚çˆ¶èŠ‚ç‚¹çš„nodeArrayï¼Œå¹¶ç»™å½“å‰å±‚çš„nodeArrayä¸­çš„parentèµ‹å€¼
 			device::generateNodeArrayPreviousLevelKernel << <grid_PreLevel, block_PreLevel, 0, stream >> > (uniqueNodePrevious.ArrayView(), nodeAddressPrevious.ArrayView(), UniqueCountPrevious, depth, NodeArrays[depth - 1].Array().ptr(), NodeArrays[depth].Array().ptr(), NodeAddressFull.Array().ptr());
 			
-			//CHECKCUDA(cudaStreamSynchronize(stream));	// Á÷Í¬²½
+			//CHECKCUDA(cudaStreamSynchronize(stream));	// æµåŒæ­¥
 			//printf("TotalNodeNumsPreviousLevel = %d\n", TotalNodeNumsPreviousLevel);
 
 		}
@@ -818,13 +818,13 @@ void SparseSurfelFusion::BuildOctree::buildOtherDepthNodeArray(int* BaseAddressA
 			TotalNodeNumsPreviousLevel = 1;
 			NodeArrays[depth - 1].AllocateBuffer(TotalNodeNumsPreviousLevel);
 			NodeArrays[depth - 1].ResizeArrayOrException(TotalNodeNumsPreviousLevel);
-			OctNode* NodeArrays_0 = NodeArrays[depth - 1].Array().ptr();	// ±©Â¶Ö¸Õë£¬Ö±½Ó¸³Öµ
+			OctNode* NodeArrays_0 = NodeArrays[depth - 1].Array().ptr();	// æš´éœ²æŒ‡é’ˆï¼Œç›´æ¥èµ‹å€¼
 			CHECKCUDA(cudaMemcpyAsync(NodeArrays_0, uniqueNodePrevious.Array().ptr(), sizeof(OctNode) * 1, cudaMemcpyDeviceToDevice, stream));
 		}
 		allNodeNums_D = TotalNodeNumsPreviousLevel;
 	}
 
-	CHECKCUDA(cudaStreamSynchronize(stream));	// Á÷Í¬²½
+	CHECKCUDA(cudaStreamSynchronize(stream));	// æµåŒæ­¥
 
 	for (int i = 0; i <= Constants::maxDepth_Host; i++) {
 		if (i == 0) {
@@ -837,7 +837,7 @@ void SparseSurfelFusion::BuildOctree::buildOtherDepthNodeArray(int* BaseAddressA
 	//for (int i = 0; i <= Constants::maxDepth_Host; i++) {
 	//	printf("BaseAddressArray[%d] = %d    NodeArrayCount[%d] = %d\n", i, BaseAddressArray_Host[i], i, NodeArrayCount_Host[i]);
 	//}
-	// ÉÏÊö¹¹½¨OctreeÒÑ¾­cudaÍ¬²½
+	// ä¸Šè¿°æ„å»ºOctreeå·²ç»cudaåŒæ­¥
 }
 
 void SparseSurfelFusion::BuildOctree::updateNodeInfo(int* BaseAddressArray_Host, DeviceBufferArray<OctNode>& NodeArray, cudaStream_t stream)
@@ -845,14 +845,14 @@ void SparseSurfelFusion::BuildOctree::updateNodeInfo(int* BaseAddressArray_Host,
 	BaseAddressArray_Device.ResizeArrayOrException(Constants::maxDepth_Host + 1);
 	CHECKCUDA(cudaMemcpyAsync(BaseAddressArray_Device.Array().ptr(), BaseAddressArray_Host, sizeof(int) * (Constants::maxDepth_Host + 1), cudaMemcpyHostToDevice, stream));
 	CHECKCUDA(cudaMemcpyToSymbolAsync(device::BaseAddressArray_Device, BaseAddressArray_Host, sizeof(int) * (Constants::maxDepth_Host + 1), 0, cudaMemcpyHostToDevice, stream));
-	// D²ãÊ×¸ö½ÚµãÔÚNodeArraysµÄÎ»ÖÃÆ«ÒÆ + D²ã½ÚµãÊıÁ¿ = ×ÜNodeArrayµÄ½ÚµãÊıÁ¿
+	// Då±‚é¦–ä¸ªèŠ‚ç‚¹åœ¨NodeArraysçš„ä½ç½®åç§» + Då±‚èŠ‚ç‚¹æ•°é‡ = æ€»NodeArrayçš„èŠ‚ç‚¹æ•°é‡
 	const unsigned int totalNodeArrayLength = BaseAddressArray_Host[Constants::maxDepth_Host] + NodeArrayCount_Host[Constants::maxDepth_Host];
 	//printf("NodeArray_sz = %d\n", totalNodeArrayLength);
 	NodeArray.ResizeArrayOrException(totalNodeArrayLength);
 	NodeArrayDepthIndex.ResizeArrayOrException(totalNodeArrayLength);
 	NodeArrayNodeCenter.ResizeArrayOrException(totalNodeArrayLength);
 	for (int i = 0; i <= Constants::maxDepth_Host; i++) {
-		// ×èÈû¿½±´£¬·ÀÖ¹Î´¿½±´Íê³É£¬µ«ÊÇÏÂÃæµÄNodeArrayÊÍ·ÅÁË
+		// é˜»å¡æ‹·è´ï¼Œé˜²æ­¢æœªæ‹·è´å®Œæˆï¼Œä½†æ˜¯ä¸‹é¢çš„NodeArrayé‡Šæ”¾äº†
 		CHECKCUDA(cudaMemcpyAsync(NodeArray.Array().ptr() + BaseAddressArray_Host[i], NodeArrays[i], sizeof(OctNode) * NodeArrayCount_Host[i], cudaMemcpyDeviceToDevice, stream));
 		CHECKCUDA(cudaStreamSynchronize(stream));
 		NodeArrays[i].ReleaseBuffer();
@@ -869,7 +869,7 @@ void SparseSurfelFusion::BuildOctree::updateNodeInfo(int* BaseAddressArray_Host,
 
 void SparseSurfelFusion::BuildOctree::computeNodeNeighbor(DeviceBufferArray<OctNode>& NodeArray, cudaStream_t stream)
 {
-	int Node_0_Neighs[27];	// µÚ0²ã¹¹½¨ÁÚ¾Ó
+	int Node_0_Neighs[27];	// ç¬¬0å±‚æ„å»ºé‚»å±…
 	for (int i = 0; i < 27; i++) {
 		if (i == 13) {
 			Node_0_Neighs[i] = 0;
@@ -880,21 +880,21 @@ void SparseSurfelFusion::BuildOctree::computeNodeNeighbor(DeviceBufferArray<OctN
 	}
 	CHECKCUDA(cudaMemcpyAsync(NodeArray[0].neighs, Node_0_Neighs, sizeof(int) * 27, cudaMemcpyHostToDevice, stream));
 
-	for (int depth = 1; depth <= Constants::maxDepth_Host; depth++) {	// Ë³Ğò±éÀúÃ¿¸ö²ã£¬¹¹½¨½ÚµãÁÚ¾Ó
+	for (int depth = 1; depth <= Constants::maxDepth_Host; depth++) {	// é¡ºåºéå†æ¯ä¸ªå±‚ï¼Œæ„å»ºèŠ‚ç‚¹é‚»å±…
 		const unsigned int currentLevelNodeCount = NodeArrayCount_Host[depth];
 		dim3 block(128);
 		dim3 grid(divUp(currentLevelNodeCount, block.x));
 		device::computeNodeNeighborKernel << <grid, block, 0, stream >> > (BaseAddressArray_Host[depth], currentLevelNodeCount, depth, NodeArray.Array().ptr());
 
 	}
-	CHECKCUDA(cudaStreamSynchronize(stream));	// ÕâÀïĞèÒªÁ÷Í¬²½£¬ºóĞøËã·¨·ÖÎªÁ½¸öÁ÷£¬¾ùÒªÓÃµ½µ±Ç°¼ÆËã½á¹û
+	CHECKCUDA(cudaStreamSynchronize(stream));	// è¿™é‡Œéœ€è¦æµåŒæ­¥ï¼Œåç»­ç®—æ³•åˆ†ä¸ºä¸¤ä¸ªæµï¼Œå‡è¦ç”¨åˆ°å½“å‰è®¡ç®—ç»“æœ
 
 }
 
 void SparseSurfelFusion::BuildOctree::ComputeEncodedFunctionNodeIndex(cudaStream_t stream)
 {
 #ifdef CHECK_MESH_BUILD_TIME_COST
-	auto start = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼¿ªÊ¼Ê±¼äµã
+	auto start = std::chrono::high_resolution_clock::now();						// è®°å½•å¼€å§‹æ—¶é—´ç‚¹
 #endif // CHECK_MESH_BUILD_TIME_COST
 
 
@@ -905,12 +905,12 @@ void SparseSurfelFusion::BuildOctree::ComputeEncodedFunctionNodeIndex(cudaStream
 	device::computeEncodedFunctionNodeIndexKernel << <grid, block, 0, stream >> > (NodeArrayDepthIndex.ArrayView(), NodeArray.ArrayView(), totalNodeArrayCount, EncodedFunctionNodeIndex.Array().ptr());
 
 #ifdef CHECK_MESH_BUILD_TIME_COST
-	CHECKCUDA(cudaStreamSynchronize(stream));	// Á÷Í¬²½
-	auto end = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼½áÊøÊ±¼äµã
-	std::chrono::duration<double, std::milli> duration = end - start;			// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-	std::cout << "¼ÆËã±àÂë»ùº¯Êı½ÚµãË÷ÒıµÄÊ±¼ä: " << duration.count() << " ms" << std::endl;		// Êä³ö
+	CHECKCUDA(cudaStreamSynchronize(stream));	// æµåŒæ­¥
+	auto end = std::chrono::high_resolution_clock::now();						// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+	std::chrono::duration<double, std::milli> duration = end - start;			// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+	std::cout << "è®¡ç®—ç¼–ç åŸºå‡½æ•°èŠ‚ç‚¹ç´¢å¼•çš„æ—¶é—´: " << duration.count() << " ms" << std::endl;		// è¾“å‡º
 	std::cout << std::endl;
-	std::cout << "-----------------------------------------------------" << std::endl;	// Êä³ö
+	std::cout << "-----------------------------------------------------" << std::endl;	// è¾“å‡º
 	std::cout << std::endl;
 #endif // CHECK_MESH_BUILD_TIME_COST
 }

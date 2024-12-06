@@ -1,37 +1,37 @@
 #version 460 core
 
-in vec3 Normal;             // ·¨Ïß(ÒÑ¾­¹éÒ»»¯)
-in vec3 FragPos;            // ÔÚÊÀ½ç¿Õ¼äÖĞµÄ¶¥µãÎ»ÖÃ
-in vec3 Color;              // ¶¥µãÑÕÉ«
+in vec3 Normal;             // æ³•çº¿(å·²ç»å½’ä¸€åŒ–)
+in vec3 FragPos;            // åœ¨ä¸–ç•Œç©ºé—´ä¸­çš„é¡¶ç‚¹ä½ç½®
+in vec3 Color;              // é¡¶ç‚¹é¢œè‰²
 
-out vec4 FragColor;         // ¶¥µãÑÕÉ«
+out vec4 FragColor;         // é¡¶ç‚¹é¢œè‰²
 
-uniform vec3 lightPos;      // ¹âÔ´Î»ÖÃ
-uniform vec3 viewPos;       // ÊÓ½ÇÎ»ÖÃ
-uniform vec3 lightColor;    // ¹âµÄÑÕÉ«
+uniform vec3 lightPos;      // å…‰æºä½ç½®
+uniform vec3 viewPos;       // è§†è§’ä½ç½®
+uniform vec3 lightColor;    // å…‰çš„é¢œè‰²
 
 void main()
 {
-    // »·¾³¹â
-    float ambientStrength = 0.1;                                    // ³£Á¿»·¾³Òò×Ó
-    vec3 ambient = ambientStrength * lightColor;                    // ¹âÕÕÑÕÉ«
+    // ç¯å¢ƒå…‰
+    float ambientStrength = 0.1;                                    // å¸¸é‡ç¯å¢ƒå› å­
+    vec3 ambient = ambientStrength * lightColor;                    // å…‰ç…§é¢œè‰²
   	
-    // Âş·´Éä 
-    vec3 norm = Normal;                                             // ·¨ÏßÎŞĞèÔÙ¹éÒ»»¯
-    vec3 lightDir = normalize(lightPos - FragPos);                  // µã¹âÔ´Éäµ½µ±Ç°¶¥µãµÄÏòÁ¿¹éÒ»»¯
-    float diff = max(dot(norm, lightDir), 0.0);                     // Âş·´ÉäÄ£ĞÍ¼ÆËã·´ÉäÖµ
-    vec3 diffuse = diff * lightColor;                               // ½«µ±Ç°Âı·´ÉäÖµ³ËÒÔ¹âÕÕÑÕÉ«(Ê²Ã´ÑÕÉ«µÄ¹âÕÕÔòÌáÈ¡Ê²Ã´ÑÕÉ«µÄ·ÖÁ¿)
+    // æ¼«åå°„ 
+    vec3 norm = Normal;                                             // æ³•çº¿æ— éœ€å†å½’ä¸€åŒ–
+    vec3 lightDir = normalize(lightPos - FragPos);                  // ç‚¹å…‰æºå°„åˆ°å½“å‰é¡¶ç‚¹çš„å‘é‡å½’ä¸€åŒ–
+    float diff = max(dot(norm, lightDir), 0.0);                     // æ¼«åå°„æ¨¡å‹è®¡ç®—åå°„å€¼
+    vec3 diffuse = diff * lightColor;                               // å°†å½“å‰æ…¢åå°„å€¼ä¹˜ä»¥å…‰ç…§é¢œè‰²(ä»€ä¹ˆé¢œè‰²çš„å…‰ç…§åˆ™æå–ä»€ä¹ˆé¢œè‰²çš„åˆ†é‡)
     
-    // ¾µÃæ·´Éä
-    float specularStrength = 0.5;                                   // ¾µÃæÇ¿¶È
-    vec3 viewDir = normalize(viewPos - FragPos);                    // ÊÓ½ÇÓë¶¥µãÎ»ÖÃµÄÏòÁ¿¹éÒ»»¯
-    vec3 halfwayDir = normalize(lightDir + viewDir);                // ¡¾Blinn-PhongÄ£ĞÍ¡¿
-    float spec = pow(max(dot(viewDir, halfwayDir), 0.0), 32);       // 32ÊÇ·´¹â¶È£¬ÎïÌåµÄ·´¹â¶ÈÔ½¸ß£¬·´Éä¹âµÄÄÜÁ¦Ô½Ç¿£¬É¢ÉäµÃÔ½ÉÙ£¬¸ß¹âµã¾Í»áÔ½Ğ¡
-    // vec3 reflectDir = reflect(-lightDir, norm);                  // ¡¾PhongÄ£ĞÍ¡¿-lightDirÊÇ·´Ïò¹âÂ·, reflectDir·´ÉäÏòÁ¿
-    // float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);    // 32ÊÇ·´¹â¶È£¬ÎïÌåµÄ·´¹â¶ÈÔ½¸ß£¬·´Éä¹âµÄÄÜÁ¦Ô½Ç¿£¬É¢ÉäµÃÔ½ÉÙ£¬¸ß¹âµã¾Í»áÔ½Ğ¡
-    vec3 specular = specularStrength * spec * lightColor;           // ¼ÆËã¾µÃæ·´Éä²¢³ËÒÔ¹âÕÕ
+    // é•œé¢åå°„
+    float specularStrength = 0.5;                                   // é•œé¢å¼ºåº¦
+    vec3 viewDir = normalize(viewPos - FragPos);                    // è§†è§’ä¸é¡¶ç‚¹ä½ç½®çš„å‘é‡å½’ä¸€åŒ–
+    vec3 halfwayDir = normalize(lightDir + viewDir);                // ã€Blinn-Phongæ¨¡å‹ã€‘
+    float spec = pow(max(dot(viewDir, halfwayDir), 0.0), 32);       // 32æ˜¯åå…‰åº¦ï¼Œç‰©ä½“çš„åå…‰åº¦è¶Šé«˜ï¼Œåå°„å…‰çš„èƒ½åŠ›è¶Šå¼ºï¼Œæ•£å°„å¾—è¶Šå°‘ï¼Œé«˜å…‰ç‚¹å°±ä¼šè¶Šå°
+    // vec3 reflectDir = reflect(-lightDir, norm);                  // ã€Phongæ¨¡å‹ã€‘-lightDiræ˜¯åå‘å…‰è·¯, reflectDiråå°„å‘é‡
+    // float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);    // 32æ˜¯åå…‰åº¦ï¼Œç‰©ä½“çš„åå…‰åº¦è¶Šé«˜ï¼Œåå°„å…‰çš„èƒ½åŠ›è¶Šå¼ºï¼Œæ•£å°„å¾—è¶Šå°‘ï¼Œé«˜å…‰ç‚¹å°±ä¼šè¶Šå°
+    vec3 specular = specularStrength * spec * lightColor;           // è®¡ç®—é•œé¢åå°„å¹¶ä¹˜ä»¥å…‰ç…§
         
-    vec3 result = (ambient + diffuse + specular) * Color;           // (»·¾³¹â + Âş·´Éä + ¾µÃæ·´Éä) * ÎïÌåÑÕÉ«
+    vec3 result = (ambient + diffuse + specular) * Color;           // (ç¯å¢ƒå…‰ + æ¼«åå°„ + é•œé¢åå°„) * ç‰©ä½“é¢œè‰²
     FragColor = vec4(result, 1.0);
 } 
 

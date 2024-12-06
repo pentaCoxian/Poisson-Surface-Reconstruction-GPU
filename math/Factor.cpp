@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   Factor.cpp
- * \brief  方程求解
+ * \brief  鏂圭▼姹傝В
  * 
  * \author LUOJIAXUAN
  * \date   May 21st 2024
@@ -216,7 +216,7 @@ bool SparseSurfelFusion::Factor::Solve(const double* eqns, const double* values,
 
 double SparseSurfelFusion::Factor::ArcTan2(const double& y, const double& x)
 {
-    // 第一种情况不应该发生
+    // 绗竴绉嶆儏鍐典笉搴旇鍙戠敓
     if (y == 0 && x == 0) {
         return 0; 
     }

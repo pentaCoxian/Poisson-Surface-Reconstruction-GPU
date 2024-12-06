@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   DeviceArrayView.h
- * \brief  ¶ÔGPUµÄ»º´æÄÚÈİÖ»¶ÁµÄÀà
+ * \brief  å¯¹GPUçš„ç¼“å­˜å†…å®¹åªè¯»çš„ç±»
  * 
  * \author LUO
  * \date   January 2024
@@ -11,84 +11,84 @@
 
 namespace SparseSurfelFusion {
 	
-	// Õâ¸öÀàÊÇÒ»¸öÖ»¶ÁÀà£¬¶ÁÈ¡DeviceÖĞµÄÄÚÈİ£¬ ²»¶ÔGPU×ö·ÖÅäÄÚ´æ²Ù×÷
+	// è¿™ä¸ªç±»æ˜¯ä¸€ä¸ªåªè¯»ç±»ï¼Œè¯»å–Deviceä¸­çš„å†…å®¹ï¼Œ ä¸å¯¹GPUåšåˆ†é…å†…å­˜æ“ä½œ
 	template<typename T>
 	class DeviceArrayView {
 	private:
-		const T* deviceArray;	// ÔÚGPUÖĞÊı¾İµÄÊ×µØÖ·£¬const¾ÍÈ·¶¨ÁËÊÇÒ»¸ö³£Á¿²»»á±»¸³Öµ
-		size_t deviceArraySize;	// GPUÖĞÊı¾İµÄÊıÁ¿
+		const T* deviceArray;	// åœ¨GPUä¸­æ•°æ®çš„é¦–åœ°å€ï¼Œconstå°±ç¡®å®šäº†æ˜¯ä¸€ä¸ªå¸¸é‡ä¸ä¼šè¢«èµ‹å€¼
+		size_t deviceArraySize;	// GPUä¸­æ•°æ®çš„æ•°é‡
 	public:
-		// Ä¬ÈÏµÄ¿½±´/¸³Öµ/ÒÆ¶¯/Îö¹¹
-		// ¹¹Ôìº¯Êı£ºÖ¸ÕëÎª¿Õ£¬´óĞ¡Îª0¡£ÊÊÓÃ·¶Î§£º¡°host & device¡±
+		// é»˜è®¤çš„æ‹·è´/èµ‹å€¼/ç§»åŠ¨/ææ„
+		// æ„é€ å‡½æ•°ï¼šæŒ‡é’ˆä¸ºç©ºï¼Œå¤§å°ä¸º0ã€‚é€‚ç”¨èŒƒå›´ï¼šâ€œhost & deviceâ€
 		__host__ __device__ DeviceArrayView() : deviceArray(nullptr), deviceArraySize(0) {}
-		// ¹¹Ôìº¯Êı£º´«ÈëÊı¾İÊ×µØÖ·£¬Êı¾İ´óĞ¡¡£ÊÊÓÃ·¶Î§£º¡°host & device¡±
+		// æ„é€ å‡½æ•°ï¼šä¼ å…¥æ•°æ®é¦–åœ°å€ï¼Œæ•°æ®å¤§å°ã€‚é€‚ç”¨èŒƒå›´ï¼šâ€œhost & deviceâ€
 		__host__ __device__ DeviceArrayView(const T* arr, size_t size) : deviceArray(arr), deviceArraySize(size) {}
-		// ¹¹Ôìº¯Êı£º´«ÈëÊ×µØÖ·£¬Êı¾İÆğÊ¼µÄÎ»ÖÃ(´ÓµÚ¼¸¸ö¿ªÊ¼)£¬Êı¾İ½áÊøµÄÎ»ÖÃ(µ½µÚ¼¸¸ö½áÊø) ÊÊÓÃ·¶Î§£º¡°host & device¡±
+		// æ„é€ å‡½æ•°ï¼šä¼ å…¥é¦–åœ°å€ï¼Œæ•°æ®èµ·å§‹çš„ä½ç½®(ä»ç¬¬å‡ ä¸ªå¼€å§‹)ï¼Œæ•°æ®ç»“æŸçš„ä½ç½®(åˆ°ç¬¬å‡ ä¸ªç»“æŸ) é€‚ç”¨èŒƒå›´ï¼šâ€œhost & deviceâ€
 		__host__ __device__ DeviceArrayView(const T* arr, size_t start, size_t end) {
 			deviceArraySize = end - start;
 			deviceArray = arr + start;
 		}
-		// ÏÔÊ¾¹¹Ôìº¯Êı£º´«¸øÒ»¸öDeviceArray<T>ÀàĞÍ£¬·ÀÖ¹ÒşÊ½µ÷ÓÃ
+		// æ˜¾ç¤ºæ„é€ å‡½æ•°ï¼šä¼ ç»™ä¸€ä¸ªDeviceArray<T>ç±»å‹ï¼Œé˜²æ­¢éšå¼è°ƒç”¨
 		explicit __host__ DeviceArrayView(const DeviceArray<T>& arr) : deviceArray(arr.ptr()), deviceArraySize(arr.size()) {}
 
-		// ·ÖÅä²Ù×÷£¬ÖØÔØ¡°=¡±Ê¹µÃDeviceArrayÄÜ¸øDeviceArrayView¸³Öµ  ÊÊÓÃ·¶Î§£º¡°host¡±
+		// åˆ†é…æ“ä½œï¼Œé‡è½½â€œ=â€ä½¿å¾—DeviceArrayèƒ½ç»™DeviceArrayViewèµ‹å€¼  é€‚ç”¨èŒƒå›´ï¼šâ€œhostâ€
 		__host__ DeviceArrayView<T>& operator=(const DeviceArray<T>& arr) {
 			deviceArray = arr.ptr();
 			deviceArraySize = arr.size();
 			return *this;
 		}
 
-		// ¼òµ¥½Ó¿Ú
-		// »ñµÃGPUÊı¾İÊıÁ¿
+		// ç®€å•æ¥å£
+		// è·å¾—GPUæ•°æ®æ•°é‡
 		__host__ __device__ size_t Size() const { return deviceArraySize; }
-		// »ñµÃGPUÖĞÕâ´®Êı¾İÕ¼¶àÉÙbyte
+		// è·å¾—GPUä¸­è¿™ä¸²æ•°æ®å å¤šå°‘byte
 		__host__ __device__ size_t ByteSize() const { return deviceArraySize * sizeof(T); }
-		// »ñµÃÊı¾İÔÚGPUÖĞµÄÊ×µØÖ·
+		// è·å¾—æ•°æ®åœ¨GPUä¸­çš„é¦–åœ°å€
 		__host__ __device__ const T* RawPtr() const { return deviceArray; }
-		// »ñµÃÊı¾İÔÚGPUÖĞµÄÊ×µØÖ·
+		// è·å¾—æ•°æ®åœ¨GPUä¸­çš„é¦–åœ°å€
 		__host__ __device__ operator const T* () const { return deviceArray; }
 
-		// ÕâÖÖ·ÃÎÊ·½Ê½Ö»ÄÜÔÚdeviceÖĞ²Ù×÷  ÊÊÓÃ·¶Î§£º¡°device¡±
+		// è¿™ç§è®¿é—®æ–¹å¼åªèƒ½åœ¨deviceä¸­æ“ä½œ  é€‚ç”¨èŒƒå›´ï¼šâ€œdeviceâ€
 		__device__ const T& operator[](size_t index) const { return deviceArray[index]; }
 
-		// ½«GPUÊı¾İ¿½±´µ½CPU£¬ÒÔ±ãÓÚºóĞøDebug
+		// å°†GPUæ•°æ®æ‹·è´åˆ°CPUï¼Œä»¥ä¾¿äºåç»­Debug
 		__host__ void Download(std::vector<T>& h_vec) const {
 			h_vec.resize(Size());
 			CHECKCUDA(cudaMemcpy(h_vec.data(), deviceArray, Size() * sizeof(T), cudaMemcpyDeviceToHost));
 		}
 	};
 
-	// GPUÖĞ2DÊı×éµÄ²é¿´£¬ÊÇÒ»¸öÖ»¶ÁÀà
+	// GPUä¸­2Dæ•°ç»„çš„æŸ¥çœ‹ï¼Œæ˜¯ä¸€ä¸ªåªè¯»ç±»
 	template<typename T>
 	class DeviceArrayView2D {
 	private:
-		unsigned short rows, cols;	// 2DÊı×éµÄĞĞ£¬ÁĞ
-		unsigned int byte_step;		// ²½³¤¶¼ÊÇÒÔ×Ö½ÚbyteÎªµ¥Î»µÄ£¬Ò»ĞĞÓĞ¶àÉÙ¸ö×Ö½Ú
-		const T* ptr;				// Êı×éµÄÊ×µØÖ·
+		unsigned short rows, cols;	// 2Dæ•°ç»„çš„è¡Œï¼Œåˆ—
+		unsigned int byte_step;		// æ­¥é•¿éƒ½æ˜¯ä»¥å­—èŠ‚byteä¸ºå•ä½çš„ï¼Œä¸€è¡Œæœ‰å¤šå°‘ä¸ªå­—èŠ‚
+		const T* ptr;				// æ•°ç»„çš„é¦–åœ°å€
 
 	public:
-		// ¹¹Ôìº¯Êı£¬³õÊ¼»¯£º³¤¿íÎª0
+		// æ„é€ å‡½æ•°ï¼Œåˆå§‹åŒ–ï¼šé•¿å®½ä¸º0
 		__host__ __device__ DeviceArrayView2D() : rows(0), cols(0), byte_step(0), ptr(nullptr) {}
-		// ¹¹Ôìº¯Êı£ºÓÃDeviceArray2DÀàÀ´¹¹ÔìDeviceArrayView2D£¬ÒÔ¹©²é¿´GPUÖĞµÄÊı¾İ
+		// æ„é€ å‡½æ•°ï¼šç”¨DeviceArray2Dç±»æ¥æ„é€ DeviceArrayView2Dï¼Œä»¥ä¾›æŸ¥çœ‹GPUä¸­çš„æ•°æ®
 		__host__ DeviceArrayView2D(const DeviceArray2D<T>& array2D)
 			: rows(array2D.rows()), cols(array2D.cols()),
 			byte_step(array2D.step()), ptr(array2D.ptr())
 		{}
 
-		// ½Ó¿Ú
-		// ¶şÎ¬Êı¾İµÄĞĞÊı
+		// æ¥å£
+		// äºŒç»´æ•°æ®çš„è¡Œæ•°
 		__host__ __device__ __forceinline__ unsigned short Rows() const { return rows; }
-		// ¶şÎ¬Êı¾İµÄÁĞÊı
+		// äºŒç»´æ•°æ®çš„åˆ—æ•°
 		__host__ __device__ __forceinline__ unsigned short Cols() const { return cols; }
-		// ¶şÎ¬Êı¾İÖĞÒ»ĞĞÓĞ¶àÉÙ¸ö×Ö½Ú 
+		// äºŒç»´æ•°æ®ä¸­ä¸€è¡Œæœ‰å¤šå°‘ä¸ªå­—èŠ‚ 
 		__host__ __device__ __forceinline__ unsigned ByteStep() const { return byte_step; }
-		// ¶şÎ¬Êı¾İµÄÊ×µØÖ·
+		// äºŒç»´æ•°æ®çš„é¦–åœ°å€
 		__host__ __device__ __forceinline__ const T* RawPtr() const { return ptr; }
-		// ¶şÎ¬Êı¾İÖĞµÚrowĞĞµÄÊ×µØÖ·
+		// äºŒç»´æ•°æ®ä¸­ç¬¬rowè¡Œçš„é¦–åœ°å€
 		__host__ __device__ __forceinline__ const T* RawPtr(int row) const {
 			return ((const T*)((const char*)(ptr)+row * byte_step));
 		}
-		// ¶şÎ¬Êı¾İÖĞµÚrowĞĞ,µÚcolÁĞµÄµØÖ·
+		// äºŒç»´æ•°æ®ä¸­ç¬¬rowè¡Œ,ç¬¬colåˆ—çš„åœ°å€
 		__host__ __device__ __forceinline__ const T& operator()(int row, int col) const {
 			return RawPtr(row)[col];
 		}

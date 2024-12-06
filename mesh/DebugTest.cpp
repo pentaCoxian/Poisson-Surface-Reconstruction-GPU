@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   DebugTest.cpp
- * \brief  ²âÊÔËã·¨Àà
+ * \brief  æµ‹è¯•ç®—æ³•ç±»
  * 
  * \author LUOJIAXUAN
  * \date   May 1st 2024
@@ -9,7 +9,7 @@
 
 void SparseSurfelFusion::DebugTest::CheckKeysEncode(DeviceArrayView<long long> keys, cudaStream_t stream, std::string Type)
 {
-	CHECKCUDA(cudaStreamSynchronize(stream));		// ÏÈÍ¬²½
+	CHECKCUDA(cudaStreamSynchronize(stream));		// å…ˆåŒæ­¥
 	std::vector<long long> keysCodeCheck;
 	keys.Download(keysCodeCheck);
 	for (int index = 0; index < keys.Size(); index++) {
@@ -21,10 +21,10 @@ void SparseSurfelFusion::DebugTest::CheckKeysEncode(DeviceArrayView<long long> k
 				binaryStr[1] = '\0';
 				return;
 			}
-			int High32 = int(n >> 32);	// Ç°32Î»
+			int High32 = int(n >> 32);	// å‰32ä½
 			int i = 0;
 			while (High32 > 0) {
-				binaryStr[i] = (High32 % 2) + '0'; // ½«Êı×Ö×ª»»Îª×Ö·û '0' »ò '1'
+				binaryStr[i] = (High32 % 2) + '0'; // å°†æ•°å­—è½¬æ¢ä¸ºå­—ç¬¦ '0' æˆ– '1'
 				High32 = High32 / 2;
 				i++;
 			}
@@ -32,14 +32,14 @@ void SparseSurfelFusion::DebugTest::CheckKeysEncode(DeviceArrayView<long long> k
 			for (; i < len; i++) {
 				binaryStr[i] = '0';
 			}
-			binaryStr[len + 1] = '\0'; // ÔÚ×Ö·û´®Ä©Î²Ìí¼Ó¿Õ×Ö·û
-			// ·´×ª×Ö·û´®
+			binaryStr[len + 1] = '\0'; // åœ¨å­—ç¬¦ä¸²æœ«å°¾æ·»åŠ ç©ºå­—ç¬¦
+			// åè½¬å­—ç¬¦ä¸²
 			for (int j = 0; j < len / 2; j++) {
 				char temp = binaryStr[j];
 				binaryStr[j] = binaryStr[len - j - 1];
 				binaryStr[len - j - 1] = temp;
 			}
-			printf("index = %hu ¶ş½øÖÆ±àÂëÎª %s\n", index, binaryStr);
+			printf("index = %hu äºŒè¿›åˆ¶ç¼–ç ä¸º %s\n", index, binaryStr);
 		}
 		else if (Type == "low32") {
 			char binaryStr[33] = { '0' };;
@@ -48,26 +48,26 @@ void SparseSurfelFusion::DebugTest::CheckKeysEncode(DeviceArrayView<long long> k
 				binaryStr[1] = '\0';
 				return;
 			}
-			int Low32 = int(n & ((1ll << 31) - 1));	// ºó32Î»
+			int Low32 = int(n & ((1ll << 31) - 1));	// å32ä½
 			int DenseIndex = int(n & ((1ll << 31) - 1));
 			int i = 0;
 			while (Low32 > 0) {
-				binaryStr[i] = (Low32 % 2) + '0'; // ½«Êı×Ö×ª»»Îª×Ö·û '0' »ò '1'
+				binaryStr[i] = (Low32 % 2) + '0'; // å°†æ•°å­—è½¬æ¢ä¸ºå­—ç¬¦ '0' æˆ– '1'
 				Low32 = Low32 / 2;
 				i++;
 			}
-			// ·´×ª×Ö·û´®
+			// åè½¬å­—ç¬¦ä¸²
 			int len = 31;
 			for (; i < len; i++) {
 				binaryStr[i] = '0';
 			}
-			binaryStr[len + 1] = '\0'; // ÔÚ×Ö·û´®Ä©Î²Ìí¼Ó¿Õ×Ö·û
+			binaryStr[len + 1] = '\0'; // åœ¨å­—ç¬¦ä¸²æœ«å°¾æ·»åŠ ç©ºå­—ç¬¦
 			for (int j = 0; j < len / 2; j++) {
 				char temp = binaryStr[j];
 				binaryStr[j] = binaryStr[len - j - 1];
 				binaryStr[len - j - 1] = temp;
 			}
-			printf("index = %hu ¶ş½øÖÆ±àÂëÎª %s  ÔÚ³íÃÜÊı×éÖĞµÄindex = %d\n", index, binaryStr, DenseIndex);
+			printf("index = %hu äºŒè¿›åˆ¶ç¼–ç ä¸º %s  åœ¨ç¨ å¯†æ•°ç»„ä¸­çš„index = %d\n", index, binaryStr, DenseIndex);
 		}
 		else {
 			char binaryStr[65] = { '0' };
@@ -79,7 +79,7 @@ void SparseSurfelFusion::DebugTest::CheckKeysEncode(DeviceArrayView<long long> k
 
 			int i = 0;
 			while (n > 0) {
-				binaryStr[i] = (n % 2) + '0'; // ½«Êı×Ö×ª»»Îª×Ö·û '0' »ò '1'
+				binaryStr[i] = (n % 2) + '0'; // å°†æ•°å­—è½¬æ¢ä¸ºå­—ç¬¦ '0' æˆ– '1'
 				n = n / 2;
 				i++;
 			}
@@ -87,14 +87,14 @@ void SparseSurfelFusion::DebugTest::CheckKeysEncode(DeviceArrayView<long long> k
 			for (; i < len; i++) {
 				binaryStr[i] = '0';
 			}
-			binaryStr[len + 1] = '\0'; // ÔÚ×Ö·û´®Ä©Î²Ìí¼Ó¿Õ×Ö·û
-			// ·´×ª×Ö·û´®
+			binaryStr[len + 1] = '\0'; // åœ¨å­—ç¬¦ä¸²æœ«å°¾æ·»åŠ ç©ºå­—ç¬¦
+			// åè½¬å­—ç¬¦ä¸²
 			for (int j = 0; j < len / 2; j++) {
 				char temp = binaryStr[j];
 				binaryStr[j] = binaryStr[len - j - 1];
 				binaryStr[len - j - 1] = temp;
 			}
-			printf("index = %hu ¶ş½øÖÆ±àÂëÎª %s\n", index, binaryStr);
+			printf("index = %hu äºŒè¿›åˆ¶ç¼–ç ä¸º %s\n", index, binaryStr);
 		}
 	}
 

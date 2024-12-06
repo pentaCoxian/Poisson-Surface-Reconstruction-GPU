@@ -1,21 +1,21 @@
 #version 460 core
 
-layout (location = 0) in vec3 pos;      // Î»ÖÃ±äÁ¿µÄÊôĞÔÎ»ÖÃÖµÎª 0 
-layout (location = 1) in vec3 normal;   // ·¨ÏòÁ¿±äÁ¿µÄÊôĞÔÎ»ÖÃÖµÎª 1
-layout (location = 2) in vec3 color;    // ÑÕÉ«±äÁ¿µÄÊôĞÔÎ»ÖÃÖµÎª 2
+layout (location = 0) in vec3 pos;      // ä½ç½®å˜é‡çš„å±æ€§ä½ç½®å€¼ä¸º 0 
+layout (location = 1) in vec3 normal;   // æ³•å‘é‡å˜é‡çš„å±æ€§ä½ç½®å€¼ä¸º 1
+layout (location = 2) in vec3 color;    // é¢œè‰²å˜é‡çš„å±æ€§ä½ç½®å€¼ä¸º 2
 
-uniform mat4 model;         // Ä£ĞÍ¾ØÕó
-uniform mat4 view;          // ÊÓ½Ç¾ØÕó
-uniform mat4 projection;    // Í¶Ó°¾ØÕó
+uniform mat4 model;         // æ¨¡å‹çŸ©é˜µ
+uniform mat4 view;          // è§†è§’çŸ©é˜µ
+uniform mat4 projection;    // æŠ•å½±çŸ©é˜µ
 
-out vec3 Normal;            // ·¨Ïß
-out vec3 FragPos;           // ÔÚÊÀ½ç¿Õ¼äÖĞµÄ¶¥µãÎ»ÖÃ
-out vec3 Color;             // ¶¥µãÑÕÉ«
+out vec3 Normal;            // æ³•çº¿
+out vec3 FragPos;           // åœ¨ä¸–ç•Œç©ºé—´ä¸­çš„é¡¶ç‚¹ä½ç½®
+out vec3 Color;             // é¡¶ç‚¹é¢œè‰²
 
 void main()
 {
     FragPos = vec3(model * vec4(pos, 1.0));
     Normal = normal;
     Color = color;
-    gl_Position = projection * view * vec4(FragPos, 1.0);        // ¶¥µãµÄ×ø±ê(Ç°ÃæÒÑ¾­ÓĞ×ó³ËµÄFragPos, ´Ë´¦ÎŞĞè¼ÆËã)
+    gl_Position = projection * view * vec4(FragPos, 1.0);        // é¡¶ç‚¹çš„åæ ‡(å‰é¢å·²ç»æœ‰å·¦ä¹˜çš„FragPos, æ­¤å¤„æ— éœ€è®¡ç®—)
 }

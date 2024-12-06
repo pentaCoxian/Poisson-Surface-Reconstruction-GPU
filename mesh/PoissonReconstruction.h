@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   PoissonReconstruction.h
- * \brief  GPUÇó½â²´ËÉÇúÃæÖØ½¨
+ * \brief  GPUæ±‚è§£æ³Šæ¾æ›²é¢é‡å»º
  * 
  * \author LUOJIAXUAN
  * \date   May 4th 2024
@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <pcl/io/ply_io.h>  // ply ÎÄ¼ş¶ÁÈ¡Í·ÎÄ¼ş
+#include <pcl/io/ply_io.h>  // ply æ–‡ä»¶è¯»å–å¤´æ–‡ä»¶
 #include <pcl/visualization/cloud_viewer.h>
 
 #include <pcl/io/pcd_io.h>
@@ -41,22 +41,22 @@ namespace SparseSurfelFusion {
 	namespace device {
 
 		/**
-		 * \brief ¹¹½¨³íÃÜÃæÔª.
+		 * \brief æ„å»ºç¨ å¯†é¢å…ƒ.
 		 * 
-		 * \param coor ´«ÈëµãÔÆÈıÎ¬×ø±ê
-		 * \param surfel ×ø±êĞ´ÈëÃæÔª
-		 * \param pointsNum ÃæÔªÊıÁ¿
+		 * \param coor ä¼ å…¥ç‚¹äº‘ä¸‰ç»´åæ ‡
+		 * \param surfel åæ ‡å†™å…¥é¢å…ƒ
+		 * \param pointsNum é¢å…ƒæ•°é‡
 		 */
 		__global__ void buildDenseSurfelKernel(pcl::PointXYZ* coor, DepthSurfel* surfel, const unsigned int pointsNum);
 
 		/**
-		 * \brief ¹¹½¨ÓĞ·¨ÏòÁ¿µÄ³íÃÜµãÔÆ.
+		 * \brief æ„å»ºæœ‰æ³•å‘é‡çš„ç¨ å¯†ç‚¹äº‘.
 		 * 
-		 * \param coor ´«ÈëµãÔÆÈıÎ¬×ø±ê
-		 * \param normal ·¨ÏòÁ¿
-		 * \param surfel ×ø±êĞ´ÈëÃæÔª
-		 * \param cudaStates ÓÃÒÔÉú³ÉËæ»úÊı
-		 * \param pointsNum ÃæÔªÊıÁ¿
+		 * \param coor ä¼ å…¥ç‚¹äº‘ä¸‰ç»´åæ ‡
+		 * \param normal æ³•å‘é‡
+		 * \param surfel åæ ‡å†™å…¥é¢å…ƒ
+		 * \param cudaStates ç”¨ä»¥ç”Ÿæˆéšæœºæ•°
+		 * \param pointsNum é¢å…ƒæ•°é‡
 		 */
 		__global__ void buildOrientedDenseSurfelKernel(pcl::PointXYZ* coor, pcl::Normal* normal, DepthSurfel* surfel, curandState* cudaStates, const unsigned int pointsNum);
 	}
@@ -69,62 +69,62 @@ namespace SparseSurfelFusion {
 
 	private:
 		/**
-		 * \brief ³õÊ¼»¯meshµÄËùÓĞcudaÁ÷.
+		 * \brief åˆå§‹åŒ–meshçš„æ‰€æœ‰cudaæµ.
 		 * 
 		 */
 		void initCudaStream();
 
 		/**
-		 * \brief ÊÍ·ÅcudaÁ÷.
+		 * \brief é‡Šæ”¾cudaæµ.
 		 * 
 		 */
 		void releaseCudaStream();
 
 		/**
-		 * \brief  Í¬²½ËùÓĞcudaÁ÷.
+		 * \brief  åŒæ­¥æ‰€æœ‰cudaæµ.
 		 * 
 		 */
 		void synchronizeAllCudaStream();
 
-		BuildOctree::Ptr OctreePtr;							// ¹¹½¨°Ë²æÊ÷
-		ComputeVectorField::Ptr VectorFieldPtr;				// ¹¹½¨ÏòÁ¿³¡(typenameĞŞÊÎ¸æËß±àÒëÆ÷Õâ¸öÊÇÒ»¸öÀà)
-		ComputeNodesDivergence::Ptr NodeDivergencePtr;		// ¼ÆËã½ÚµãÉ¢¶È
-		LaplacianSolver::Ptr LaplacianSolverPtr;			// LaplaceÇó½âÆ÷
-		BuildMeshGeometry::Ptr MeshGeometryPtr;				// Íø¸ñ¹¹½¨¶¥µã¡¢±ß¡¢ÃæÈıÖÖÔªËØ
-		ComputeTriangleIndices::Ptr TriangleIndicesPtr;		// Èı½ÇÆÊ·Ö¹¹½¨Ë÷Òı
-		DrawMesh::Ptr DrawConstructedMesh;					// OpenGL»æÖÆ±»¹¹½¨µÄÍø¸ñ
+		BuildOctree::Ptr OctreePtr;							// æ„å»ºå…«å‰æ ‘
+		ComputeVectorField::Ptr VectorFieldPtr;				// æ„å»ºå‘é‡åœº(typenameä¿®é¥°å‘Šè¯‰ç¼–è¯‘å™¨è¿™ä¸ªæ˜¯ä¸€ä¸ªç±»)
+		ComputeNodesDivergence::Ptr NodeDivergencePtr;		// è®¡ç®—èŠ‚ç‚¹æ•£åº¦
+		LaplacianSolver::Ptr LaplacianSolverPtr;			// Laplaceæ±‚è§£å™¨
+		BuildMeshGeometry::Ptr MeshGeometryPtr;				// ç½‘æ ¼æ„å»ºé¡¶ç‚¹ã€è¾¹ã€é¢ä¸‰ç§å…ƒç´ 
+		ComputeTriangleIndices::Ptr TriangleIndicesPtr;		// ä¸‰è§’å‰–åˆ†æ„å»ºç´¢å¼•
+		DrawMesh::Ptr DrawConstructedMesh;					// OpenGLç»˜åˆ¶è¢«æ„å»ºçš„ç½‘æ ¼
 
 	public:
 		/**
-		 * \brief ¶ÁÈ¡µãÔÆÊı¾İ²âÊÔËã·¨.
+		 * \brief è¯»å–ç‚¹äº‘æ•°æ®æµ‹è¯•ç®—æ³•.
 		 * 
-		 * \param path µãÔÆÊı¾İÂ·¾¶
+		 * \param path ç‚¹äº‘æ•°æ®è·¯å¾„
 		 */
 		void readTXTFile(std::string path);
 
 		/**
-		 * \brief ¶ÁÈ¡pcdÎÄ¼ş.
+		 * \brief è¯»å–pcdæ–‡ä»¶.
 		 * 
-		 * \param path ÎÄ¼şÂ·¾¶
+		 * \param path æ–‡ä»¶è·¯å¾„
 		 */
 		void readPCDFile(std::string path);
 
 		/**
-		 * \brief ¶ÁÈ¡plyÎÄ¼ş.
+		 * \brief è¯»å–plyæ–‡ä»¶.
 		 * 
-		 * \param path ÎÄ¼şÂ·¾¶
+		 * \param path æ–‡ä»¶è·¯å¾„
 		 */
 		void readPLYFile(std::string path);
 
 		/**
-		 * \brief ³õÊ¼»¯°Ë²æÊ÷µÄÊ÷½á¹¹.
+		 * \brief åˆå§‹åŒ–å…«å‰æ ‘çš„æ ‘ç»“æ„.
 		 *
-		 * \param denseSurfel ´«Èë³íÃÜµã
+		 * \param denseSurfel ä¼ å…¥ç¨ å¯†ç‚¹
 		 */
 		void SolvePoissionReconstructionMesh(DeviceArrayView<DepthSurfel> denseSurfel);
 
 		/**
-		 * \brief OpenGL»æÖÆÖØ½¨µÄÍø¸ñ.
+		 * \brief OpenGLç»˜åˆ¶é‡å»ºçš„ç½‘æ ¼.
 		 */
 		void DrawRebuildMesh();
 
@@ -146,14 +146,14 @@ namespace SparseSurfelFusion {
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
 		pcl::PointCloud<pcl::Normal>::Ptr normals;
 
-		curandState* cudaStates = NULL;		// ÓÃÒÔÉú³ÉËæ»úÊı
+		curandState* cudaStates = NULL;		// ç”¨ä»¥ç”Ÿæˆéšæœºæ•°
 
 
 		/**
-		 * \brief ´«ÈëµãÔÆ¼ÆËã·¨Ïß.
+		 * \brief ä¼ å…¥ç‚¹äº‘è®¡ç®—æ³•çº¿.
 		 *
-		 * \param cloud ´«ÈëµãÔÆ
-		 * \param normals ¼ÆËãµÃµ½·¨Ïß
+		 * \param cloud ä¼ å…¥ç‚¹äº‘
+		 * \param normals è®¡ç®—å¾—åˆ°æ³•çº¿
 		 */
 		void CalculatePointCloudNormal(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, pcl::PointCloud<pcl::Normal>::Ptr normals);
 

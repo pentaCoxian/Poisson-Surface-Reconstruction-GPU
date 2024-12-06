@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   CommonUtils.cu
- * \brief  ÎÄ¼şÖ÷Òª°üº¬Ò»Ğ©³£ÓÃµÄcuda¹¤¾ßº¯Êı
+ * \brief  æ–‡ä»¶ä¸»è¦åŒ…å«ä¸€äº›å¸¸ç”¨çš„cudaå·¥å…·å‡½æ•°
  * 
  * \author LUO
  * \date   January 12th 2024
@@ -9,7 +9,7 @@
 
 
 CUcontext SparseSurfelFusion::initCudaContext(int selected_device) {
-    //³õÊ¼»¯CudaÇı¶¯µÄAPI
+    //åˆå§‹åŒ–Cudaé©±åŠ¨çš„API
     CHECKCUDADRIVER(cuInit(0));
 
     //Query the device
@@ -21,12 +21,12 @@ CUcontext SparseSurfelFusion::initCudaContext(int selected_device) {
         printf("device %d: %s\n", dev_idx, dev_name);
     }
 
-    //Ñ¡ÔñGPU
-    printf("Éè±¸ %d ±»ÓÃ×÷²¢ĞĞ´¦ÀíÆ÷.\n", selected_device);
+    //é€‰æ‹©GPU
+    printf("è®¾å¤‡ %d è¢«ç”¨ä½œå¹¶è¡Œå¤„ç†å™¨.\n", selected_device);
     CUdevice cuda_device;
     CHECKCUDADRIVER(cuDeviceGet(&cuda_device, selected_device));
 
-    //´´½¨cudaÉÏÏÂÎÄ
+    //åˆ›å»ºcudaä¸Šä¸‹æ–‡
     CUcontext cuda_context;
     CHECKCUDADRIVER(cuCtxCreate(&cuda_context, CU_CTX_SCHED_AUTO, cuda_device));
     return cuda_context;
@@ -43,59 +43,59 @@ void SparseSurfelFusion::destroyCudaContext(CUcontext context)
 void SparseSurfelFusion::createDefault2DTextureDescriptor(cudaTextureDesc& descriptor)
 {
     memset(&descriptor, 0, sizeof(descriptor));
-    // ÎÆÀíÑ°Ö·Ä£Ê½£¬Ê¹ÓÃ3¸öÎ¬¶È(Êµ¼ÊÉÏÖ»Ê¹ÓÃ2Î¬)
-    descriptor.addressMode[0] = cudaAddressModeBorder;  // ÔÚ±ß½çÖ®Íâ·µ»Ø0
+    // çº¹ç†å¯»å€æ¨¡å¼ï¼Œä½¿ç”¨3ä¸ªç»´åº¦(å®é™…ä¸Šåªä½¿ç”¨2ç»´)
+    descriptor.addressMode[0] = cudaAddressModeBorder;  // åœ¨è¾¹ç•Œä¹‹å¤–è¿”å›0
     descriptor.addressMode[1] = cudaAddressModeBorder;
     descriptor.addressMode[2] = cudaAddressModeBorder;
-    // ´ÓÎÆÀí»ñÈ¡Ê±ÒªÊ¹ÓÃµÄ¹ıÂËÄ£Ê½
-    descriptor.filterMode = cudaFilterModePoint;        // ×îÁÚ½ü²åÖµ--cudaFilterModePoint       Ë«ÏßĞÔ²åÖµ--cudaFilterModeLinear
-    // Ö¸¶¨ÊÇ·ñÓ¦½«ÕûÊıÊı¾İ×ª»»Îª¸¡µãÊı
-    descriptor.readMode = cudaReadModeElementType;      // ¶ÁÊı¾İÒÔÖ¸¶¨µÄÊı¾İÀàĞÍ¶Á£¬²»È«²¿×ª»¯³Éfloat
-    // ÊÇ·ñ½«ÎÆÀí×ø±ê±ê×¼»¯
-    descriptor.normalizedCoords = 0;                    // ²»Ê¹ÓÃ¹éÒ»»¯ÎÆÀíÄÚ´æ
+    // ä»çº¹ç†è·å–æ—¶è¦ä½¿ç”¨çš„è¿‡æ»¤æ¨¡å¼
+    descriptor.filterMode = cudaFilterModePoint;        // æœ€é‚»è¿‘æ’å€¼--cudaFilterModePoint       åŒçº¿æ€§æ’å€¼--cudaFilterModeLinear
+    // æŒ‡å®šæ˜¯å¦åº”å°†æ•´æ•°æ•°æ®è½¬æ¢ä¸ºæµ®ç‚¹æ•°
+    descriptor.readMode = cudaReadModeElementType;      // è¯»æ•°æ®ä»¥æŒ‡å®šçš„æ•°æ®ç±»å‹è¯»ï¼Œä¸å…¨éƒ¨è½¬åŒ–æˆfloat
+    // æ˜¯å¦å°†çº¹ç†åæ ‡æ ‡å‡†åŒ–
+    descriptor.normalizedCoords = 0;                    // ä¸ä½¿ç”¨å½’ä¸€åŒ–çº¹ç†å†…å­˜
 
 }
 
 void SparseSurfelFusion::createDefault2DResourceDescriptor(cudaResourceDesc& descriptor, cudaArray_t& cudaArray)
 {
-    memset(&descriptor, 0, sizeof(cudaResourceDesc));   // ×ÊÔ´ÃèÊö×Ó³õÖµÎª0
-    // Ê¹ÓÃCUDAÊı×é--cudaResourceTypeArray      
-    // Ê¹ÓÃCUDAÓ³ÉäÊı×é--cudaResourceTypeMipmappedArray      
-    // Ê¹ÓÃÉè±¸ÉÏÒ»¶ÎÏßĞÔÄÚ´æ--cudaResourceTypeLinear
-    // Ê¹ÓÃÉè±¸ÉÏÒ»¸ö2D¿é×ÊÔ´
+    memset(&descriptor, 0, sizeof(cudaResourceDesc));   // èµ„æºæè¿°å­åˆå€¼ä¸º0
+    // ä½¿ç”¨CUDAæ•°ç»„--cudaResourceTypeArray      
+    // ä½¿ç”¨CUDAæ˜ å°„æ•°ç»„--cudaResourceTypeMipmappedArray      
+    // ä½¿ç”¨è®¾å¤‡ä¸Šä¸€æ®µçº¿æ€§å†…å­˜--cudaResourceTypeLinear
+    // ä½¿ç”¨è®¾å¤‡ä¸Šä¸€ä¸ª2Då—èµ„æº
     descriptor.resType = cudaResourceTypeArray;         
-    descriptor.res.array.array = cudaArray;             // ½«ÖµµÄÄÚ´æ¶Î¸³Èë
+    descriptor.res.array.array = cudaArray;             // å°†å€¼çš„å†…å­˜æ®µèµ‹å…¥
 }
 
 void SparseSurfelFusion::createDepthTexture(const unsigned int rows, const unsigned int cols, cudaTextureObject_t& texture, cudaArray_t& cudaArray)
 {
-    // ÉùÃ÷ÎÆÀíÃèÊö
+    // å£°æ˜çº¹ç†æè¿°
     cudaTextureDesc depth_texture_desc;
     createDefault2DTextureDescriptor(depth_texture_desc);
-    // ÉùÃ÷Í¨µÀÃèÊö(Ö»ÓĞÒ»¸öÍ¨µÀµÄÊı¾İ£¬Êı¾İÀàĞÍÊÇuint16)
-    cudaChannelFormatDesc depth_channel_desc = cudaCreateChannelDesc(16, 0, 0, 0, cudaChannelFormatKindUnsigned); // 16bitµÄÎŞ·ûºÅÕûĞÍ
-    // ·ÖÅäcudaÊı×é
+    // å£°æ˜é€šé“æè¿°(åªæœ‰ä¸€ä¸ªé€šé“çš„æ•°æ®ï¼Œæ•°æ®ç±»å‹æ˜¯uint16)
+    cudaChannelFormatDesc depth_channel_desc = cudaCreateChannelDesc(16, 0, 0, 0, cudaChannelFormatKindUnsigned); // 16bitçš„æ— ç¬¦å·æ•´å‹
+    // åˆ†é…cudaæ•°ç»„
     CHECKCUDA(cudaMallocArray(&cudaArray, &depth_channel_desc, cols, rows));
-    // ÉùÃ÷×ÊÔ´ÃèÊö
+    // å£°æ˜èµ„æºæè¿°
     cudaResourceDesc resource_desc;
-    createDefault2DResourceDescriptor(resource_desc, cudaArray); // ³õÊ¼»¯×ÊÔ´ÃèÊö×Ó²¢½«×ÊÔ´Êı¾İcudaArray¸³Öµ½øÈ¥
-    // ·ÖÅäÎÆÀíÄÚ´æ
+    createDefault2DResourceDescriptor(resource_desc, cudaArray); // åˆå§‹åŒ–èµ„æºæè¿°å­å¹¶å°†èµ„æºæ•°æ®cudaArrayèµ‹å€¼è¿›å»
+    // åˆ†é…çº¹ç†å†…å­˜
     CHECKCUDA(cudaCreateTextureObject(&texture, &resource_desc, &depth_texture_desc, 0));
 }
 
 void SparseSurfelFusion::createDepthTextureSurface(const unsigned int rows, const unsigned int cols, cudaTextureObject_t& texture, cudaSurfaceObject_t& surface, cudaArray_t& cudaArray)
 {
-    //ÎÆÀíÃèÊö
+    //çº¹ç†æè¿°
     cudaTextureDesc depth_texture_description;
     createDefault2DTextureDescriptor(depth_texture_description);
-    //´´½¨Í¨µÀÃèÊö
+    //åˆ›å»ºé€šé“æè¿°
     cudaChannelFormatDesc depth_channel_desc = cudaCreateChannelDesc(16, 0, 0, 0, cudaChannelFormatKindUnsigned);
-    //·ÖÅäcudaÊı×é
+    //åˆ†é…cudaæ•°ç»„
     CHECKCUDA(cudaMallocArray(&cudaArray, &depth_channel_desc, cols, rows));
-    //´´½¨×ÊÔ´desc
+    //åˆ›å»ºèµ„æºdesc
     cudaResourceDesc resource_desc;
-    createDefault2DResourceDescriptor(resource_desc, cudaArray); // ³õÊ¼»¯×ÊÔ´ÃèÊö×Ó²¢½«×ÊÔ´Êı¾İcudaArray¸³Öµ½øÈ¥
-    //·ÖÅäÎÆÀí
+    createDefault2DResourceDescriptor(resource_desc, cudaArray); // åˆå§‹åŒ–èµ„æºæè¿°å­å¹¶å°†èµ„æºæ•°æ®cudaArrayèµ‹å€¼è¿›å»
+    //åˆ†é…çº¹ç†
     CHECKCUDA(cudaCreateTextureObject(&texture, &resource_desc, &depth_texture_description, 0));
     CHECKCUDA(cudaCreateSurfaceObject(&surface, &resource_desc));
 }
@@ -107,17 +107,17 @@ void SparseSurfelFusion::createDepthTextureSurface(const unsigned int rows, cons
 
 void SparseSurfelFusion::createFloat1TextureSurface(const unsigned int rows, const unsigned int cols, cudaTextureObject_t& texture, cudaSurfaceObject_t& surface, cudaArray_t& cudaArray)
 {
-    //ÎÆÀíÃèÊö
+    //çº¹ç†æè¿°
     cudaTextureDesc float1_texture_desc;
     createDefault2DTextureDescriptor(float1_texture_desc);
-    //´´½¨Í¨µÀÃèÊö£¬Ê¹ÓÃÖ¸¶¨ÀàĞÍ·µ»ØÍ¨µÀÃèÊö×Ó£¬²¢ÌîÈëÃ¿Ò»¸öÍ¨µÀ·ÖÁ¿µÄbitÊı (ÏÂÊöÎª1¸öÍ¨µÀ£¬´ËÍ¨µÀÊı¾İÎ»ÊıÎª32bit)
+    //åˆ›å»ºé€šé“æè¿°ï¼Œä½¿ç”¨æŒ‡å®šç±»å‹è¿”å›é€šé“æè¿°å­ï¼Œå¹¶å¡«å…¥æ¯ä¸€ä¸ªé€šé“åˆ†é‡çš„bitæ•° (ä¸‹è¿°ä¸º1ä¸ªé€šé“ï¼Œæ­¤é€šé“æ•°æ®ä½æ•°ä¸º32bit)
     cudaChannelFormatDesc float1_channel_desc = cudaCreateChannelDesc(32, 0, 0, 0, cudaChannelFormatKindFloat);
-    //·ÖÅäcudaÊı×é
+    //åˆ†é…cudaæ•°ç»„
     CHECKCUDA(cudaMallocArray(&cudaArray, &float1_channel_desc, cols, rows));
-    //´´½¨×ÊÔ´desc
+    //åˆ›å»ºèµ„æºdesc
     cudaResourceDesc resource_desc;
-    createDefault2DResourceDescriptor(resource_desc, cudaArray); // ³õÊ¼»¯×ÊÔ´ÃèÊö×Ó²¢½«×ÊÔ´Êı¾İcudaArray¸³Öµ½øÈ¥
-    //·ÖÅäÎÆÀí
+    createDefault2DResourceDescriptor(resource_desc, cudaArray); // åˆå§‹åŒ–èµ„æºæè¿°å­å¹¶å°†èµ„æºæ•°æ®cudaArrayèµ‹å€¼è¿›å»
+    //åˆ†é…çº¹ç†
     CHECKCUDA(cudaCreateTextureObject(&texture, &resource_desc, &float1_texture_desc, 0));
     CHECKCUDA(cudaCreateSurfaceObject(&surface, &resource_desc));
 }
@@ -129,17 +129,17 @@ void SparseSurfelFusion::createFloat1TextureSurface(const unsigned int rows, con
 
 void SparseSurfelFusion::createFloat2TextureSurface(const unsigned int rows, const unsigned int cols, cudaTextureObject_t& texture, cudaSurfaceObject_t& surface, cudaArray_t& cudaArray)
 {
-    //ÎÆÀíÃèÊö
+    //çº¹ç†æè¿°
     cudaTextureDesc float2_texture_desc;
     createDefault2DTextureDescriptor(float2_texture_desc);
-    //´´½¨Í¨µÀÃèÊö£¬Ê¹ÓÃÖ¸¶¨ÀàĞÍ·µ»ØÍ¨µÀÃèÊö×Ó£¬²¢ÌîÈëÃ¿Ò»¸öÍ¨µÀ·ÖÁ¿µÄbitÊı (ÏÂÊöÎª2¸öÍ¨µÀ£¬´ËÍ¨µÀÊı¾İÎ»ÊıÎª32bit)
+    //åˆ›å»ºé€šé“æè¿°ï¼Œä½¿ç”¨æŒ‡å®šç±»å‹è¿”å›é€šé“æè¿°å­ï¼Œå¹¶å¡«å…¥æ¯ä¸€ä¸ªé€šé“åˆ†é‡çš„bitæ•° (ä¸‹è¿°ä¸º2ä¸ªé€šé“ï¼Œæ­¤é€šé“æ•°æ®ä½æ•°ä¸º32bit)
     cudaChannelFormatDesc float2_channel_desc = cudaCreateChannelDesc(32, 32, 0, 0, cudaChannelFormatKindFloat);
-    //·ÖÅäcudaÊı×é
+    //åˆ†é…cudaæ•°ç»„
     CHECKCUDA(cudaMallocArray(&cudaArray, &float2_channel_desc, cols, rows));
-    //´´½¨×ÊÔ´desc
+    //åˆ›å»ºèµ„æºdesc
     cudaResourceDesc resource_desc;
-    createDefault2DResourceDescriptor(resource_desc, cudaArray); // ³õÊ¼»¯×ÊÔ´ÃèÊö×Ó²¢½«×ÊÔ´Êı¾İcudaArray¸³Öµ½øÈ¥
-    //·ÖÅäÎÆÀí
+    createDefault2DResourceDescriptor(resource_desc, cudaArray); // åˆå§‹åŒ–èµ„æºæè¿°å­å¹¶å°†èµ„æºæ•°æ®cudaArrayèµ‹å€¼è¿›å»
+    //åˆ†é…çº¹ç†
     CHECKCUDA(cudaCreateTextureObject(&texture, &resource_desc, &float2_texture_desc, 0));
     CHECKCUDA(cudaCreateSurfaceObject(&surface, &resource_desc));
 }
@@ -151,17 +151,17 @@ void SparseSurfelFusion::createFloat2TextureSurface(const unsigned int rows, con
 
 void SparseSurfelFusion::createUChar1TextureSurface(const unsigned rows, const unsigned cols, cudaTextureObject_t& texture, cudaSurfaceObject_t& surface, cudaArray_t& cudaArray)
 {
-    //ÎÆÀíÃèÊö
+    //çº¹ç†æè¿°
     cudaTextureDesc uchar1_texture_desc;
     createDefault2DTextureDescriptor(uchar1_texture_desc);
-    //´´½¨Í¨µÀÃèÊö£¬Ê¹ÓÃÖ¸¶¨ÀàĞÍ·µ»ØÍ¨µÀÃèÊö×Ó£¬²¢ÌîÈëÃ¿Ò»¸öÍ¨µÀ·ÖÁ¿µÄbitÊı (ÏÂÊöÎª1¸öÍ¨µÀ£¬´ËÍ¨µÀÊı¾İÎ»ÊıÎª8bit)
+    //åˆ›å»ºé€šé“æè¿°ï¼Œä½¿ç”¨æŒ‡å®šç±»å‹è¿”å›é€šé“æè¿°å­ï¼Œå¹¶å¡«å…¥æ¯ä¸€ä¸ªé€šé“åˆ†é‡çš„bitæ•° (ä¸‹è¿°ä¸º1ä¸ªé€šé“ï¼Œæ­¤é€šé“æ•°æ®ä½æ•°ä¸º8bit)
     cudaChannelFormatDesc uchar1_channel_desc = cudaCreateChannelDesc(8, 0, 0, 0, cudaChannelFormatKindUnsigned);
-    //·ÖÅäcudaÊı×é
+    //åˆ†é…cudaæ•°ç»„
     CHECKCUDA(cudaMallocArray(&cudaArray, &uchar1_channel_desc, cols, rows));
-    //´´½¨×ÊÔ´desc
+    //åˆ›å»ºèµ„æºdesc
     cudaResourceDesc resource_desc;
-    createDefault2DResourceDescriptor(resource_desc, cudaArray); // ³õÊ¼»¯×ÊÔ´ÃèÊö×Ó²¢½«×ÊÔ´Êı¾İcudaArray¸³Öµ½øÈ¥
-    //·ÖÅäÎÆÀí
+    createDefault2DResourceDescriptor(resource_desc, cudaArray); // åˆå§‹åŒ–èµ„æºæè¿°å­å¹¶å°†èµ„æºæ•°æ®cudaArrayèµ‹å€¼è¿›å»
+    //åˆ†é…çº¹ç†
     CHECKCUDA(cudaCreateTextureObject(&texture, &resource_desc, &uchar1_texture_desc, 0));
     CHECKCUDA(cudaCreateSurfaceObject(&surface, &resource_desc));
 }
@@ -174,24 +174,24 @@ void SparseSurfelFusion::createUChar1TextureSurface(const unsigned rows, const u
 
 void SparseSurfelFusion::createFloat4TextureSurface(const unsigned int rows, const unsigned int cols, cudaTextureObject_t& texture, cudaSurfaceObject_t& surface, cudaArray_t& cudaArray)
 {
-    // ÉùÃ÷²¢³õÊ¼»¯ÎÆÀíÃèÊö×Ó
-    cudaTextureDesc float4_texture_desc; // ÎÆÀíÃèÊö×Ó
-    createDefault2DTextureDescriptor(float4_texture_desc); // ½«ÎÆÀíÃèÊö×Ó³õÊ¼»¯
+    // å£°æ˜å¹¶åˆå§‹åŒ–çº¹ç†æè¿°å­
+    cudaTextureDesc float4_texture_desc; // çº¹ç†æè¿°å­
+    createDefault2DTextureDescriptor(float4_texture_desc); // å°†çº¹ç†æè¿°å­åˆå§‹åŒ–
 
-    // ´´ÔìÍ¨µÀÃèÊö£¬Ê¹ÓÃÖ¸¶¨ÀàĞÍ·µ»ØÍ¨µÀÃèÊö×Ó£¬²¢ÌîÈëÃ¿Ò»¸öÍ¨µÀ·ÖÁ¿µÄbitÊı
-    // Ê¹ÓÃfloatÀàĞÍ·µ»ØÃèÊö×Ó£¬²¢ÇÒÃ¿¸öÍ¨µÀ·ÖÁ¿¶¼ÊÇ32bitÎ»
-    cudaChannelFormatDesc float4_channel_desc = cudaCreateChannelDesc(32, 32, 32, 32, cudaChannelFormatKindFloat); // ·µ»ØÁËÒ»¸öfloatÀàĞÍµÄÍ¨µÀÃèÊö×Ó
+    // åˆ›é€ é€šé“æè¿°ï¼Œä½¿ç”¨æŒ‡å®šç±»å‹è¿”å›é€šé“æè¿°å­ï¼Œå¹¶å¡«å…¥æ¯ä¸€ä¸ªé€šé“åˆ†é‡çš„bitæ•°
+    // ä½¿ç”¨floatç±»å‹è¿”å›æè¿°å­ï¼Œå¹¶ä¸”æ¯ä¸ªé€šé“åˆ†é‡éƒ½æ˜¯32bitä½
+    cudaChannelFormatDesc float4_channel_desc = cudaCreateChannelDesc(32, 32, 32, 32, cudaChannelFormatKindFloat); // è¿”å›äº†ä¸€ä¸ªfloatç±»å‹çš„é€šé“æè¿°å­
 
-    // ¸ù¾İÍ¨µÀÃèÊö×Ófloat4_channel_desc·ÖÅäcudaµÄÄÚ´æ
+    // æ ¹æ®é€šé“æè¿°å­float4_channel_descåˆ†é…cudaçš„å†…å­˜
     CHECKCUDA(cudaMallocArray(&cudaArray, &float4_channel_desc, cols, rows));
 
-    // ´´½¨×ÊÔ´ÃèÊö×Ó
+    // åˆ›å»ºèµ„æºæè¿°å­
     cudaResourceDesc resource_desc;
-    createDefault2DResourceDescriptor(resource_desc, cudaArray); // ³õÊ¼»¯×ÊÔ´ÃèÊö×Ó²¢½«×ÊÔ´Êı¾İcudaArray¸³Öµ½øÈ¥
+    createDefault2DResourceDescriptor(resource_desc, cudaArray); // åˆå§‹åŒ–èµ„æºæè¿°å­å¹¶å°†èµ„æºæ•°æ®cudaArrayèµ‹å€¼è¿›å»
 
-    // ·ÖÅäÎÆÀíÄÚ´æ
+    // åˆ†é…çº¹ç†å†…å­˜
     CHECKCUDA(cudaCreateTextureObject(&texture, &resource_desc, &float4_texture_desc, 0));
-    // ·ÖÅä±íÃæÄÚ´æ
+    // åˆ†é…è¡¨é¢å†…å­˜
     CHECKCUDA(cudaCreateSurfaceObject(&surface, &resource_desc));
 }
 

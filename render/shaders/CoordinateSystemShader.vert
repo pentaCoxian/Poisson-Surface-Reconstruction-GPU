@@ -1,17 +1,17 @@
 #version 460
 
-layout (location = 0) in vec3 coordinatePos;    // ÊäÈë×ø±êÏµ¼¸¸ö¹Ø¼üµãµÄÈıÎ¬×ø±ê
-layout (location = 1) in vec3 coordinateColor;  // ÊäÈë×ø±êÏµ¼¸¸ö¹Ø¼üµãµÄÑÕÉ«ÊôĞÔ
+layout (location = 0) in vec3 coordinatePos;    // è¾“å…¥åæ ‡ç³»å‡ ä¸ªå…³é”®ç‚¹çš„ä¸‰ç»´åæ ‡
+layout (location = 1) in vec3 coordinateColor;  // è¾“å…¥åæ ‡ç³»å‡ ä¸ªå…³é”®ç‚¹çš„é¢œè‰²å±æ€§
 
 out vec3 color;
 
-uniform mat4 model;         // Ä£ĞÍ¾ØÕó
-uniform mat4 view;          // ÊÓ½Ç¾ØÕó
-uniform mat4 projection;    // Í¶Ó°¾ØÕó
+uniform mat4 model;         // æ¨¡å‹çŸ©é˜µ
+uniform mat4 view;          // è§†è§’çŸ©é˜µ
+uniform mat4 projection;    // æŠ•å½±çŸ©é˜µ
 
 void main()
 {
     color = coordinateColor;
-    highp vec4 normalizedVertexPos = projection * view * model * vec4(coordinatePos.xyz, 1.0);        // ½«Æä×ª»»µ½Ïà»ú×ø±êÏµÄÚ£¬²¢¹éÒ»»¯µ½[-1,1]·¶Î§ÄÚ£¬ÒÔ±ãOpenGLÏÔÊ¾
-    gl_Position = normalizedVertexPos;      // Ê¹¶¥µãĞı×ªÆğÀ´
+    highp vec4 normalizedVertexPos = projection * view * model * vec4(coordinatePos.xyz, 1.0);        // å°†å…¶è½¬æ¢åˆ°ç›¸æœºåæ ‡ç³»å†…ï¼Œå¹¶å½’ä¸€åŒ–åˆ°[-1,1]èŒƒå›´å†…ï¼Œä»¥ä¾¿OpenGLæ˜¾ç¤º
+    gl_Position = normalizedVertexPos;      // ä½¿é¡¶ç‚¹æ—‹è½¬èµ·æ¥
 }

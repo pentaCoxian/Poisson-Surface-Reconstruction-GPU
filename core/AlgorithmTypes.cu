@@ -1,13 +1,13 @@
 /*****************************************************************//**
  * \file   AlgorithmTypes.cu
- * \brief  ¶ÔÒ»Ğ©»ù´¡Ëã·¨ÀàÖĞ·½·¨µÄ¼òµ¥ÊµÏÖ£¬Ö÷ÒªÊÇµ÷ÓÃcuh¿âµÄÏà¹ØËã·¨
+ * \brief  å¯¹ä¸€äº›åŸºç¡€ç®—æ³•ç±»ä¸­æ–¹æ³•çš„ç®€å•å®ç°ï¼Œä¸»è¦æ˜¯è°ƒç”¨cuhåº“çš„ç›¸å…³ç®—æ³•
  * 
  * \author LUO
  * \date   January 31st 2024
  *********************************************************************/
 
 #include "AlgorithmTypes.h"
-#if defined(__CUDACC__)		//Èç¹ûÓÉNVCC±àÒëÆ÷±àÒë
+#if defined(__CUDACC__)		//å¦‚æœç”±NVCCç¼–è¯‘å™¨ç¼–è¯‘
 #include <cub/cub.cuh>
 #endif
 
@@ -15,15 +15,15 @@ namespace SparseSurfelFusion {
     namespace device {
 
         /**
-         * \brief ³õÊ¼»¯seleted_inputµÄºËº¯Êı£¬½«Ñ¡ÔñµÄÊä³ö×÷ÎªÔ­Ê¼Êı×éÖĞµÄË÷Òı.
+         * \brief åˆå§‹åŒ–seleted_inputçš„æ ¸å‡½æ•°ï¼Œå°†é€‰æ‹©çš„è¾“å‡ºä½œä¸ºåŸå§‹æ•°ç»„ä¸­çš„ç´¢å¼•.
          * 
-         * \param selection_input_buffer ĞèÒª³õÊ¼»¯µÄÈİÆ÷
+         * \param selection_input_buffer éœ€è¦åˆå§‹åŒ–çš„å®¹å™¨
          * \return 
          */
         __global__ void selectionIndexInitKernel(PtrSize<int> selection_input_buffer) {
             const auto idx = threadIdx.x + blockIdx.x * blockDim.x;
             if (idx < selection_input_buffer.size)
-                selection_input_buffer.data[idx] = idx;     // PtrSize¼Ì³ĞDevPtrÀàĞÍ£¬dataÊÇDevPtrÀàĞÍÖĞµÄ¹«¹²³ÉÔ±±äÁ¿£¬Òò´Ë¿ÉÒÔ·ÃÎÊ
+                selection_input_buffer.data[idx] = idx;     // PtrSizeç»§æ‰¿DevPtrç±»å‹ï¼Œdataæ˜¯DevPtrç±»å‹ä¸­çš„å…¬å…±æˆå‘˜å˜é‡ï¼Œå› æ­¤å¯ä»¥è®¿é—®
         }
     }
 }
@@ -33,7 +33,7 @@ void SparseSurfelFusion::FlagSelection::AllocateAndInit(size_t input_size, cudaS
 {
     if (m_selection_input_buffer.size() >= input_size) return;
 
-    // ÔÚĞèÒªµÄÊ±ºòÇå³ıÄÚ´æ
+    // åœ¨éœ€è¦çš„æ—¶å€™æ¸…é™¤å†…å­˜
     if (m_selected_idx_buffer.size() > 0) {
         m_selected_idx_buffer.release();
         m_selection_input_buffer.release();
@@ -41,20 +41,20 @@ void SparseSurfelFusion::FlagSelection::AllocateAndInit(size_t input_size, cudaS
         selectIndicatorBuffer.release();
     }
 
-    // ·ÖÅäĞÂµÄ»º´æ
+    // åˆ†é…æ–°çš„ç¼“å­˜
     size_t allocate_size = 3 * input_size / 2;
 
-    // ·ÖÅä:ËùÑ¡Ë÷ÒıµÄ×î´ó´óĞ¡ÓëÑ¡ÔñÊäÈëÏàÍ¬
+    // åˆ†é…:æ‰€é€‰ç´¢å¼•çš„æœ€å¤§å¤§å°ä¸é€‰æ‹©è¾“å…¥ç›¸åŒ
     m_selected_idx_buffer.create(allocate_size);
     m_selection_input_buffer.create(allocate_size);
     selectIndicatorBuffer.create(allocate_size);
 
-    // ²é¿´ËùĞèÒªµÄÔİ´æÊı¾İÈİÆ÷µÄ´óĞ¡
-    size_t temp_storage_bytes = 0;  // ÔËĞĞËã·¨Ôİ´æÈİÆ÷µÄ´óĞ¡
+    // æŸ¥çœ‹æ‰€éœ€è¦çš„æš‚å­˜æ•°æ®å®¹å™¨çš„å¤§å°
+    size_t temp_storage_bytes = 0;  // è¿è¡Œç®—æ³•æš‚å­˜å®¹å™¨çš„å¤§å°
     cub::DeviceSelect::Flagged(NULL, temp_storage_bytes, m_selection_input_buffer.ptr(), m_selected_idx_buffer.ptr(), validSelectedIndex.ptr(), m_device_num_selected, allocate_size, stream);
 
     m_temp_storage.create(temp_storage_bytes);
-    // ³õÊ¼»¯m_selection_input_buffer
+    // åˆå§‹åŒ–m_selection_input_buffer
     dim3 block(128);
     dim3 grid(divUp(m_selection_input_buffer.size(), block.x));
     device::selectionIndexInitKernel << <grid, block, 0, stream >> > (m_selection_input_buffer);
@@ -63,40 +63,40 @@ void SparseSurfelFusion::FlagSelection::AllocateAndInit(size_t input_size, cudaS
 
 void SparseSurfelFusion::FlagSelection::Select(const DeviceArray<char>& flags, cudaStream_t stream)
 {
-    // ·ÖÅä²¢³õÊ¼»¯
+    // åˆ†é…å¹¶åˆå§‹åŒ–
     AllocateAndInit(flags.size(), stream);
 
-    // ¹¹½¨Ñ¡ÔñÊı×é
+    // æ„å»ºé€‰æ‹©æ•°ç»„
     DeviceArray<int> selection_idx_input = DeviceArray<int>(m_selection_input_buffer.ptr(), flags.size());
     validSelectedIndex = DeviceArray<int>(m_selected_idx_buffer.ptr(), flags.size());
 
-    // É¸Ñ¡
+    // ç­›é€‰
     size_t temp_storage_bytes = m_temp_storage.sizeBytes();
     cub::DeviceSelect::Flagged(m_temp_storage.ptr(), temp_storage_bytes, selection_idx_input.ptr(), flags.ptr(), validSelectedIndex.ptr(), m_device_num_selected, (int)flags.size(), stream, false);
 
-    // ½«GPUÊı¾İ¿½±´µ½CPUÖĞ
+    // å°†GPUæ•°æ®æ‹·è´åˆ°CPUä¸­
     CHECKCUDA(cudaMemcpyAsync(m_host_num_selected, m_device_num_selected, sizeof(int), cudaMemcpyDeviceToHost, stream));
-    CHECKCUDA(cudaStreamSynchronize(stream));   // ĞèÒª×öÁ÷Í¬²½£¬ÒÔ±ãhostÄÜÕı³£µÄ·ÃÎÊm_host_num_selected
+    CHECKCUDA(cudaStreamSynchronize(stream));   // éœ€è¦åšæµåŒæ­¥ï¼Œä»¥ä¾¿hostèƒ½æ­£å¸¸çš„è®¿é—®m_host_num_selected
 
-    // ½ÃÕı²¢¸³ÖµÊä³öÑ¡ÔñÓĞĞ§IndexµÄ½á¹û
+    // çŸ«æ­£å¹¶èµ‹å€¼è¾“å‡ºé€‰æ‹©æœ‰æ•ˆIndexçš„ç»“æœ
     validSelectedIndex = DeviceArray<int>(m_selected_idx_buffer.ptr(), *m_host_num_selected);
     return;
 }
 
 void SparseSurfelFusion::FlagSelection::SelectUnsigned(const DeviceArray<char>& flags, const DeviceArray<unsigned int>& selectFrom, DeviceArray<unsigned int>& selectToBuffer, DeviceArray<unsigned int>& validSelectToArray, cudaStream_t stream)
 {
-    // ·ÖÅä²¢³õÊ¼»¯flagsÊı×é
+    // åˆ†é…å¹¶åˆå§‹åŒ–flagsæ•°ç»„
     AllocateAndInit(flags.size(), stream);
 
-    // É¸Ñ¡
+    // ç­›é€‰
     size_t temp_storage_bytes = m_temp_storage.sizeBytes();
     cub::DeviceSelect::Flagged(m_temp_storage.ptr(), temp_storage_bytes, selectFrom.ptr(), flags.ptr(), selectToBuffer.ptr(), m_device_num_selected, (int)flags.size(), stream, false);
 
-    // Host·ÃÎÊÇ°ĞèÒªÍ¬²½
+    // Hostè®¿é—®å‰éœ€è¦åŒæ­¥
     CHECKCUDA(cudaMemcpyAsync(m_host_num_selected, m_device_num_selected, sizeof(int), cudaMemcpyDeviceToHost, stream));
     CHECKCUDA(cudaStreamSynchronize(stream));
 
-    // ÏÖÔÚ¿ÉÒÔ°²È«µØ·ÃÎÊÄÚ´æÊä³öÁË
+    // ç°åœ¨å¯ä»¥å®‰å…¨åœ°è®¿é—®å†…å­˜è¾“å‡ºäº†
     validSelectToArray = DeviceArray<unsigned>(selectToBuffer.ptr(), *m_host_num_selected);
     return;
 }
@@ -151,18 +151,18 @@ void SparseSurfelFusion::UniqueSelection::Select(const DeviceArray<int>& key_in,
 
 __host__ void SparseSurfelFusion::PrefixSum::AllocateBuffer(size_t input_size)
 {
-    //²»ĞèÒª·ÖÅä
+    //ä¸éœ€è¦åˆ†é…
     if (m_prefixsum_buffer.size() >= input_size) return;
 
-    //Èç¹û´æÔÚ»º³åÇø£¬Çå³ıËüÃÇ
+    //å¦‚æœå­˜åœ¨ç¼“å†²åŒºï¼Œæ¸…é™¤å®ƒä»¬
     if (m_prefixsum_buffer.size() > 0) {
         m_prefixsum_buffer.release();
         m_temp_storage.release();
     }
 
-    //×ö·ÖÅä
+    //åšåˆ†é…
     m_prefixsum_buffer.create(input_size);
-    //²éÑ¯ÁÙÊ±´æ´¢ÒÔ»ñÈ¡ÊäÈë´óĞ¡
+    //æŸ¥è¯¢ä¸´æ—¶å­˜å‚¨ä»¥è·å–è¾“å…¥å¤§å°
     size_t prefixsum_bytes = 0;
     cub::DeviceScan::InclusiveSum(NULL, prefixsum_bytes,
         m_prefixsum_buffer.ptr(), m_prefixsum_buffer.ptr(), (int)input_size, 0);
@@ -188,14 +188,14 @@ __host__ void SparseSurfelFusion::PrefixSum::InclusiveSum(const DeviceArray<unsi
 
 __host__ void SparseSurfelFusion::PrefixSum::InclusiveSum(const DeviceArrayView<unsigned>& array_in, cudaStream_t stream)
 {
-    //Èç¹û»º³åÇø²»¹»£¬Ôò·ÖÅä»º³åÇø
-    AllocateBuffer(array_in.Size()); //Õâ¸öµØ·½ÒÑ¾­Ä¬ÈÏ¸øm_temp_storage¸³´óĞ¡ÁË
+    //å¦‚æœç¼“å†²åŒºä¸å¤Ÿï¼Œåˆ™åˆ†é…ç¼“å†²åŒº
+    AllocateBuffer(array_in.Size()); //è¿™ä¸ªåœ°æ–¹å·²ç»é»˜è®¤ç»™m_temp_storageèµ‹å¤§å°äº†
 
-    //¹¹Ôì½á¹ûÊı×évalid_prefixsum_arrayÊÇGPU»º´æ£¬valid_prefixsum_arrayµÄµØÖ·¾ÍÊÇm_prefixsum_bufferµØÖ·
+    //æ„é€ ç»“æœæ•°ç»„valid_prefixsum_arrayæ˜¯GPUç¼“å­˜ï¼Œvalid_prefixsum_arrayçš„åœ°å€å°±æ˜¯m_prefixsum_bufferåœ°å€
     valid_prefixsum_array = DeviceArray<unsigned>(m_prefixsum_buffer.ptr(), array_in.Size());
-    //×öÇ°ÖÃºÍ
-    size_t inclusive_sum_bytes = m_temp_storage.sizeBytes();//m_temp_storage ¾ÍÊÇ m_prefixsum_bufferµÄ´óĞ¡
-    //¼ÆËãÉè±¸·¶Î§ÄÚµÄÇ°×ººÍ¡£Ç°ÏîºÍ£ºInclusiveSum(a[0],a[1],a[2]) = (a[0], a[0]+a[1], a[0]+a[1]+a[2])
+    //åšå‰ç½®å’Œ
+    size_t inclusive_sum_bytes = m_temp_storage.sizeBytes();//m_temp_storage å°±æ˜¯ m_prefixsum_bufferçš„å¤§å°
+    //è®¡ç®—è®¾å¤‡èŒƒå›´å†…çš„å‰ç¼€å’Œã€‚å‰é¡¹å’Œï¼šInclusiveSum(a[0],a[1],a[2]) = (a[0], a[0]+a[1], a[0]+a[1]+a[2])
     cub::DeviceScan::InclusiveSum(m_temp_storage, inclusive_sum_bytes, array_in.RawPtr(), valid_prefixsum_array.ptr(), (int)array_in.Size(), stream, false);
     return;
 }

@@ -48,38 +48,38 @@ namespace SparseSurfelFusion {
 
 
 
-		//×ÜÊÇ¼ì²é
+		//æ€»æ˜¯æ£€æŸ¥
 #define FUNCTION_CHECK(x)																	\
 	if(!(x))																				\
         SparseSurfelFusion::LogMessageFatal(__FILE__, __LINE__).stream()					\
-        << "¼ì²éÊ§°Ü: " #x << " "
+        << "æ£€æŸ¥å¤±è´¥: " #x << " "
 
 #define FUNCTION_CHECK_BINARY_OP(name, op, x, y)											\
 	if(SparseSurfelFusion::LogCheckError err = SparseSurfelFusion::LogCheck##name(x, y))	\
         SparseSurfelFusion::LogMessageFatal(__FILE__, __LINE__).stream()					\
-	    << "¼ì²éÊ§°Ü: " << #x " " #op " " #y << *(err.str)
+	    << "æ£€æŸ¥å¤±è´¥: " << #x " " #op " " #y << *(err.str)
 
-#define	FUNCTION_CHECK_LT(x, y) FUNCTION_CHECK_BINARY_OP(_LT, < , x, y) //¼ì²éĞ¡ÓÚ
-#define	FUNCTION_CHECK_GT(x, y) FUNCTION_CHECK_BINARY_OP(_GT, > , x, y)	//¼ì²é´óÓÚ
-#define	FUNCTION_CHECK_LE(x, y) FUNCTION_CHECK_BINARY_OP(_LE, <=, x, y)	//¼ì²éĞ¡ÓÚµÈÓÚ
-#define	FUNCTION_CHECK_GE(x, y) FUNCTION_CHECK_BINARY_OP(_GE, >=, x, y)	//¼ì²é´óÓÚµÈÓÚ
-#define	FUNCTION_CHECK_EQ(x, y) FUNCTION_CHECK_BINARY_OP(_EQ, ==, x, y)	//¼ì²éµÈÓÚ
-#define	FUNCTION_CHECK_NE(x, y) FUNCTION_CHECK_BINARY_OP(_NE, !=, x, y)	//¼ì²é²»µÈÓÚ
+#define	FUNCTION_CHECK_LT(x, y) FUNCTION_CHECK_BINARY_OP(_LT, < , x, y) //æ£€æŸ¥å°äº
+#define	FUNCTION_CHECK_GT(x, y) FUNCTION_CHECK_BINARY_OP(_GT, > , x, y)	//æ£€æŸ¥å¤§äº
+#define	FUNCTION_CHECK_LE(x, y) FUNCTION_CHECK_BINARY_OP(_LE, <=, x, y)	//æ£€æŸ¥å°äºç­‰äº
+#define	FUNCTION_CHECK_GE(x, y) FUNCTION_CHECK_BINARY_OP(_GE, >=, x, y)	//æ£€æŸ¥å¤§äºç­‰äº
+#define	FUNCTION_CHECK_EQ(x, y) FUNCTION_CHECK_BINARY_OP(_EQ, ==, x, y)	//æ£€æŸ¥ç­‰äº
+#define	FUNCTION_CHECK_NE(x, y) FUNCTION_CHECK_BINARY_OP(_NE, !=, x, y)	//æ£€æŸ¥ä¸ç­‰äº
 
-//¹©ÒÔºóÊ¹ÓÃµÄÈÕÖ¾ÀàĞÍ
-#define LOGGING_INFO SparseSurfelFusion::LogMessage(__FILE__, __LINE__)			//ÌáÊ¾ĞÅÏ¢
-#define LOGGING_ERROR LOG_INFO		//ÌáÊ¾ĞÅÏ¢
-#define LOGGING_WARNING LOG_INFO	//ÌáÊ¾ĞÅÏ¢
-#define LOGGING_FATAL SparseSurfelFusion::LogMessageFatal(__FILE__, __LINE__)	//ÖÂÃü´íÎó
-#define LOGGING_BEFORE_THROW SparseSurfelFusion::LogMessage().stream()			//Å×³öÒì³£ºóµÄÄÚÈİ
+//ä¾›ä»¥åä½¿ç”¨çš„æ—¥å¿—ç±»å‹
+#define LOGGING_INFO SparseSurfelFusion::LogMessage(__FILE__, __LINE__)			//æç¤ºä¿¡æ¯
+#define LOGGING_ERROR LOG_INFO		//æç¤ºä¿¡æ¯
+#define LOGGING_WARNING LOG_INFO	//æç¤ºä¿¡æ¯
+#define LOGGING_FATAL SparseSurfelFusion::LogMessageFatal(__FILE__, __LINE__)	//è‡´å‘½é”™è¯¯
+#define LOGGING_BEFORE_THROW SparseSurfelFusion::LogMessage().stream()			//æŠ›å‡ºå¼‚å¸¸åçš„å†…å®¹
 
-//¶ÔÓÚ²»Í¬µÄÑÏÖØ³Ì¶È
+//å¯¹äºä¸åŒçš„ä¸¥é‡ç¨‹åº¦
 #define LOGGING(severity) LOGGING_##severity.stream()
 
-	// ÈÕÖ¾ÄÚÈİ
+	// æ—¥å¿—å†…å®¹
 	class LogMessage {
 	public:
-		//¹¹Ôìº¯Êı
+		//æ„é€ å‡½æ•°
 		LogMessage() : log_stream_(std::cout) {}
 		LogMessage(const char* file, int line) : log_stream_(std::cout) {
 			log_stream_ << file << ":" << line << ": ";
@@ -87,7 +87,7 @@ namespace SparseSurfelFusion {
 		LogMessage(const LogMessage&) = delete;
 		LogMessage& operator=(const LogMessage&) = delete;
 
-		//»»ĞĞ
+		//æ¢è¡Œ
 		~LogMessage() { log_stream_ << "\n"; }
 
 		std::ostream& stream() { return log_stream_; }
@@ -95,7 +95,7 @@ namespace SparseSurfelFusion {
 		std::ostream& log_stream_;
 	};
 
-	//ÖÂÃü´íÎóÈÕÖ¾ÄÚÈİ
+	//è‡´å‘½é”™è¯¯æ—¥å¿—å†…å®¹
 	class LogMessageFatal {
 	public:
 		LogMessageFatal(const char* file, int line) {
@@ -103,23 +103,23 @@ namespace SparseSurfelFusion {
 
 		}
 
-		//Ã»ÓĞ¸´ÖÆ/·ÖÅä
+		//æ²¡æœ‰å¤åˆ¶/åˆ†é…
 		LogMessageFatal(const LogMessageFatal&) = delete;
 		LogMessageFatal& operator=(LogMessageFatal&) = delete;
 
-		//Ê¹Õû¸öÏµÍ³Ê§Ğ§
+		//ä½¿æ•´ä¸ªç³»ç»Ÿå¤±æ•ˆ
 		~LogMessageFatal() {
-			//¾¡Á¿²»ÔÚÎö¹¹º¯ÊıÖĞÅ×³öÒì³£
+			//å°½é‡ä¸åœ¨ææ„å‡½æ•°ä¸­æŠ›å‡ºå¼‚å¸¸
 			throwErrorInfo();
 		}
-		//Êä³ö×Ö·û´®Á÷
+		//è¾“å‡ºå­—ç¬¦ä¸²æµ
 		std::ostringstream& stream() { return log_stream_; }
 	protected:
 		std::ostringstream log_stream_;
 
 	private:
 		/**
-		 * Å×³öÖÂÃüÒì³£º¯Êı.
+		 * æŠ›å‡ºè‡´å‘½å¼‚å¸¸å‡½æ•°.
 		 * 
 		 */
 		void throwErrorInfo() {

@@ -16,26 +16,26 @@ int main(int argc, char** argv) {
 	size_t Frame = 0;
 	double averageRuntime = 0;
 	while (Frame < 500) {
-		if (_kbhit()) { // Èç¹ûÓĞ°´¼ü°´ÏÂ£¬Ôò_kbhit()º¯Êı·µ»ØÕæ
-			int ch = _getch();// Ê¹ÓÃ_getch()º¯Êı»ñÈ¡°´ÏÂµÄ¼üÖµ
+		if (_kbhit()) { // å¦‚æœæœ‰æŒ‰é”®æŒ‰ä¸‹ï¼Œåˆ™_kbhit()å‡½æ•°è¿”å›çœŸ
+			int ch = _getch();// ä½¿ç”¨_getch()å‡½æ•°è·å–æŒ‰ä¸‹çš„é”®å€¼
 			if (ch == ESC_KEY) {
 				break;
 			}
 		}
-		printf("¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤  µÚ %lld Ö¡  ¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤¡¤  \n", Frame);
-		auto start = std::chrono::high_resolution_clock::now();						// ¼ÇÂ¼¿ªÊ¼Ê±¼äµã
+		printf("ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»  ç¬¬ %lld å¸§  ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»  \n", Frame);
+		auto start = std::chrono::high_resolution_clock::now();						// è®°å½•å¼€å§‹æ—¶é—´ç‚¹
 		PoissonRecon.SolvePoissionReconstructionMesh(PoissonRecon.getDenseSurfel());
 		PoissonRecon.DrawRebuildMesh();
 
-		auto end = std::chrono::high_resolution_clock::now();							// ¼ÇÂ¼½áÊøÊ±¼äµã
-		std::chrono::duration<double, std::milli> duration = end - start;				// ¼ÆËãÖ´ĞĞÊ±¼ä£¨ÒÔmsÎªµ¥Î»£©
-		std::cout << "Ëã·¨ÔËĞĞÕûÌåÊ±¼ä: " << duration.count() << " ms" << std::endl;		// Êä³ö
+		auto end = std::chrono::high_resolution_clock::now();							// è®°å½•ç»“æŸæ—¶é—´ç‚¹
+		std::chrono::duration<double, std::milli> duration = end - start;				// è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼ˆä»¥msä¸ºå•ä½ï¼‰
+		std::cout << "ç®—æ³•è¿è¡Œæ•´ä½“æ—¶é—´: " << duration.count() << " ms" << std::endl;		// è¾“å‡º
 		std::cout << std::endl;
-		std::cout << "-----------------------------------------------------" << std::endl;	// Êä³ö
+		std::cout << "-----------------------------------------------------" << std::endl;	// è¾“å‡º
 		std::cout << std::endl;
 		averageRuntime += duration.count();
 		Frame++;
 	}
-	std::cout << "Ëã·¨ÔËĞĞÆ½¾ùÊ±¼ä: " << averageRuntime * 1.0f / Frame << " ms" << std::endl;		// Êä³ö
+	std::cout << "ç®—æ³•è¿è¡Œå¹³å‡æ—¶é—´: " << averageRuntime * 1.0f / Frame << " ms" << std::endl;		// è¾“å‡º
 	exit(-1);
 }

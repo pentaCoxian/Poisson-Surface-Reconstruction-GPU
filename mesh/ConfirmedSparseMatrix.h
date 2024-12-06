@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   ConfirmedSparseMatrix.h
- * \brief  ¾ØÕó·½·¨
+ * \brief  çŸ©é˜µæ–¹æ³•
  * 
  * \author LUOJIAXUAN
  * \date   May 18th 2024

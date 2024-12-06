@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   ComfirmedVector.h
- * \brief  向量方法
+ * \brief  鍚戦噺鏂规硶
  * 
  * \author LUOJIAXUAN
  * \date   May 17th 2024

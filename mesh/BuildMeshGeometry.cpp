@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   BuildMeshGeometry.cpp
- * \brief  ¹¹½¨Íø¸ñËã·¨
+ * \brief  æž„å»ºç½‘æ ¼ç®—æ³•
  * 
  * \author LUOJIAXUAN
  * \date   June 1st 2024
@@ -9,9 +9,9 @@
 
 SparseSurfelFusion::BuildMeshGeometry::BuildMeshGeometry()
 {
-	VertexArray.AllocateBuffer(TOTAL_VERTEXARRAY_MAX_COUNT);	// NodeArray´óÐ¡µÄ8±¶(Èô×î´óÃæÔªÊÇ50wÔò´Ë´¦ºÄ·Ñ2.09G)		¡¾ÔÚÊµ¼ÊÔËÐÐ¹ý³ÌÖÐ£¬ÊÇÐèÒªÒ»¸öpreviousÀ´Éú³É×îÖÕµÄArray£¬Òò´Ë´Ë´¦ÐèÒª³Ë2À´¾ö¶¨GPUµÄÏÔ´æÊÇ·ñÂú×ãËã·¨¡¿ 
-	EdgeArray.AllocateBuffer(TOTAL_EDGEARRAY_MAX_COUNT);		// maxDepth²ã½ÚµãÊýÁ¿µÄ12±¶(Èô×î´óÃæÔªÊÇ50wÔò´Ë´¦ºÄ·Ñ1.07G)	¡¾ÔÚÊµ¼ÊÔËÐÐ¹ý³ÌÖÐ£¬ÊÇÐèÒªÒ»¸öpreviousÀ´Éú³É×îÖÕµÄArray£¬Òò´Ë´Ë´¦ÐèÒª³Ë2À´¾ö¶¨GPUµÄÏÔ´æÊÇ·ñÂú×ãËã·¨¡¿ 
-	FaceArray.AllocateBuffer(TOTAL_FACEARRAY_MAX_COUNT);		// NodeArray´óÐ¡µÄ6±¶(Èô×î´óÃæÔªÊÇ50wÔò´Ë´¦ºÄ·Ñ0.559G)		¡¾ÔÚÊµ¼ÊÔËÐÐ¹ý³ÌÖÐ£¬ÊÇÐèÒªÒ»¸öpreviousÀ´Éú³É×îÖÕµÄArray£¬Òò´Ë´Ë´¦ÐèÒª³Ë2À´¾ö¶¨GPUµÄÏÔ´æÊÇ·ñÂú×ãËã·¨¡¿ 
+	VertexArray.AllocateBuffer(TOTAL_VERTEXARRAY_MAX_COUNT);	// NodeArrayå¤§å°çš„8å€(è‹¥æœ€å¤§é¢å…ƒæ˜¯50wåˆ™æ­¤å¤„è€—è´¹2.09G)		ã€åœ¨å®žé™…è¿è¡Œè¿‡ç¨‹ä¸­ï¼Œæ˜¯éœ€è¦ä¸€ä¸ªpreviousæ¥ç”Ÿæˆæœ€ç»ˆçš„Arrayï¼Œå› æ­¤æ­¤å¤„éœ€è¦ä¹˜2æ¥å†³å®šGPUçš„æ˜¾å­˜æ˜¯å¦æ»¡è¶³ç®—æ³•ã€‘ 
+	EdgeArray.AllocateBuffer(TOTAL_EDGEARRAY_MAX_COUNT);		// maxDepthå±‚èŠ‚ç‚¹æ•°é‡çš„12å€(è‹¥æœ€å¤§é¢å…ƒæ˜¯50wåˆ™æ­¤å¤„è€—è´¹1.07G)	ã€åœ¨å®žé™…è¿è¡Œè¿‡ç¨‹ä¸­ï¼Œæ˜¯éœ€è¦ä¸€ä¸ªpreviousæ¥ç”Ÿæˆæœ€ç»ˆçš„Arrayï¼Œå› æ­¤æ­¤å¤„éœ€è¦ä¹˜2æ¥å†³å®šGPUçš„æ˜¾å­˜æ˜¯å¦æ»¡è¶³ç®—æ³•ã€‘ 
+	FaceArray.AllocateBuffer(TOTAL_FACEARRAY_MAX_COUNT);		// NodeArrayå¤§å°çš„6å€(è‹¥æœ€å¤§é¢å…ƒæ˜¯50wåˆ™æ­¤å¤„è€—è´¹0.559G)		ã€åœ¨å®žé™…è¿è¡Œè¿‡ç¨‹ä¸­ï¼Œæ˜¯éœ€è¦ä¸€ä¸ªpreviousæ¥ç”Ÿæˆæœ€ç»ˆçš„Arrayï¼Œå› æ­¤æ­¤å¤„éœ€è¦ä¹˜2æ¥å†³å®šGPUçš„æ˜¾å­˜æ˜¯å¦æ»¡è¶³ç®—æ³•ã€‘ 
 
 	markValidVertexArray.AllocateBuffer(TOTAL_VERTEXARRAY_MAX_COUNT);
 	markValidEdgeArray.AllocateBuffer(TOTAL_EDGEARRAY_MAX_COUNT);

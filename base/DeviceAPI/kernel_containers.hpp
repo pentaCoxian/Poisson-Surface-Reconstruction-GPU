@@ -48,10 +48,10 @@
 
 template<typename T> struct DevPtr
 {
-    typedef T elem_type; //Êı¾İÀàĞÍ
-    const static size_t elem_size = sizeof(elem_type);//Êı¾İÀàĞÍµÄ´óĞ¡
+    typedef T elem_type; //æ•°æ®ç±»å‹
+    const static size_t elem_size = sizeof(elem_type);//æ•°æ®ç±»å‹çš„å¤§å°
 
-    T* data;//Ö¸ÏòÊı¾İµÄÖ¸Õë
+    T* data;//æŒ‡å‘æ•°æ®çš„æŒ‡é’ˆ
 
     GPU_HOST_DEVICE__ DevPtr() : data(0) {}
     GPU_HOST_DEVICE__ DevPtr(T* data_arg) : data(data_arg) {}
@@ -74,7 +74,7 @@ template<typename T>  struct PtrStepPCL : public DevPtr<T>
     GPU_HOST_DEVICE__ PtrStepPCL() : step(0) {}
     GPU_HOST_DEVICE__ PtrStepPCL(T* data_arg, size_t step_arg) : DevPtr<T>(data_arg), step(step_arg) {}
 
-    /** \brief ÔÚÒÔ×Ö½ÚÎªµ¥Î»µÄÁ½¸öÁ¬ĞøĞĞÖ®¼äµÄ²½³¤. ²½³¤ÔÚÃ¿¸öµØ·½¶¼ÊÇÒÔ×Ö½ÚÎªµ¥Î»!!! */
+    /** \brief åœ¨ä»¥å­—èŠ‚ä¸ºå•ä½çš„ä¸¤ä¸ªè¿ç»­è¡Œä¹‹é—´çš„æ­¥é•¿. æ­¥é•¿åœ¨æ¯ä¸ªåœ°æ–¹éƒ½æ˜¯ä»¥å­—èŠ‚ä¸ºå•ä½!!! */
     size_t step;
 
     GPU_HOST_DEVICE__       T* ptr(int y = 0)       { return (      T*)( (      char*)DevPtr<T>::data + y * step); }

@@ -7,24 +7,24 @@
 namespace SparseSurfelFusion {
 
     /**
-     * \brief ´¿¶àÏîÊ½£¬Ã»ÓĞ·¶Î§.
+     * \brief çº¯å¤šé¡¹å¼ï¼Œæ²¡æœ‰èŒƒå›´.
      */
 	template<int Degree>
 	class Polynomial
 	{
     public:
-        float coefficients[Degree + 1] = { 0.0f }; // ¶àÏîÊ½µÄÏµÊı
+        float coefficients[Degree + 1] = { 0.0f }; // å¤šé¡¹å¼çš„ç³»æ•°
 
         /**
-         * \brief ¹¹Ôìº¯Êı,³õÊ¼»¯ËùÓĞÏµÊıÎª0.
+         * \brief æ„é€ å‡½æ•°,åˆå§‹åŒ–æ‰€æœ‰ç³»æ•°ä¸º0.
          * 
          * \return 
          */
         __host__ __device__ Polynomial(void) = default;
         /**
-         * \brief ¹¹Ôìº¯Êı£¬ÓÃP¸³Öµµ±Ç°¶àÏîÊ½£¬¶àÏîÊ½ÏîÊı×îĞ¡µÄÎª×¼.
+         * \brief æ„é€ å‡½æ•°ï¼Œç”¨Pèµ‹å€¼å½“å‰å¤šé¡¹å¼ï¼Œå¤šé¡¹å¼é¡¹æ•°æœ€å°çš„ä¸ºå‡†.
          *
-         * \param P ¶àÏîÊ½
+         * \param P å¤šé¡¹å¼
          */
         template<int Degree2>
         Polynomial(const Polynomial<Degree2>& P) {
@@ -34,10 +34,10 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ÖØÔØ(),¼ÆËãf(t)µÄÖµ.
+         * \brief é‡è½½(),è®¡ç®—f(t)çš„å€¼.
          * 
-         * \param t ×Ô±äÁ¿
-         * \return º¯ÊıÖµ
+         * \param t è‡ªå˜é‡
+         * \return å‡½æ•°å€¼
          */
         __host__ __device__ float operator()(const float& t) const {
             float temp = 1;
@@ -50,11 +50,11 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ¼ÆËã¸ø¶¨Çø¼ä[tmin, tmax]ÉÏµÄ¶¨»ı·Ö, ÆäÖĞ tmin ¡İ tmax Ò²ÊÇ¿ÉÒÔµÄ.
+         * \brief è®¡ç®—ç»™å®šåŒºé—´[tmin, tmax]ä¸Šçš„å®šç§¯åˆ†, å…¶ä¸­ tmin â‰¥ tmax ä¹Ÿæ˜¯å¯ä»¥çš„.
          * 
-         * \param tMin Çø¼ä×ó±ß½ç
-         * \param tMax Çø¼äÓÒ±ß½ç
-         * \return º¯Êı¶¨»ı·ÖºóµÄÖµ
+         * \param tMin åŒºé—´å·¦è¾¹ç•Œ
+         * \param tMax åŒºé—´å³è¾¹ç•Œ
+         * \return å‡½æ•°å®šç§¯åˆ†åçš„å€¼
          */
         float integral(const float& tMin, const float& tMax) const {
             float v = 0;
@@ -63,17 +63,17 @@ namespace SparseSurfelFusion {
             t2 = tMax;
             for (int i = 0; i <= Degree; i++) {
                 v += coefficients[i] * (t2 - t1) / (i + 1);
-                if (t1 != -DBL_MAX && t1 != DBL_MAX) { t1 *= tMin; }    // Ãİ + 1
-                if (t2 != -DBL_MAX && t2 != DBL_MAX) { t2 *= tMax; }    // Ãİ + 1
+                if (t1 != -DBL_MAX && t1 != DBL_MAX) { t1 *= tMin; }    // å¹‚ + 1
+                if (t2 != -DBL_MAX && t2 != DBL_MAX) { t2 *= tMax; }    // å¹‚ + 1
             }
             return v;
         }
 
         /**
-         * \brief ÖØÔØ "==" ,ÅĞ¶Ï¶àÏîÊ½ÊÇ·ñÏàµÈ.
+         * \brief é‡è½½ "==" ,åˆ¤æ–­å¤šé¡¹å¼æ˜¯å¦ç›¸ç­‰.
          * 
-         * \param p ÓëÖ®±È½ÏµÄ¶àÏîÊ½
-         * \return ÏàµÈ·µ»Øtrue, ²»µÈ·µ»Øfalse
+         * \param p ä¸ä¹‹æ¯”è¾ƒçš„å¤šé¡¹å¼
+         * \return ç›¸ç­‰è¿”å›true, ä¸ç­‰è¿”å›false
          */
         bool operator == (const Polynomial& p) const {
             for (int i = 0; i <= Degree; i++) {
@@ -85,10 +85,10 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ÖØÔØ "!=" ,ÅĞ¶Ï¶àÏîÊ½ÊÇ·ñ²»ÏàµÈ.
+         * \brief é‡è½½ "!=" ,åˆ¤æ–­å¤šé¡¹å¼æ˜¯å¦ä¸ç›¸ç­‰.
          * 
-         * \param p ÓëÖ®±È½ÏµÄ¶àÏîÊ½
-         * \return ²»µÈ·µ»Øtrue, ÏàµÈ·µ»Øfalse
+         * \param p ä¸ä¹‹æ¯”è¾ƒçš„å¤šé¡¹å¼
+         * \return ä¸ç­‰è¿”å›true, ç›¸ç­‰è¿”å›false
          */
         bool operator != (const Polynomial& p) const {
             for (int i = 0; i <= Degree; i++) {
@@ -100,9 +100,9 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ÅĞ¶Ï¶àÏîÊ½ÊÇ·ñÎª0.
+         * \brief åˆ¤æ–­å¤šé¡¹å¼æ˜¯å¦ä¸º0.
          * 
-         * \return Îª0·µ»Øtrue£¬²»Îª0·µ»Øfalse
+         * \return ä¸º0è¿”å›trueï¼Œä¸ä¸º0è¿”å›false
          */
         bool isZero(void) const {
             for (int i = 0; i <= Degree; i++) {
@@ -114,7 +114,7 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ½«¶àÏîÊ½ÉèÖÃÎª0.
+         * \brief å°†å¤šé¡¹å¼è®¾ç½®ä¸º0.
          * 
          */
         void setZero(void) {
@@ -122,23 +122,23 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ÖØÔØ¸³Öµ·û " = ", Á½¸ö¶àÏîÊ½×îĞ¡µÃµÄdegree×÷Îª»ù×¼µÄdegree£¬½«pµÄÖµ¸³Öµ¸øµ±Ç°¶àÏîÊ½.
+         * \brief é‡è½½èµ‹å€¼ç¬¦ " = ", ä¸¤ä¸ªå¤šé¡¹å¼æœ€å°å¾—çš„degreeä½œä¸ºåŸºå‡†çš„degreeï¼Œå°†pçš„å€¼èµ‹å€¼ç»™å½“å‰å¤šé¡¹å¼.
          * 
-         * \param p ¶àÏîÊ½p£¬½×ÊıÎªDegree2
-         * \return ¶àÏîÊ½
+         * \param p å¤šé¡¹å¼pï¼Œé˜¶æ•°ä¸ºDegree2
+         * \return å¤šé¡¹å¼
          */
         template<int Degree2>
         Polynomial& operator  = (const Polynomial<Degree2>& p) {
-            int d = Degree < Degree2 ? Degree : Degree2;    // Ñ¡ÔñdegreeĞ¡µÄ
+            int d = Degree < Degree2 ? Degree : Degree2;    // é€‰æ‹©degreeå°çš„
             memset(coefficients, 0, sizeof(float) * (Degree + 1));
             memcpy(coefficients, p.coefficients, sizeof(float) * (d + 1));
             return *this;
         }
         /**
-         * \brief ÖØÔØ×Ô¼Ó·û " += ", ¶àÏîÊ½×Ô¼Ó.
+         * \brief é‡è½½è‡ªåŠ ç¬¦ " += ", å¤šé¡¹å¼è‡ªåŠ .
          * 
-         * \param p ĞèÒªÁí¼ÓµÄ¶àÏîÊ½
-         * \return ×Ô¼ÓºóµÄ½á¹û
+         * \param p éœ€è¦å¦åŠ çš„å¤šé¡¹å¼
+         * \return è‡ªåŠ åçš„ç»“æœ
          */
         Polynomial& operator += (const Polynomial& p) {
             for (int i = 0; i <= Degree; i++) { 
@@ -147,10 +147,10 @@ namespace SparseSurfelFusion {
             return *this;
         }
         /**
-         * \brief ÖØÔØ×Ô¼õ·û " += ", ¶àÏîÊ½×Ô¼õ.
+         * \brief é‡è½½è‡ªå‡ç¬¦ " += ", å¤šé¡¹å¼è‡ªå‡.
          * 
-         * \param p ĞèÒª¼õµÄ¶àÏîÊ½
-         * \return ×Ô¼õºóµÄ½á¹û
+         * \param p éœ€è¦å‡çš„å¤šé¡¹å¼
+         * \return è‡ªå‡åçš„ç»“æœ
          */
         Polynomial& operator -= (const Polynomial& p) {
             for (int i = 0; i <= Degree; i++) {
@@ -159,9 +159,9 @@ namespace SparseSurfelFusion {
             return *this;
         }
         /**
-         * \brief ¶àÏîÊ½È¡·´.
+         * \brief å¤šé¡¹å¼å–å.
          * 
-         * \return È¡·´ºóµÄ½á¹û
+         * \return å–ååçš„ç»“æœ
          */
         Polynomial  operator -  (void) const {
             Polynomial q = *this;
@@ -171,10 +171,10 @@ namespace SparseSurfelFusion {
             return q;
         }
         /**
-         * \brief ¶àÏîÊ½Ïà¼Ó.
+         * \brief å¤šé¡¹å¼ç›¸åŠ .
          * 
-         * \param p ĞèÒªÏà¼ÓµÄ¶àÏîÊ½
-         * \return Ïà¼ÓµÄ½á¹û
+         * \param p éœ€è¦ç›¸åŠ çš„å¤šé¡¹å¼
+         * \return ç›¸åŠ çš„ç»“æœ
          */
         Polynomial  operator +  (const Polynomial& p) const {
             Polynomial q;
@@ -184,19 +184,19 @@ namespace SparseSurfelFusion {
             return q;
         }
         /**
-         * \brief ¶àÏîÊ½Ïà¼õ.
+         * \brief å¤šé¡¹å¼ç›¸å‡.
          * 
-         * \param p ĞèÒªÏà¼õµÄ¶àÏîÊ½£¬¼õÊı
-         * \return Ïà¼õµÄ½á¹û
+         * \param p éœ€è¦ç›¸å‡çš„å¤šé¡¹å¼ï¼Œå‡æ•°
+         * \return ç›¸å‡çš„ç»“æœ
          */
         Polynomial  operator -  (const Polynomial& p) const {
 
         }
 
         /**
-         * \brief ¶àÏîÊ½³Ë·¨.
+         * \brief å¤šé¡¹å¼ä¹˜æ³•.
          * 
-         * \param p ĞèÒªÏà³ËµÄ¶àÏîÊ½
+         * \param p éœ€è¦ç›¸ä¹˜çš„å¤šé¡¹å¼
          */
         template<int Degree2>
         __host__ __device__ Polynomial<Degree + Degree2>  operator *  (const Polynomial<Degree2>& p) const {
@@ -209,30 +209,30 @@ namespace SparseSurfelFusion {
             return q;
         }
         /**
-         * \brief ÖØÔØ " += " ¶àÏîÊ½³£ÊıÏî×Ô¼Ó£¬³£ÊıÏµÊı + s.
+         * \brief é‡è½½ " += " å¤šé¡¹å¼å¸¸æ•°é¡¹è‡ªåŠ ï¼Œå¸¸æ•°ç³»æ•° + s.
          * 
-         * \param s ³£Êı
-         * \return ³£ÊıÏîÏà¼ÓºóµÄ¶àÏîÊ½
+         * \param s å¸¸æ•°
+         * \return å¸¸æ•°é¡¹ç›¸åŠ åçš„å¤šé¡¹å¼
          */
         Polynomial& operator += (const float& s) {
             coefficients[0] += s;
             return *this;
         }
         /**
-         * \brief ÖØÔØ " -= " ¶àÏîÊ½³£ÊıÏî×Ô¼õ£¬³£ÊıÏµÊı - s.
+         * \brief é‡è½½ " -= " å¤šé¡¹å¼å¸¸æ•°é¡¹è‡ªå‡ï¼Œå¸¸æ•°ç³»æ•° - s.
          * 
-         * \param s ³£Êı
-         * \return ³£ÊıÏîÏà¼õºóµÄ¶àÏîÊ½
+         * \param s å¸¸æ•°
+         * \return å¸¸æ•°é¡¹ç›¸å‡åçš„å¤šé¡¹å¼
          */
         Polynomial& operator -= (const float& s) {
             coefficients[0] -= s;
             return *this;
         }
         /**
-         * \brief ÖØÔØ " *= ", ¶àÏîÊ½Ã¿¸öÏîÏµÊı×Ô³Ës.
+         * \brief é‡è½½ " *= ", å¤šé¡¹å¼æ¯ä¸ªé¡¹ç³»æ•°è‡ªä¹˜s.
          * 
-         * \param s ³£Êı
-         * \return ¸÷ÏîÏµÊı×Ô³ËsºóµÄ¶àÏîÊ½
+         * \param s å¸¸æ•°
+         * \return å„é¡¹ç³»æ•°è‡ªä¹˜såçš„å¤šé¡¹å¼
          */
         Polynomial& operator *= (const float& s) {
             for (int i = 0; i <= Degree; i++) {
@@ -241,10 +241,10 @@ namespace SparseSurfelFusion {
             return *this;
         }
         /**
-         * \brief ÖØÔØ " /= ", ¶àÏîÊ½Ã¿¸öÏîÏµÊı×Ô³ıs.
+         * \brief é‡è½½ " /= ", å¤šé¡¹å¼æ¯ä¸ªé¡¹ç³»æ•°è‡ªé™¤s.
          *
-         * \param s ³£Êı
-         * \return ¸÷ÏîÏµÊı×Ô³ısºóµÄ¶àÏîÊ½
+         * \param s å¸¸æ•°
+         * \return å„é¡¹ç³»æ•°è‡ªé™¤såçš„å¤šé¡¹å¼
          */
         Polynomial& operator /= (const float& s) {
             for (int i = 0; i <= Degree; i++) {
@@ -253,10 +253,10 @@ namespace SparseSurfelFusion {
             return *this;
         }
         /**
-         * \brief ÖØÔØ " + ", ¶àÏîÊ½³£ÊıÏî + ³£Êıs.
+         * \brief é‡è½½ " + ", å¤šé¡¹å¼å¸¸æ•°é¡¹ + å¸¸æ•°s.
          * 
-         * \param s ³£Êıs
-         * \return ³£ÊıÏà¼ÓºóµÄ¶àÏîÊ½
+         * \param s å¸¸æ•°s
+         * \return å¸¸æ•°ç›¸åŠ åçš„å¤šé¡¹å¼
          */
         Polynomial  operator +  (const float& s) const {
             Polynomial<Degree> q = *this;
@@ -264,10 +264,10 @@ namespace SparseSurfelFusion {
             return q;
         }
         /**
-         * \brief ÖØÔØ " - ", ¶àÏîÊ½³£ÊıÏî - ³£Êıs.
+         * \brief é‡è½½ " - ", å¤šé¡¹å¼å¸¸æ•°é¡¹ - å¸¸æ•°s.
          *
-         * \param s ³£Êıs
-         * \return ³£ÊıÏà¼õºóµÄ¶àÏîÊ½
+         * \param s å¸¸æ•°s
+         * \return å¸¸æ•°ç›¸å‡åçš„å¤šé¡¹å¼
          */
         Polynomial  operator -  (const float& s) const {
             Polynomial q = *this;
@@ -275,10 +275,10 @@ namespace SparseSurfelFusion {
             return q;
         }
         /**
-         * \brief ÖØÔØ " * ", ¶àÏîÊ½¸÷ÏîÏµÊı * ³£Êıs¡¾Ëõ·ÅÏµÊı¡¿.
+         * \brief é‡è½½ " * ", å¤šé¡¹å¼å„é¡¹ç³»æ•° * å¸¸æ•°sã€ç¼©æ”¾ç³»æ•°ã€‘.
          *
-         * \param s ³£Êıs
-         * \return ¶àÏîÊ½¸÷ÏîÏµÊı ¡Á ³£ÊısºóµÄ¶àÏîÊ½
+         * \param s å¸¸æ•°s
+         * \return å¤šé¡¹å¼å„é¡¹ç³»æ•° Ã— å¸¸æ•°såçš„å¤šé¡¹å¼
          */
         Polynomial  operator *  (const float& s) const {
             Polynomial q;
@@ -288,10 +288,10 @@ namespace SparseSurfelFusion {
             return q;
         }
         /**
-         * \brief ÖØÔØ " / ", ¶àÏîÊ½¸÷ÏîÏµÊı / ³£Êıs¡¾Ëõ·ÅÏµÊı¡¿.
+         * \brief é‡è½½ " / ", å¤šé¡¹å¼å„é¡¹ç³»æ•° / å¸¸æ•°sã€ç¼©æ”¾ç³»æ•°ã€‘.
          *
-         * \param s ³£Êıs
-         * \return ¶àÏîÊ½¸÷ÏîÏµÊı ¡Â ³£ÊısºóµÄ¶àÏîÊ½
+         * \param s å¸¸æ•°s
+         * \return å¤šé¡¹å¼å„é¡¹ç³»æ•° Ã· å¸¸æ•°såçš„å¤šé¡¹å¼
          */
         Polynomial  operator /  (const float& s) const {
             Polynomial q(Degree);
@@ -302,10 +302,10 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ×öÈçÏÂ±ä»»£ºÔ­Ê½(100.0000 * x^0 + 100.0000 * x^1 + 100.0000 * x^2).
-         *                  scale(10.0)  =>  100.0000 x^0 +10.0000 x^1 +1.0000 x^2  (Ô­Ê¼Ê½×ÓÖµ²»¸Ä±ä)
-         * \param s Ëõ·ÅÏµÊı
-         * \return Ëõ·ÅºóµÄÖµ
+         * \brief åšå¦‚ä¸‹å˜æ¢ï¼šåŸå¼(100.0000 * x^0 + 100.0000 * x^1 + 100.0000 * x^2).
+         *                  scale(10.0)  =>  100.0000 x^0 +10.0000 x^1 +1.0000 x^2  (åŸå§‹å¼å­å€¼ä¸æ”¹å˜)
+         * \param s ç¼©æ”¾ç³»æ•°
+         * \return ç¼©æ”¾åçš„å€¼
          */
         __host__ __device__ Polynomial scale(const float& s) const {
             Polynomial q = *this;
@@ -317,15 +317,15 @@ namespace SparseSurfelFusion {
             return q;
         }
         /**
-         * \brief ×öÈçÏÂ±ä»»¡¾f(x) -> f(x-t)¡¿, ¶àÏîÊ½x·½ÏòÆ½ÒÆt.
-         *        Ô­Ê½£ºf(x) = 1.0000 * x^0 + 1.0000 * x^1 + 1.0000 * x^2 + 1.0000 * x^3 ( t = 1Ê± )
-          *       ³£ÊıÏî£º 1
-          *       Ò»´ÎÏî£º-1   +   1x
-          *       ¶ş´ÎÏî£º 1   -   2x   +   1x^2
-          *       Èı´ÎÏî£º-1   +   3x   -   3x^2    +   1x^3
-          *       ½á¹û£ºf(x-1) = 2 * x^1 - 2 * x^2 + x^3
-         * \param t ×ª»»µÄ³£Êı
-         * \return ¶àÏîÊ½ f(x - t)
+         * \brief åšå¦‚ä¸‹å˜æ¢ã€f(x) -> f(x-t)ã€‘, å¤šé¡¹å¼xæ–¹å‘å¹³ç§»t.
+         *        åŸå¼ï¼šf(x) = 1.0000 * x^0 + 1.0000 * x^1 + 1.0000 * x^2 + 1.0000 * x^3 ( t = 1æ—¶ )
+          *       å¸¸æ•°é¡¹ï¼š 1
+          *       ä¸€æ¬¡é¡¹ï¼š-1   +   1x
+          *       äºŒæ¬¡é¡¹ï¼š 1   -   2x   +   1x^2
+          *       ä¸‰æ¬¡é¡¹ï¼š-1   +   3x   -   3x^2    +   1x^3
+          *       ç»“æœï¼šf(x-1) = 2 * x^1 - 2 * x^2 + x^3
+         * \param t è½¬æ¢çš„å¸¸æ•°
+         * \return å¤šé¡¹å¼ f(x - t)
          */
         __host__ __device__ Polynomial shift(const float& t) const {
             Polynomial<Degree> q;
@@ -341,11 +341,11 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief Çó½â¶àÏîÊ½µÄµ¼Êı¡¾f(x) -> f'(x)¡¿.
-         *        Ô­Ê½£ºf(x) = 1.0000 * x^0 + 1.0000 * x^1 + 1.0000 * x^2 + 1.0000 * x^3
-         *        ½á¹û£ºf'(x) = 1.0000 * x^0 + 2.0000 * x^1 +3.0000 * x^2
+         * \brief æ±‚è§£å¤šé¡¹å¼çš„å¯¼æ•°ã€f(x) -> f'(x)ã€‘.
+         *        åŸå¼ï¼šf(x) = 1.0000 * x^0 + 1.0000 * x^1 + 1.0000 * x^2 + 1.0000 * x^3
+         *        ç»“æœï¼šf'(x) = 1.0000 * x^0 + 2.0000 * x^1 +3.0000 * x^2
          * 
-         * \return µ¼Êı¶àÏîÊ½
+         * \return å¯¼æ•°å¤šé¡¹å¼
          */
         Polynomial<Degree - 1> derivative(void) const {
             Polynomial<Degree - 1> p;
@@ -356,15 +356,15 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ¼ÆËã¶àÏîÊ½µÄ»ı·ÖÔ­º¯Êı¡¾f(x) -> F(x), ÆäÖĞC = 0¡¿.
-         *        Ô­Ê½£ºf(x) =  1.0000 * x^0 + 2.0000 * x^1 + 3.0000 * x^2 + 4.0000 * x^3
-         *        ½á¹û£ºF(x) = C * x^0 + 1.0000 * x^1 + 1.0000 * x^2 + 1.0000 * x^3 + 1.0000 * x^4 (C = 0)
+         * \brief è®¡ç®—å¤šé¡¹å¼çš„ç§¯åˆ†åŸå‡½æ•°ã€f(x) -> F(x), å…¶ä¸­C = 0ã€‘.
+         *        åŸå¼ï¼šf(x) =  1.0000 * x^0 + 2.0000 * x^1 + 3.0000 * x^2 + 4.0000 * x^3
+         *        ç»“æœï¼šF(x) = C * x^0 + 1.0000 * x^1 + 1.0000 * x^2 + 1.0000 * x^3 + 1.0000 * x^4 (C = 0)
          * 
-         * \return Ô­º¯Êı¶àÏîÊ½
+         * \return åŸå‡½æ•°å¤šé¡¹å¼
          */
         Polynomial<Degree + 1> integral(void) const {
             Polynomial<Degree + 1> p;
-            p.coefficients[0] = 0;  // ³£ÊıÏîÎª0
+            p.coefficients[0] = 0;  // å¸¸æ•°é¡¹ä¸º0
             for (int i = 0; i <= Degree; i++) {
                 p.coefficients[i + 1] = coefficients[i] / (i + 1);
             }
@@ -372,12 +372,12 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief Êä³ö¶àÏîÊ½.
+         * \brief è¾“å‡ºå¤šé¡¹å¼.
          * 
          */
         void printnl(void) const {
             for (int j = 0; j <= Degree; j++) {
-                printf("%6.4f ¡¤ x^%d ", coefficients[j], j);
+                printf("%6.4f ãƒ» x^%d ", coefficients[j], j);
                 if (j < Degree && coefficients[j + 1] >= 0) {
                     printf(" + ");
                 }
@@ -386,13 +386,13 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ½«µ±Ç°µÄ¶àÏîÊ½ *this ÓëÁíÒ»¸ö¶àÏîÊ½ p °´ÕÕ¸ø¶¨µÄ±ÈÀı½øĞĞÏà¼Ó£¬²¢½«½á¹û´æ´¢ÔÚµ±Ç°µÄ¶àÏîÊ½ÖĞ£º
-         *        Ô­Ê½£º1.000 * x^0 + 1.000 * x^1 + 1.000 * x^2 + 1.000 * x^3  µ÷ÓÃ a->addScaled(*a, 10)¼ÆËãÈçÏÂ£º
+         * \brief å°†å½“å‰çš„å¤šé¡¹å¼ *this ä¸å¦ä¸€ä¸ªå¤šé¡¹å¼ p æŒ‰ç…§ç»™å®šçš„æ¯”ä¾‹è¿›è¡Œç›¸åŠ ï¼Œå¹¶å°†ç»“æœå­˜å‚¨åœ¨å½“å‰çš„å¤šé¡¹å¼ä¸­ï¼š
+         *        åŸå¼ï¼š1.000 * x^0 + 1.000 * x^1 + 1.000 * x^2 + 1.000 * x^3  è°ƒç”¨ a->addScaled(*a, 10)è®¡ç®—å¦‚ä¸‹ï¼š
          *        (1.000 * x^0 + 1.000 * x^1 + 1.000 * x^2 + 1.000 * x^3) + 10 * (1.000 * x^0 + 1.000 * x^1 + 1.000 * x^2 + 1.000 * x^3).
-         *        ½á¹ûÎª£º11.000 * x^0 + 11.000 * x^1 + 11.000 * x^2 + 11.000 * x^3
-         * \param p ¶àÏîÊ½p
-         * \param scale Ïà¼Ó±ÈÀı
-         * \return ±ÈÀıÏà¼ÓºóµÄ½á¹û
+         *        ç»“æœä¸ºï¼š11.000 * x^0 + 11.000 * x^1 + 11.000 * x^2 + 11.000 * x^3
+         * \param p å¤šé¡¹å¼p
+         * \param scale ç›¸åŠ æ¯”ä¾‹
+         * \return æ¯”ä¾‹ç›¸åŠ åçš„ç»“æœ
          */
         Polynomial& addScaled(const Polynomial& p, const float& scale) {
             for (int i = 0; i <= Degree; i++) {
@@ -402,10 +402,10 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ½«Ò»¸ö¶àÏîÊ½È¡¸º£¬²¢½«½á¹û´æ´¢ÔÚÁíÒ»¸ö¶àÏîÊ½ÖĞ£º¼ÆËã¸ø¶¨¶àÏîÊ½ in µÄ¸ºÖµ.
+         * \brief å°†ä¸€ä¸ªå¤šé¡¹å¼å–è´Ÿï¼Œå¹¶å°†ç»“æœå­˜å‚¨åœ¨å¦ä¸€ä¸ªå¤šé¡¹å¼ä¸­ï¼šè®¡ç®—ç»™å®šå¤šé¡¹å¼ in çš„è´Ÿå€¼.
          * 
-         * \param in ÊäÈë¶àÏîÊ½
-         * \param out Êä³ö¶àÏîÊ½È¡¸ºµÄ½á¹û
+         * \param in è¾“å…¥å¤šé¡¹å¼
+         * \param out è¾“å‡ºå¤šé¡¹å¼å–è´Ÿçš„ç»“æœ
          */
         static void Negate(const Polynomial& in, Polynomial& out) {
             out = in;
@@ -415,11 +415,11 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ¼ÆËã p1 - p2£¬²¢½«½á¹û´æ´¢ÔÚÁíÒ»¸ö¶àÏîÊ½qÖĞ¡¾Polynomial<Degree>::Subtract Ö»»á¿¼ÂÇ[x^0, x^1, ..., x^Degree]ÏîµÄ¶àÏîÊ½p1 ºÍ p2¡¿.
+         * \brief è®¡ç®— p1 - p2ï¼Œå¹¶å°†ç»“æœå­˜å‚¨åœ¨å¦ä¸€ä¸ªå¤šé¡¹å¼qä¸­ã€Polynomial<Degree>::Subtract åªä¼šè€ƒè™‘[x^0, x^1, ..., x^Degree]é¡¹çš„å¤šé¡¹å¼p1 å’Œ p2ã€‘.
          * 
-         * \param p1 ¶àÏîÊ½p1£¬¿ÉÒÔÊÇÈÎÒâ½×µÄ¶àÏîÊ½
-         * \param p2 ¶àÏîÊ½p2£¬¿ÉÒÔÊÇÈÎÒâ½×µÄ¶àÏîÊ½
-         * \param q ¼ÆËãµÄ½á¹û£¬±ØĞëÊÇÒ»¸ö Degree ½×µÄ¶àÏîÊ½
+         * \param p1 å¤šé¡¹å¼p1ï¼Œå¯ä»¥æ˜¯ä»»æ„é˜¶çš„å¤šé¡¹å¼
+         * \param p2 å¤šé¡¹å¼p2ï¼Œå¯ä»¥æ˜¯ä»»æ„é˜¶çš„å¤šé¡¹å¼
+         * \param q è®¡ç®—çš„ç»“æœï¼Œå¿…é¡»æ˜¯ä¸€ä¸ª Degree é˜¶çš„å¤šé¡¹å¼
          */
         static void Subtract(const Polynomial& p1, const Polynomial& p2, Polynomial& q) {
             for (int i = 0; i <= Degree; i++) {
@@ -428,11 +428,11 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ½«Ò»¸ö¶àÏîÊ½°´ÕÕ¸ø¶¨µÄ±ÈÀı½øĞĞËõ·Å£¬²¢½«½á¹û´æ´¢ÔÚÁíÒ»¸ö¶àÏîÊ½qÖĞ¡¾Polynomial<Degree>::Scale Ö»»á¿¼ÂÇ[x^0, x^1, ..., x^Degree]ÏîµÄ¶àÏîÊ½ p¡¿.
+         * \brief å°†ä¸€ä¸ªå¤šé¡¹å¼æŒ‰ç…§ç»™å®šçš„æ¯”ä¾‹è¿›è¡Œç¼©æ”¾ï¼Œå¹¶å°†ç»“æœå­˜å‚¨åœ¨å¦ä¸€ä¸ªå¤šé¡¹å¼qä¸­ã€Polynomial<Degree>::Scale åªä¼šè€ƒè™‘[x^0, x^1, ..., x^Degree]é¡¹çš„å¤šé¡¹å¼ pã€‘.
          * 
-         * \param p ¶àÏîÊ½p£¬¿ÉÒÔÊÇÈÎÒâ½×µÄ¶àÏîÊ½
-         * \param w Ëõ·Å±ÈÀı
-         * \param q Ëõ·Å½á¹û£¬±ØĞëÊÇÒ»¸öDegree½×µÄ¶àÏîÊ½
+         * \param p å¤šé¡¹å¼pï¼Œå¯ä»¥æ˜¯ä»»æ„é˜¶çš„å¤šé¡¹å¼
+         * \param w ç¼©æ”¾æ¯”ä¾‹
+         * \param q ç¼©æ”¾ç»“æœï¼Œå¿…é¡»æ˜¯ä¸€ä¸ªDegreeé˜¶çš„å¤šé¡¹å¼
          */
         static void Scale(const Polynomial& p, const float& w, Polynomial& q) {
             for (int i = 0; i <= Degree; i++) {
@@ -441,13 +441,13 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ½«Á½¸ö¶àÏîÊ½°´±ÈÀıÏà¼Ó£¬²¢½«½á¹û´æ´¢ÔÚÁíÒ»¸ö¶àÏîÊ½ÖĞ£ºp1 * w1 + p2 * w2.
+         * \brief å°†ä¸¤ä¸ªå¤šé¡¹å¼æŒ‰æ¯”ä¾‹ç›¸åŠ ï¼Œå¹¶å°†ç»“æœå­˜å‚¨åœ¨å¦ä¸€ä¸ªå¤šé¡¹å¼ä¸­ï¼šp1 * w1 + p2 * w2.
          * 
-         * \param p1 ¶àÏîÊ½1
-         * \param w1 ¶àÏîÊ½1µÄÈ¨ÖØ
-         * \param p2 ¶àÏîÊ½2
-         * \param w2 ¶àÏîÊ½2µÄÈ¨ÖØ
-         * \param q ½«½á¹û´æ´¢µ½qÖĞ
+         * \param p1 å¤šé¡¹å¼1
+         * \param w1 å¤šé¡¹å¼1çš„æƒé‡
+         * \param p2 å¤šé¡¹å¼2
+         * \param w2 å¤šé¡¹å¼2çš„æƒé‡
+         * \param q å°†ç»“æœå­˜å‚¨åˆ°qä¸­
          */
         static void AddScaled(const Polynomial& p1, const float& w1, const Polynomial& p2, const float& w2, Polynomial& q) {
             for (int i = 0; i <= Degree; i++) {
@@ -456,12 +456,12 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ½«Á½¸ö¶àÏîÊ½Ïà¼Ó£¬²¢ÇÒÆäÖĞÒ»¸ö¶àÏîÊ½»á³ËÒÔÒ»¸ö¸ø¶¨µÄÈ¨ÖØÖµ£ºq = p1 + w2 * p2.
+         * \brief å°†ä¸¤ä¸ªå¤šé¡¹å¼ç›¸åŠ ï¼Œå¹¶ä¸”å…¶ä¸­ä¸€ä¸ªå¤šé¡¹å¼ä¼šä¹˜ä»¥ä¸€ä¸ªç»™å®šçš„æƒé‡å€¼ï¼šq = p1 + w2 * p2.
          * 
-         * \param p1 ¶àÏîÊ½1
-         * \param p2 ¶àÏîÊ½2
-         * \param w2 µÚ¶ş¸ö¶àÏîÊ½È¨ÖØ
-         * \param q ½«½á¹û´æ´¢µ½qÖĞ
+         * \param p1 å¤šé¡¹å¼1
+         * \param p2 å¤šé¡¹å¼2
+         * \param w2 ç¬¬äºŒä¸ªå¤šé¡¹å¼æƒé‡
+         * \param q å°†ç»“æœå­˜å‚¨åˆ°qä¸­
          */
         static void AddScaled(const Polynomial& p1, const Polynomial& p2, const float& w2, Polynomial& q) {
             for (int i = 0; i <= Degree; i++) {
@@ -470,12 +470,12 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief ½«Á½¸ö¶àÏîÊ½Ïà³Ëºó°´±ÈÀı¼Óµ½ÁíÒ»¸ö¶àÏîÊ½ÉÏ£ºq = w1 * p1 + p2.
+         * \brief å°†ä¸¤ä¸ªå¤šé¡¹å¼ç›¸ä¹˜åæŒ‰æ¯”ä¾‹åŠ åˆ°å¦ä¸€ä¸ªå¤šé¡¹å¼ä¸Šï¼šq = w1 * p1 + p2.
          * 
-         * \param p1 µÚÒ»¸ö¶àÏîÊ½ p1
-         * \param w1 p1µÄÈ¨ÖØ
-         * \param p2 µÚ¶ş¸ö¶àÏîÊ½ p2 
-         * \param q ½«½á¹û´æ´¢µ½qÖĞ
+         * \param p1 ç¬¬ä¸€ä¸ªå¤šé¡¹å¼ p1
+         * \param w1 p1çš„æƒé‡
+         * \param p2 ç¬¬äºŒä¸ªå¤šé¡¹å¼ p2 
+         * \param q å°†ç»“æœå­˜å‚¨åˆ°qä¸­
          */
         static void AddScaled(const Polynomial& p1, const float& w1, const Polynomial& p2, Polynomial& q) {
             for (int i = 0; i <= Degree; i++) {
@@ -484,12 +484,12 @@ namespace SparseSurfelFusion {
         }
 
         /**
-         * \brief Çó½âÏÂÊöµÈÊ½£º
+         * \brief æ±‚è§£ä¸‹è¿°ç­‰å¼ï¼š
          *        coefficients[0] x^0 + coefficients[1] x^1 + coefficients[2] x^2 + coefficients[3] x^3 = c
-         *        ·½³ÌµÄÊµÊı½â»á±»±£Áô£¬ĞéÊı½â»á±»ÅÅ³ı.
-         * \param c ·½³Ì³£Êı
-         * \param roots ·½³ÌµÄ¸ù
-         * \param EPS ±íÊ¾¾«¶ÈµÄ²ÎÊı£¬ÓÃÓÚÈ·¶¨½âµÄ¾«È·¶È¡£Èç¹ûÁ½¸ö½âÖ®¼äµÄ²îĞ¡ÓÚ EPS£¬ÔòÕâÁ½¸ö½â±»ÈÏÎªÊÇÏàµÈµÄ
+         *        æ–¹ç¨‹çš„å®æ•°è§£ä¼šè¢«ä¿ç•™ï¼Œè™šæ•°è§£ä¼šè¢«æ’é™¤.
+         * \param c æ–¹ç¨‹å¸¸æ•°
+         * \param roots æ–¹ç¨‹çš„æ ¹
+         * \param EPS è¡¨ç¤ºç²¾åº¦çš„å‚æ•°ï¼Œç”¨äºç¡®å®šè§£çš„ç²¾ç¡®åº¦ã€‚å¦‚æœä¸¤ä¸ªè§£ä¹‹é—´çš„å·®å°äº EPSï¼Œåˆ™è¿™ä¸¤ä¸ªè§£è¢«è®¤ä¸ºæ˜¯ç›¸ç­‰çš„
          */
         void getSolutions(const float& c, std::vector<float>& roots, const float& EPS) const {
             float r[4][2];
@@ -509,7 +509,7 @@ namespace SparseSurfelFusion {
                 rCount = Factor::FactorSolver(coefficients[4], coefficients[3], coefficients[2], coefficients[1], coefficients[0] - c, r, EPS);
                 break;
             default:
-                printf("Îå´Î¼°ÒÔÉÏ·½³ÌÃ»ÓĞÇó¸ù¹«Ê½£¬ÎŞ·¨Çó½â: %d\n", Degree);
+                printf("äº”æ¬¡åŠä»¥ä¸Šæ–¹ç¨‹æ²¡æœ‰æ±‚æ ¹å…¬å¼ï¼Œæ— æ³•æ±‚è§£: %d\n", Degree);
             }
             for (int i = 0; i < rCount; i++) {
                 if (fabs(r[i][1]) <= EPS) {

@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   FunctionData.h
- * \brief  »ùº¯Êı·½·¨¼°Ä£°å·½·¨ÊµÏÖ
+ * \brief  åŸºå‡½æ•°æ–¹æ³•åŠæ¨¡æ¿æ–¹æ³•å®ç°
  * 
  * \author LUOJIAXUAN
  * \date   May 15th 2024
@@ -11,40 +11,40 @@
 namespace SparseSurfelFusion {
 
 	template<class Real>
-	class FunctionValueTable;	// Ç°ÏòÉùÃ÷
+	class FunctionValueTable;	// å‰å‘å£°æ˜
 
 	template<int Degree, class Real>
 	class FunctionData
 	{
         /**
-         * ÊÇ·ñËõ·ÅdDotTable, d2DotTableÓëdotTable 
+         * æ˜¯å¦ç¼©æ”¾dDotTable, d2DotTableä¸dotTable 
          */
-        int useDotRatios;   // ÊÇ·ñ½øĞĞµã»ı±ÈµÄ¼ÆËã¡¾true£º¼ÆËãÍêÒ»½×»òÕß¶ş½×µ¼º¯Êıµã»ıºó³ıÒÔÔ­Ê¼º¯ÊıµÄµã»ı£»false£ºÖ±½Ó¼ÆËãº¯Êıµã»ı¡¿
-        int normalize;      // º¯Êıµã»ı¹éÒ»»¯µÄÀàĞÍ¡¾0£º²»½øĞĞ¹éÒ»»¯£»1£º½øĞĞL1-·¶Êı¹éÒ»»¯£»2£º½øĞĞL2-·¶Êı¹éÒ»»¯
+        int useDotRatios;   // æ˜¯å¦è¿›è¡Œç‚¹ç§¯æ¯”çš„è®¡ç®—ã€trueï¼šè®¡ç®—å®Œä¸€é˜¶æˆ–è€…äºŒé˜¶å¯¼å‡½æ•°ç‚¹ç§¯åé™¤ä»¥åŸå§‹å‡½æ•°çš„ç‚¹ç§¯ï¼›falseï¼šç›´æ¥è®¡ç®—å‡½æ•°ç‚¹ç§¯ã€‘
+        int normalize;      // å‡½æ•°ç‚¹ç§¯å½’ä¸€åŒ–çš„ç±»å‹ã€0ï¼šä¸è¿›è¡Œå½’ä¸€åŒ–ï¼›1ï¼šè¿›è¡ŒL1-èŒƒæ•°å½’ä¸€åŒ–ï¼›2ï¼šè¿›è¡ŒL2-èŒƒæ•°å½’ä¸€åŒ–
     public:
-        const static int     DOT_FLAG = 1;  // ÊÇ·ñ¼ÇÂ¼»ùº¯ÊıµÄµã»ı±í
-        const static int   D_DOT_FLAG = 2;  // ÊÇ·ñ¼ÇÂ¼»ùº¯ÊıÒ»½×µ¼ÊıµÄµã»ı±í
-        const static int  D2_DOT_FLAG = 4;  // ÊÇ·ñ¼ÇÂ¼»ùº¯Êı¶ş½×µ¼ÊıµÄµã»ı±í
-        const static int   VALUE_FLAG = 1;  // ÊÇ·ñ¼ÇÂ¼»ùº¯ÊıÖµ
-        const static int D_VALUE_FLAG = 2;  // ÊÇ·ñ¼ÇÂ¼»ùº¯Êıµ¼ÊıÖµ
+        const static int     DOT_FLAG = 1;  // æ˜¯å¦è®°å½•åŸºå‡½æ•°çš„ç‚¹ç§¯è¡¨
+        const static int   D_DOT_FLAG = 2;  // æ˜¯å¦è®°å½•åŸºå‡½æ•°ä¸€é˜¶å¯¼æ•°çš„ç‚¹ç§¯è¡¨
+        const static int  D2_DOT_FLAG = 4;  // æ˜¯å¦è®°å½•åŸºå‡½æ•°äºŒé˜¶å¯¼æ•°çš„ç‚¹ç§¯è¡¨
+        const static int   VALUE_FLAG = 1;  // æ˜¯å¦è®°å½•åŸºå‡½æ•°å€¼
+        const static int D_VALUE_FLAG = 2;  // æ˜¯å¦è®°å½•åŸºå‡½æ•°å¯¼æ•°å€¼
 
         /**
-         * ResÊÇ·Ö±æÂÊ
+         * Resæ˜¯åˆ†è¾¨ç‡
          */
-        int res = 0;                    // ¼ÇÂ¼»ùº¯Êıµã»ı±íµÄ´óĞ¡
+        int res = 0;                    // è®°å½•åŸºå‡½æ•°ç‚¹ç§¯è¡¨çš„å¤§å°
         int depth, res2;
-        double* dotTable = NULL;        // »ùº¯ÊıµÄº¯ÊıÄÚ»ı±í
-        double* dDotTable = NULL;       // »ùº¯ÊıÒ»½×µ¼ÊıµÄº¯ÊıÄÚ»ı±í
-        double* d2DotTable = NULL;      // »ùº¯Êı¶ş½×µ¼ÊıµÄº¯ÊıÄÚ»ı±í
-        double* valueTables = NULL;     // »ùº¯ÊıÖµµÄ±í
-        double* dValueTables = NULL;    // »ùº¯Êıµ¼ÊıÖµµÄ±í
+        double* dotTable = NULL;        // åŸºå‡½æ•°çš„å‡½æ•°å†…ç§¯è¡¨
+        double* dDotTable = NULL;       // åŸºå‡½æ•°ä¸€é˜¶å¯¼æ•°çš„å‡½æ•°å†…ç§¯è¡¨
+        double* d2DotTable = NULL;      // åŸºå‡½æ•°äºŒé˜¶å¯¼æ•°çš„å‡½æ•°å†…ç§¯è¡¨
+        double* valueTables = NULL;     // åŸºå‡½æ•°å€¼çš„è¡¨
+        double* dValueTables = NULL;    // åŸºå‡½æ•°å¯¼æ•°å€¼çš„è¡¨
         PPolynomial<Degree> baseFunction;
         /**
-         * baseFunctionµÄµ¼º¯Êı
+         * baseFunctionçš„å¯¼å‡½æ•°
          */
         PPolynomial<Degree - 1> dBaseFunction;
         /**
-         * baseFunctionµÄÔ­º¯Êı.
+         * baseFunctionçš„åŸå‡½æ•°.
          */
         PPolynomial<Degree + 1>* baseFunctions;
 
@@ -62,7 +62,7 @@ namespace SparseSurfelFusion {
             res = 0;
         }
 
-        /**     ¼ÙÉèmaxDepthÎª2£¬¼ÙÉèREALÎªÒ»Î¬
+        /**     å‡è®¾maxDepthä¸º2ï¼Œå‡è®¾REALä¸ºä¸€ç»´
           *     the center and width of $index is
           *     [0] 0.500000, 1.000000
           *     [1] 0.250000, 0.500000
@@ -88,10 +88,10 @@ namespace SparseSurfelFusion {
             this->res = BinaryNode<double>::CumulativeCenterCount(this->depth);
             this->res2 = (1 << (this->depth + 1)) + 1;
             this->baseFunctions = new PPolynomial<Degree + 1>[res];
-            // Ëõ·Åº¯ÊıÊ¹Æä:
-            // 0] ÔÚ0´¦µÄÖµÎª1
-            // 1] »ı·ÖÎª1
-            // 2] Æ½·½»ı·ÖÎª1
+            // ç¼©æ”¾å‡½æ•°ä½¿å…¶:
+            // 0] åœ¨0å¤„çš„å€¼ä¸º1
+            // 1] ç§¯åˆ†ä¸º1
+            // 2] å¹³æ–¹ç§¯åˆ†ä¸º1
             switch (normalize) {
             case 2:
                 baseFunction = F / sqrt((F * F).integral(F.polys[0].start, F.polys[F.polyCount - 1].start));
@@ -125,11 +125,11 @@ namespace SparseSurfelFusion {
         }
 
 
-        /**     if   (flags &   DOT_FLAG)  ÎªÕæ, ÉèÖÃdotTable  
-          *          (flags & D_DOT_FLAG)  ÎªÕæ, ÉèÖÃdDotTable 
-          *          (flags & D2_DOT_FLAG) ÎªÕæ, ÉèÖÃd2DotTable
-          *    Êı¾İ±í°üº¬baseFunctionsµÄÄÚ»ı
-          *    ÕâĞ©Êı×éµÄ´óĞ¡Îª[res * res]                      
+        /**     if   (flags &   DOT_FLAG)  ä¸ºçœŸ, è®¾ç½®dotTable  
+          *          (flags & D_DOT_FLAG)  ä¸ºçœŸ, è®¾ç½®dDotTable 
+          *          (flags & D2_DOT_FLAG) ä¸ºçœŸ, è®¾ç½®d2DotTable
+          *    æ•°æ®è¡¨åŒ…å«baseFunctionsçš„å†…ç§¯
+          *    è¿™äº›æ•°ç»„çš„å¤§å°ä¸º[res * res]                      
           */
         void setDotTables(const int& flags) {
             clearDotTables(flags);
@@ -152,7 +152,7 @@ namespace SparseSurfelFusion {
             for (int i = 0; i < res; i++) {
                 double c1, c2, w1, w2;
                 BinaryNode<double>::CenterAndWidth(i, c1, w1);
-                // ½«0µãµÄº¯ÊıÖĞĞÄÓ³Éäµ½ËüµÄÊµ¼ÊÎ»ÖÃ
+                // å°†0ç‚¹çš„å‡½æ•°ä¸­å¿ƒæ˜ å°„åˆ°å®ƒçš„å®é™…ä½ç½®
                 double start1 = t1 * w1 + c1;
                 double end1 = t2 * w1 + c1;
                 for (int j = 0; j <= i; j++) {
@@ -189,9 +189,9 @@ namespace SparseSurfelFusion {
             }
         }
         /**
-         * \brief Çå¿Õµã»ı²éÑ¯±í.
+         * \brief æ¸…ç©ºç‚¹ç§¯æŸ¥è¯¢è¡¨.
          * 
-         * \param flags ±êÖ¾Î»
+         * \param flags æ ‡å¿—ä½
          */
         void clearDotTables(const int& flags) {
             if ((flags & DOT_FLAG) && dotTable) {
@@ -208,9 +208,9 @@ namespace SparseSurfelFusion {
             }
         }
 
-        /**     Èç¹û   (flags &   VALUE_FLAG) ÊÇ True, ¼ÆËãÉèÖÃ valueTables
-          *     Èç¹û   (flags & D_VALUE_FLAG) ÊÇ True, ¼ÆËãÉèÖÃ dValueTables
-          *     valueTables[i*res2 -- i*res2+res2-1] ÊÇ±»Æ½»¬µÄ»ùº¯Êı baseFunctions[i]
+        /**     å¦‚æœ   (flags &   VALUE_FLAG) æ˜¯ True, è®¡ç®—è®¾ç½® valueTables
+          *     å¦‚æœ   (flags & D_VALUE_FLAG) æ˜¯ True, è®¡ç®—è®¾ç½® dValueTables
+          *     valueTables[i*res2 -- i*res2+res2-1] æ˜¯è¢«å¹³æ»‘çš„åŸºå‡½æ•° baseFunctions[i]
           *     discrete value from [0, 1]
           *     so is dValueTables.
           *     size of these array is all [res * res2]                     */
@@ -251,13 +251,13 @@ namespace SparseSurfelFusion {
 
         /**     <F1, F2> inner product      */
         /**
-         * \brief ¼ÆËã»ùº¯Êı1ºÍ»ùº¯Êı2Ö®¼äµÄµã»ı<F, F>¡¾µã»ı±íÊ¾ÁËÁ½¸öº¯ÊıÔÚ¸ø¶¨Çø¼äÉÏµÄÏàËÆ³Ì¶È¡£Èç¹ûµã»ı½á¹ûÎª·ÇÁã£¬ÔòËµÃ÷ÕâÁ½¸öº¯ÊıÔÚ¸ÃÇø¼äÉÏÓĞÒ»¶¨µÄÏàËÆĞÔ¡¿.
+         * \brief è®¡ç®—åŸºå‡½æ•°1å’ŒåŸºå‡½æ•°2ä¹‹é—´çš„ç‚¹ç§¯<F, F>ã€ç‚¹ç§¯è¡¨ç¤ºäº†ä¸¤ä¸ªå‡½æ•°åœ¨ç»™å®šåŒºé—´ä¸Šçš„ç›¸ä¼¼ç¨‹åº¦ã€‚å¦‚æœç‚¹ç§¯ç»“æœä¸ºéé›¶ï¼Œåˆ™è¯´æ˜è¿™ä¸¤ä¸ªå‡½æ•°åœ¨è¯¥åŒºé—´ä¸Šæœ‰ä¸€å®šçš„ç›¸ä¼¼æ€§ã€‘.
          * 
-         * \param center1 »ùº¯Êı1µÄÖĞĞÄÖµ
-         * \param width1 »ùº¯Êı1µÄ¿í¶È
-         * \param center2 »ùº¯Êı2µÄÖĞĞÄÖµ
-         * \param width2 »ùº¯Êı2µÄÖĞĞÄÖµ
-         * \return Á½¸ö»ùº¯ÊıµÄµã»ı
+         * \param center1 åŸºå‡½æ•°1çš„ä¸­å¿ƒå€¼
+         * \param width1 åŸºå‡½æ•°1çš„å®½åº¦
+         * \param center2 åŸºå‡½æ•°2çš„ä¸­å¿ƒå€¼
+         * \param width2 åŸºå‡½æ•°2çš„ä¸­å¿ƒå€¼
+         * \return ä¸¤ä¸ªåŸºå‡½æ•°çš„ç‚¹ç§¯
          */
         double dotProduct(const double& center1, const double& width1, const double& center2, const double& width2) const {
             double r = fabs(baseFunction.polys[0].start);
@@ -271,13 +271,13 @@ namespace SparseSurfelFusion {
             }
         }
         /**
-         * \brief ¼ÆËã»ùº¯ÊıÒ»½×µ¼ÊıµÄµã»ı<F, dF>¡¾µã»ı±íÊ¾ÁËÁ½¸öº¯ÊıÔÚ¸ø¶¨Çø¼äÉÏµÄÏàËÆ³Ì¶È¡£Èç¹ûµã»ı½á¹ûÎª·ÇÁã£¬ÔòËµÃ÷ÕâÁ½¸öº¯ÊıÔÚ¸ÃÇø¼äÉÏÓĞÒ»¶¨µÄÏàËÆĞÔ¡¿.
+         * \brief è®¡ç®—åŸºå‡½æ•°ä¸€é˜¶å¯¼æ•°çš„ç‚¹ç§¯<F, dF>ã€ç‚¹ç§¯è¡¨ç¤ºäº†ä¸¤ä¸ªå‡½æ•°åœ¨ç»™å®šåŒºé—´ä¸Šçš„ç›¸ä¼¼ç¨‹åº¦ã€‚å¦‚æœç‚¹ç§¯ç»“æœä¸ºéé›¶ï¼Œåˆ™è¯´æ˜è¿™ä¸¤ä¸ªå‡½æ•°åœ¨è¯¥åŒºé—´ä¸Šæœ‰ä¸€å®šçš„ç›¸ä¼¼æ€§ã€‘.
          * 
-         * \param center1 »ùº¯Êı1µÄÖĞĞÄÖµ
-         * \param width1 »ùº¯Êı1µÄ¿í¶È
-         * \param center2 »ùº¯Êı2µÄÖĞĞÄÖµ
-         * \param width2 »ùº¯Êı2µÄÖĞĞÄÖµ
-         * \return Á½¸ö»ùº¯Êıµ¼ÊıµÄµã»ı
+         * \param center1 åŸºå‡½æ•°1çš„ä¸­å¿ƒå€¼
+         * \param width1 åŸºå‡½æ•°1çš„å®½åº¦
+         * \param center2 åŸºå‡½æ•°2çš„ä¸­å¿ƒå€¼
+         * \param width2 åŸºå‡½æ•°2çš„ä¸­å¿ƒå€¼
+         * \return ä¸¤ä¸ªåŸºå‡½æ•°å¯¼æ•°çš„ç‚¹ç§¯
          */
         double  dDotProduct(const double& center1, const double& width1, const double& center2, const double& width2) const {
             double r = fabs(baseFunction.polys[0].start);
@@ -291,13 +291,13 @@ namespace SparseSurfelFusion {
             }
         }
         /**
-         * \brief ¼ÆËã»ùº¯Êı¶ş½×µ¼ÊıµÄµã»ı<F, d2F>¡¾µã»ı±íÊ¾ÁËÁ½¸öº¯ÊıÔÚ¸ø¶¨Çø¼äÉÏµÄÏàËÆ³Ì¶È¡£Èç¹ûµã»ı½á¹ûÎª·ÇÁã£¬ÔòËµÃ÷ÕâÁ½¸öº¯ÊıÔÚ¸ÃÇø¼äÉÏÓĞÒ»¶¨µÄÏàËÆĞÔ¡¿.
+         * \brief è®¡ç®—åŸºå‡½æ•°äºŒé˜¶å¯¼æ•°çš„ç‚¹ç§¯<F, d2F>ã€ç‚¹ç§¯è¡¨ç¤ºäº†ä¸¤ä¸ªå‡½æ•°åœ¨ç»™å®šåŒºé—´ä¸Šçš„ç›¸ä¼¼ç¨‹åº¦ã€‚å¦‚æœç‚¹ç§¯ç»“æœä¸ºéé›¶ï¼Œåˆ™è¯´æ˜è¿™ä¸¤ä¸ªå‡½æ•°åœ¨è¯¥åŒºé—´ä¸Šæœ‰ä¸€å®šçš„ç›¸ä¼¼æ€§ã€‘.
          *
-         * \param center1 »ùº¯Êı1µÄÖĞĞÄÖµ
-         * \param width1 »ùº¯Êı1µÄ¿í¶È
-         * \param center2 »ùº¯Êı2µÄÖĞĞÄÖµ
-         * \param width2 »ùº¯Êı2µÄÖĞĞÄÖµ
-         * \return Á½¸ö»ùº¯Êıµ¼ÊıµÄµã»ı
+         * \param center1 åŸºå‡½æ•°1çš„ä¸­å¿ƒå€¼
+         * \param width1 åŸºå‡½æ•°1çš„å®½åº¦
+         * \param center2 åŸºå‡½æ•°2çš„ä¸­å¿ƒå€¼
+         * \param width2 åŸºå‡½æ•°2çš„ä¸­å¿ƒå€¼
+         * \return ä¸¤ä¸ªåŸºå‡½æ•°å¯¼æ•°çš„ç‚¹ç§¯
          */
         double d2DotProduct(const double& center1, const double& width1, const double& center2, const double& width2) const {
             double r = fabs(baseFunction.polys[0].start);
@@ -328,14 +328,14 @@ namespace SparseSurfelFusion {
             values = NULL;
         }
 
-        /**     ·µ»Øpoly(idx/res)£¬Èç¹ûvalueÎ´¶¨ÒåÔò·µ»Ø0                            */
+        /**     è¿”å›poly(idx/res)ï¼Œå¦‚æœvalueæœªå®šä¹‰åˆ™è¿”å›0                            */
         inline Real operator[] (const int& idx) {
             int i = idx - start;
             if (i < 0 || i >= size) { return 0; }
             else { return this->values[i]; }
         }
 
-        /**     resÎª·Ö±æÂÊ£¬[0,1]ÖĞpoly(i/ Res)µÄÀëÉ¢Öµ±£´æÎªvalues   */
+        /**     resä¸ºåˆ†è¾¨ç‡ï¼Œ[0,1]ä¸­poly(i/ Res)çš„ç¦»æ•£å€¼ä¿å­˜ä¸ºvalues   */
         template<int Degree>
         int setValues(const PPolynomial<Degree>& ppoly, const int& res) {
             int j;

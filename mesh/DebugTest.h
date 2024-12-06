@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   DebugTest.h
- * \brief  ²âÊÔËã·¨Àà
+ * \brief  æµ‹è¯•ç®—æ³•ç±»
  * 
  * \author LUOJIAXUAN
  * \date   May 1st 2024
@@ -17,11 +17,11 @@ namespace SparseSurfelFusion {
 		~DebugTest() = default;
 
 		/**
-		 * \brief Êä³ö64Î»¸ß32Î»¶ş½øÖÆ±àÂë£¬all64£ºÊä³ö64Î»È«²¿£¬high32£ºÊä³öÇ°32Î»£¬low32£ºÊä³öºó32Î».
+		 * \brief è¾“å‡º64ä½é«˜32ä½äºŒè¿›åˆ¶ç¼–ç ï¼Œall64ï¼šè¾“å‡º64ä½å…¨éƒ¨ï¼Œhigh32ï¼šè¾“å‡ºå‰32ä½ï¼Œlow32ï¼šè¾“å‡ºå32ä½.
 		 * 
-		 * \param keys ĞèÒª½âÎöµÄÊı×é
-		 * \param stream µ±Ç°ÔËËãµÄcudaÁ÷£¬ĞèÒªÍ¬²½
-		 * \param Type ĞèÒªÊä³öµÄ²¿·Ö£¬all64£ºÊä³ö64Î»È«²¿£¬high32£ºÊä³öÇ°32Î»£¬low32£ºÊä³öºó32Î»
+		 * \param keys éœ€è¦è§£æçš„æ•°ç»„
+		 * \param stream å½“å‰è¿ç®—çš„cudaæµï¼Œéœ€è¦åŒæ­¥
+		 * \param Type éœ€è¦è¾“å‡ºçš„éƒ¨åˆ†ï¼Œall64ï¼šè¾“å‡º64ä½å…¨éƒ¨ï¼Œhigh32ï¼šè¾“å‡ºå‰32ä½ï¼Œlow32ï¼šè¾“å‡ºå32ä½
 		 */
 		void CheckKeysEncode(DeviceArrayView<long long> keys, cudaStream_t stream, std::string Type = "all64");
 	private:
